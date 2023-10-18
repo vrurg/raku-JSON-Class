@@ -1,0 +1,7 @@
+._*
+.DS_Store
+.precomp/
+.idea/
+*.iml
+.vscode/*
+.layout

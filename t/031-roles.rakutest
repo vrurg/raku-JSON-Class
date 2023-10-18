@@ -1,0 +1,60 @@
+use v6.e.PREVIEW;
+use Test::Async;
+use JSON::Class:auth<zef:vrurg>;
+
+subtest "Incorporating roles" => {
+    # By default attributes from roles, consumed by a class, are not included into serialization, unless the roles
+    # themselves are `is json`. But incorporating a role via `:does` argument of the `json` trait will make its content
+    # serializable.
+
+    my role Base {
+        has Str $.comment;
+    }
+
+    # This role is to be incorporated. Make sure other roles it consumes are incorporated too.
+    my role Rec does Base {
+        has Int $.amount;
+        has Str $.what;
+    }
+
+    my role R {
+        has Bool $.flag;
+    }
+
+    # Currings are to be supported too.
+    my role RT[Int:D $def] {
+        has Int:D $.when = $def;
+    }
+
+    my role Common {
+        has Str $.common;
+        has Rat $.vvv;
+    }
+
+    # A JSON roles incorporating other role and consumed by another JSON role. Well, yes, I know the entire construct
+    # is overcomplicated and pulled out of the thing air. But we do need to testa as many cases as possible.
+    my role CommonJ is json(:does(Common), :!skip-null) {
+        has Bool $.cj = True;
+    }
+
+    my role RJ is json(:does(R)) does CommonJ {}
+
+    # This one must not be included into the serialization.
+    my role Unincorporated {
+        has Num $.const = pi; # Not to be in the JSON
+    }
+
+    my class Record is json(:does(Rec,RT[11])) does RJ does Unincorporated { }
+
+    my $expected = q<{"amount":0,"cj":true,"comment":"test comment","common":"any nonsense","flag":true,"vvv":null,"what":"whatever","when":11}>;
+    my $rec = Record.new( :amount(0),
+                          :comment("test comment"),
+                          :common("any nonsense"),
+                          :flag,
+                          :what("whatever") );
+
+    is $rec.to-json(:sorted-keys), $expected, "incorporated role attributes are all serialized";
+    cmp-deeply Record.from-json($expected), $rec, "incorporated role attributes are all deserialized";
+}
+
+done-testing;

@@ -1,0 +1,158 @@
+use v6.e.PREVIEW;
+use Test::Async;
+use JSON::Class:auth<zef:vrurg>;
+use JSON::Class::Config:auth<zef:vrurg>;
+use JSON::Class::X:auth<zef:vrurg>;
+
+use AttrX::Mooish;
+
+plan 6;
+
+class Record is json {
+    has Int $.count;
+    has Str $.what;
+}
+
+class Status {
+    has Str $.code;
+    has Bool $.verified;
+    has Str $.notes;
+}
+
+class RecWrapper is json-wrap(Record) {
+    has Bool $.available is mooish(:lazy);
+
+    method build-available {
+        $.count > 0;
+    }
+}
+
+class StatusTools is Status {
+    # Just a mockup of what could be used for accessing some API, for example.
+    method update-record {
+        "will-update" => $.code
+    }
+}
+
+JSON::Class::Config.map-types: RecWrapper, (Status) => StatusTools;
+
+subtest "Direct mapping" => {
+    plan 3;
+    my $deserialized = Record.from-json(q<{"count":1,"what":"no idea"}>);
+
+    isa-ok $deserialized, RecWrapper, "simple type deserialization maps types";
+    cmp-deeply ($deserialized.count, $deserialized.what), (1, "no idea"), "deserialized attribute values";
+    ok $deserialized.available, "deserialized type specific attribute";
+}
+
+subtest "In a class" => {
+    my class Foo is json {
+        has Record $.rec;
+        has Status $.st;
+    }
+
+    my $json = q<{"rec":{"count":0,"what":"irrelevant"},"st":{"code":"1A-CD3","verified":false,"notes":"to be done"}}>;
+
+    my $foo = Foo.from-json($json);
+
+    isa-ok $foo.rec, RecWrapper, "object attribute of a JSON type is mapped";
+    isa-ok $foo.st, StatusTools, "object attribute of a non-JSON type is mapped";
+
+    is $foo.st.update-record, "will-update" => "1A-CD3", "non-JSON wrapper type works";
+}
+
+subtest "Map into unrelated class" => {
+    plan 2;
+
+    my role Rec {
+        has Int $.count;
+        has Str $.what;
+    }
+    my class CR1 is json( :does(Rec) ) { }
+    my class CR2 is json( :does(Rec) ) { }
+
+    my $config = JSON::Class::Config.new;
+
+    $config.with-severity: :easy, {
+        $config.map-type: CR1, CR2;
+    };
+
+    my $r = CR1.from-json(q<{"count":13,"what":"whatever"}>, :$config);
+
+    isa-ok $r, CR2, "mapped into a non-child";
+
+    # This is how such mapping can work in real life.
+    my class Container is json {
+        has Rec $.cr;
+    }
+
+    $config.set-helpers: Rec, from-json => { diag "custom deser"; CR1.from-json(%^profile) };
+
+    my $c = Container.new(cr => CR1.new(:count(321), :what("mystical stuff")));
+    my $c2 = Container.from-json($c.to-json, :$config);
+
+    cmp-deeply $c2.cr, CR2.new(:count(321), :what("mystical stuff")), "attribute value mapped into the target type";
+}
+
+subtest "Map a sequence" => {
+    plan 2;
+
+    my class JSeq1 is json(:sequence(Int)) {}
+    my class JSeq2 is json(:sequence(Int,Str)) {}
+
+    my $config = JSON::Class::Config.new;
+
+    $config.with-severity: :easy, {
+        $config.map-type: JSeq1, JSeq2;
+    }
+
+    my $jseq1 = JSeq1.new(1, 12, 13, 42);
+
+    my $jseq2 = JSeq1.from-json($jseq1.to-json, :$config);
+
+    isa-ok $jseq2, JSeq2, "sequence type mapping works";
+    cmp-deeply $jseq2.List, $jseq1.List, "deserialization is identical to the original";
+}
+
+subtest "Map in a sequence" => {
+    plan 2;
+
+    my class Item1 is json {
+        has $.val;
+    }
+
+    my class Item2 is json-wrap(Item1) {}
+
+    my class Item3 is json {
+        has $.whatever;
+    }
+
+    my class JSeq is json( :sequence(Item1, Item3) ) {}
+
+    my $config = JSON::Class::Config.new;
+
+    $config.map-type: Item2;
+
+    my $jseq = JSeq.new(Item1.new(:val(pi)), Item1.new(:val("OK")), Item3.new(:whatever(-1)));
+
+    my $unampped = JSeq.from-json($jseq.to-json);
+    cmp-deeply $unampped.List, $jseq.List, "unmapped deserialization is fully identical to the original";
+
+    my $mapped = JSeq.from-json($jseq.to-json, :$config);
+    cmp-deeply $mapped.map({ .WHAT }).List, (Item2, Item2, Item3), "mapped deserialization contains target types";
+}
+
+subtest "Errors" => {
+    plan 1;
+
+    my class C { }
+
+    my $config = JSON::Class::Config.new;
+
+    throws-like
+        { $config.map-type: C },
+        JSON::Class::X::Config::NonWrapperType,
+        "single-argument map-type requires a wrapper class";
+}
+
+done-testing;

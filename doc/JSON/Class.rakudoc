@@ -1,0 +1,18 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class> - general purpose JSON de-/serialization for Raku
+
+=head1 SYNOPSIS
+
+=begin code
+
+clas Record is json {
+    has Int $.count;
+    has Str $.description;
+}
+
+say Record.new(:count(42), :description("The Answer")).to-json;
+=end code
+
+=end rakudoc

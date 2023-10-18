@@ -1,0 +1,282 @@
+use v6.e.PREVIEW;
+use Test::Async;
+use JSON::Class:auth<zef:vrurg>;
+use JSON::Class::Config:auth<zef:vrurg>;
+use JSON::Class::Types:auth<zef:vrurg>;
+
+plan 6;
+
+subtest "Global defaults" => {
+    plan 11;
+    is JSON::Class::Config.spacing, 2, "default spacing is 2";
+    nok JSON::Class::Config.sorted-keys, "default is not to sort keys";
+
+    is-run q:to/CODE/,
+        use JSON::Class::Config:auth<zef:vrurg>;
+        JSON::Class::Config.global(:spacing(4), :sorted-keys);
+        print JSON::Class::Config.spacing, " ", JSON::Class::Config.sorted-keys;
+        CODE
+        {
+            :compiler-args('-I.',),
+            :out('4 True'),
+            :err('')
+        },
+        "first reference to the .global sets its defaults";
+
+    is-run q:to/CODE/,
+        use JSON::Class::Config:auth<zef:vrurg>;
+        JSON::Class::Config.global(:spacing(4), :sorted-keys);
+        JSON::Class::Config.global(:spacing(4), :sorted-keys);
+        CODE
+        {
+            :compiler-args('-I.',),
+            :out(''),
+            :err(*.contains('The global configuration object already exists and cannot be changed')),
+            :exitcode(1)
+        },
+        "global defaults cannot be changed";
+
+    nok JSON::Class::Config.pretty, "control: 'pretty' is off by default";
+    my class Rec is json {
+        has Str $.a = "foo";
+        has Int $.b = 11;
+    }
+    is Rec.new.to-json(:sorted-keys), q<{"a":"foo","b":11}>, "default JSON is not pretty";
+
+    is-run q:to/CODE/,
+        use JSON::Class:auth<zef:vrurg>;
+        use JSON::Class::Config:auth<zef:vrurg>;
+        JSON::Class::Config.global(:pretty);
+        my class Rec is json {
+            has Str $.a = "foo";
+            has Int $.b = 11;
+        }
+        print Rec.new.to-json(:sorted-keys);
+        CODE
+        {
+            :compiler-args('-I.',),
+            :out("\{\n  \"a\": \"foo\",\n  \"b\": 11\n}"),
+            :err(''),
+        },
+        "setting a global config parameter affects serialization";
+
+    my class Foo is json(:pretty, :sorted-keys) {
+        has Str $.a = "foo";
+        has Int $.b = 11;
+    }
+
+    cmp-deeply Foo.^json-config-defaults, {:pretty, :sorted-keys}, "config defaults are set for class";
+    is Foo.new.to-json, "\{\n  \"a\": \"foo\",\n  \"b\": 11\n}", "config defaults can be set for a class";
+
+    is Foo.new.to-json(:config{:!pretty, :sorted-keys}),
+       q<{"a":"foo","b":11}>,
+       ":config adverb with a hash overrides any other config for a class";
+
+    my $config = JSON::Class::Config.dup(:!pretty, :sorted-keys);
+
+    is Foo.new.to-json(:$config),
+       q<{"a":"foo","b":11}>,
+       ":config adverb with a config object overrides any other config for a class";
+}
+
+subtest "Type mapping" => {
+    plan 2;
+
+    my class Item { }
+    my class ItemW is json-wrap(Item) {}
+
+    my class Foo {}
+    my class Bar {};
+
+    my $config = JSON::Class::Config.new;
+
+    $config.with-severity: :easy, {
+        $config.map-types: ItemW, (Foo) => Bar;
+    }
+
+    cmp-ok $config.type-from(Item), &[=:=], ItemW, "json-wrapp'ed type maps";
+    cmp-ok $config.type-from(Foo), &[=:=], Bar, "direct mapping works too";
+}
+
+subtest "Severity" => -> $subtest {
+    plan 8;
+
+    my $config = JSON::Class::Config.new(:warn);
+    is $config.severity, "warn", "severity is set by constructor";
+    lives-ok {
+            CONTROL {
+                when CX::Warn {
+                    $subtest.is: .message, "this should warn", "warning message";
+                }
+            }
+            $config.alert("this should warn");
+        },
+        "alert issues a warning when severity is :warn";
+
+    lives-ok {
+            CONTROL {
+                when CX::Warn {
+                    $subtest.is: .message, "this will become a warning", "exception message is used with warning";
+                }
+            }
+            try { die "this will become a warning" };
+            $config.alert($!);
+        },
+        "alert can be used to report error without throwing with :warn";
+
+    $config.set-severity(:strict);
+    is $config.severity, "strict", "severity can be changed dynamically";
+    throws-like
+        { $config.alert("this one dies"); },
+        JSON::Class::X::AdHoc,
+        "alert throws when severity is :strict";
+
+    is-run q:to/CODE/,
+        use JSON::Class::Config:auth<zef:vrurg>;
+        JSON::Class::Config.set-severity(:easy);
+        JSON::Class::Config.alert("whatever, it must not be reported");
+        CODE
+        {
+            :compiler-args('-I.',),
+            :out(''),
+            :err('')
+        },
+        "setting severity to :easy suppresses any reports";
+}
+
+subtest "Enums" => {
+    plan 2;
+
+    my enum FOO <f1 f2>;
+    my class Bar is json {
+        has FOO @.e;
+    }
+
+    my $bar = Bar.new(e => [f2, f1]);
+    is $bar.to-json, q<{"e":["f2","f1"]}>, "default enum serialization";
+    my $config = JSON::Class::Config.new(:enums-as-value);
+    is $bar.to-json(:$config), q<{"e":[1,0]}>, "setting enums-as-value in config";
+}
+
+subtest "Global de-/serializers" => -> $subtest {
+    # Since our de-/serializers manipulate with the keys of JSON object/hashes use :strict to ensure the test would
+    # fail if anything unwanted slips away.
+    my $config = JSON::Class::Config.new(:!pretty, :sorted-keys, :strict);
+
+    my class Rec is json {
+        has Str $.what;
+    }
+
+    my class Item is json {
+        has Str $.what;
+    }
+
+    my @stages;
+
+    $config.set-helpers:
+        Rec,
+        to-json => -> $v {
+            my %json = $v.to-json(:raw);
+            @stages.push: 'to-json:rec';
+            %json<.kind> = "rec";
+            %json
+        },
+        from-json => -> %from {
+            %from<.kind>:delete;
+            @stages.push: 'from-json:rec';
+            Rec.from-json(%from)
+        },
+        matcher => -> %from {
+            @stages.push: 'matcher:rec';
+            %from<.kind> andthen $_ eq 'rec'
+        };
+
+    $config.set-helpers:
+        Item,
+        to-json => -> $v {
+            my %json = $v.to-json(:raw);
+            @stages.push: 'to-json:item';
+            %json<.kind> = "item";
+            %json
+        },
+        from-json => -> %from {
+            %from<.kind>:delete;
+            @stages.push: 'from-json:item';
+            Item.from-json(%from)
+        },
+        matcher => -> %from {
+            @stages.push: 'matcher:item';
+            %from<.kind> andthen $_ eq 'item'
+        };
+
+    my class Foo is json {
+        has Rec $.rec;
+    }
+
+    my $foo = Foo.new( rec => Rec.new(:what("for foo")) );
+    my $expected = q<{"rec":{".kind":"rec","what":"for foo"}}>;
+    is $foo.to-json(:$config), $expected, "serialized using config-defined serializer for type";
+    my $deserialized = Foo.from-json($expected, :$config);
+    cmp-deeply $deserialized, $foo, "deserialization is identical to the original";
+
+    cmp-deeply @stages, <to-json:rec from-json:rec>, "global helpers were ran";
+
+    @stages = Empty;
+
+    my class JSeq is json(:sequence(Item,Rec)) { }
+
+    my $jseq = JSeq.new: Item.new(:what<item1>), Rec.new(:what<rec1>), Rec.new(:what<rec2>), Item.new(:what<item2>);
+
+    $expected = q<[{".kind":"item","what":"item1"},{".kind":"rec","what":"rec1"},{".kind":"rec","what":"rec2"},{".kind":"item","what":"item2"}]>;
+    is $jseq.to-json(:$config), $expected, "sequence serialized using global helpers";
+
+    $deserialized = JSeq.from-json($expected, :$config);
+
+    cmp-deeply $deserialized.List, $jseq.List, "deserialized sequence is identical to the original";
+
+    cmp-deeply
+        @stages,
+        <to-json:item to-json:rec to-json:rec to-json:item matcher:item matcher:rec from-json:item matcher:item
+         matcher:rec from-json:rec matcher:item matcher:rec from-json:rec matcher:item matcher:rec from-json:item>,
+        "all helpers were executed in order";
+
+    my $bad-json = q<[{"what":"item1"},{".kind":"rec","what":"rec1"},{".kind":"rec","what":"rec2"},{".kind":"item","what":"item2"}]>;
+    throws-like
+        {
+            $deserialized = JSeq.from-json($bad-json, :$config);
+            $deserialized[0];
+        },
+        JSON::Class::X::Deserialize::SeqItem,
+        :message(/"Cannot deserialize an instance of Hash at position 0 of sequence type JSeq: no matching item definition found"/),
+        "use of global matchers doesn't break ambiguity detection";
+}
+
+subtest "Deep JSONificication" => {
+    plan 1;
+
+    my class C1 {
+        has Str $.c1;
+    }
+
+    my class C2 is C1 {
+        has Int $.c2;
+    }
+
+    my class C3 {
+        has Bool $.c3;
+    }
+
+    my class C4 is C3 is C2 {
+        has Num $.c4;
+    }
+
+    my \jsonified = JSON::Class::Config.jsonify(C4,:!local);
+
+    my $obj = jsonified.new: :c1("some C1"), :c2(2), :c3(False), :c4(pi);
+
+    is $obj.to-json(:sorted-keys),
+       q<{"c1":"some C1","c2":2,"c3":false,"c4":3.141592653589793e0}>,
+       "JSONified class serialization";
+}
+
+done-testing;

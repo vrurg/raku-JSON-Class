@@ -1,0 +1,131 @@
+use v6.e.PREVIEW;
+use Test::Async;
+use JSON::Class:auth<zef:vrurg>;
+use MONKEY-SEE-NO-EVAL;
+
+plan 3;
+
+subtest "Code" => -> $subtest {
+    plan 7;
+
+    my SetHash $keys-serialized .= new;
+    my SetHash $keys-deserialized .= new;
+    my SetHash $values-serialized .= new;
+    my SetHash $values-deserialized .= new;
+
+    my class Foo is json {
+        has Str $.foo is json(:serializer({ "pfx:" ~ $_ }), :deserializer({ .substr(4) }));
+        has Int:D %.assoc is json(
+                        :serializer(
+                            value => -> Int:D $v { $values-serialized.set($v); $v.Num },
+                            key => { $keys-serialized.set($_); "." ~ $_ },
+                        ),
+                        :deserializer(
+                            value => -> Num:D $v { $values-deserialized.set($v); $v.Int },
+                            key => { $keys-deserialized.set($_); .substr(1) }
+                        ));
+        has %.h is json(
+                    :serializer({
+                        # Use .clone because otherwise we'd be modifying the original attribute value!
+                        .clone andthen { .<for-json> = "так-так!"; .raku }
+                    }),
+                    :deserializer({
+                        $^v.EVAL
+                            andthen {
+                                $subtest.is(%^h.<for-json>:delete, "так-так!", "injected value has been deserialied too");
+                                %h
+                            }
+                        }));
+    }
+
+    my $foo = Foo.new(
+        :foo<some-code>,
+        assoc => %(
+            "k1" => 1,
+            "k2" => 2,
+        ),
+        h => %( :aa, :bb(42) )
+    );
+
+    is $foo.to-json(:sorted-keys),
+       q<{"assoc":{".k1":1e0,".k2":2e0},"foo":"pfx:some-code","h":"{:aa(Bool::True), :bb(42), :for-json(\"так-так!\")}"}>,
+       "all serializers did their job";
+
+    cmp-deeply Foo.from-json($foo.to-json), $foo, "deserialization is identical to the original";
+
+    cmp-ok $keys-serialized,     &[(==)], <k1 k2>.Set, "keys processed by key serializer";
+    cmp-ok $keys-deserialized,   &[(==)], <.k1 .k2>.Set, "keys processed by key deserializer";
+    cmp-ok $values-serialized,   &[(==)], (1, 2).Set, "values processed by value serializer";
+    cmp-ok $values-deserialized, &[(==)], (1e0, 2e0).Set, "values processed by value deserializer";
+}
+
+subtest "Method" => {
+    plan 2;
+
+    my class Article {
+        has Str $.term;
+        has Str $.definition;
+
+        method simplify { ($!term, $!definition) }
+        method restore(@from) { self.new(term => @from[0], definition => @from[1]) }
+    }
+
+    my class Dict is json {
+        has Article:D @.articles is json(:serializer(:value<simplify>), :deserializer(:value<restore>));
+    }
+
+    my $dict = Dict.new:
+        articles => (
+            Article.new(:term<term1>, :definition("make it mean something")),
+            Article.new(:term("the ultimate question"), :definition("you know it!")) );
+
+    is $dict.to-json(:sorted-keys),
+       q<{"articles":[["term1","make it mean something"],["the ultimate question","you know it!"]]}>,
+       "serializer 'simplify' did its job";
+
+    cmp-deeply
+        Dict.from-json($dict.to-json),
+        $dict,
+        "deserialization is identical to the original meaning 'restore' did its job too";
+}
+
+subtest "De-/serializer can reject" => {
+    plan 4;
+
+    my $skiped-serializations = 0;
+    my $skipped-deserializations = 0;
+
+    my class Foo is json {
+        has Int:D @.counts is json(
+            :serializer(
+                value => -> $v {
+                    if $v % 3 == 0 {
+                        ++$skiped-serializations;
+                        json-I-cant
+                    }
+                    $v * 1000
+                } ),
+            :deserializer(
+                value => -> $v {
+                    if $v < 1000 {
+                        ++$skipped-deserializations;
+                        json-I-cant
+                    }
+                    $v div 1000
+                } ));
+    }
+
+    my $foo = Foo.new(counts => ^22);
+
+    is $foo.to-json,
+       q<{"counts":[0,1000,2000,3,4000,5000,6,7000,8000,9,10000,11000,12,13000,14000,15,16000,17000,18,19000,20000,21]}>,
+       "serialization skipped every third value";
+    is $skiped-serializations, 8, "skip-count for serialization";
+
+    cmp-deeply
+        Foo.from-json($foo.to-json), $foo,
+        "deserialization is identical to the original";
+    is $skipped-deserializations, 8, "skip-count for deserialization";
+}
+
+done-testing;

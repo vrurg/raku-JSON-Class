@@ -1,0 +1,219 @@
+use v6.e.PREVIEW;
+use Test::Async;
+use JSON::Class:auth<zef:vrurg>;
+
+plan 6;
+
+subtest "Basics" => {
+    plan 21;
+
+    my class SSeq is json(:sequence(Str:D)) { }
+
+    my $sseq = SSeq.new(<foo bar baz fubar>);
+
+    is $sseq.elems, 4, "newly created sequence element count";
+    cmp-deeply $sseq.List, <foo bar baz fubar>, "element values";
+    is $sseq.to-json, q<["foo","bar","baz","fubar"]>, "sequence serialized";
+
+    my $deserialized = SSeq.from-json($sseq.to-json);
+
+    is $deserialized.elems, $sseq.elems, "deserialized into as many elements as the original";
+
+    nok $deserialized[0]:has, "sequence deserialization is lazy: [0]:has reports no element yet";
+    nok $deserialized.HAS-POS(0), ".HAS-POS(0) reports the same";
+    ok $deserialized[0]:exists, "[0]:exists reports the element is there";
+    is $deserialized[0], "foo", "we can read from the first element of the sequence";
+    ok $deserialized[0]:has, "[0]:has is now true";
+    ok $deserialized.HAS-POS(0), ".HAS-POS(0) does the same";
+
+    for 1..^4 {
+        nok $deserialized[$_]:has, "[$_] is not initialized yet";
+    }
+
+    cmp-deeply $deserialized.List, $sseq.List, "deserialized is identical to the original";
+
+    for 1..^4 {
+        ok $deserialized[$_]:has, "[$_] is now initialized";
+    }
+
+    throws-like { $sseq.push: True; }, X::TypeCheck::Assignment, "pushing a wrong type throws";
+    throws-like { $sseq[1] = pi; }, X::TypeCheck::Assignment, "assigning a wrong type throws";
+
+    cmp-ok $sseq[$sseq.elems], &[=:=], Str, "accessing out of bounds element gives the default";
+    throws-like
+        { $sseq[$sseq.elems] = Nil; },
+        X::TypeCheck::Assignment,
+        "assigning a Nil throws because the default is an undefined";
+}
+
+subtest "Multitype" => {
+    plan 3;
+
+    my class Item {
+        has Str $.info;
+        has Str $.code;
+    }
+    my class MSeq is json(:sequence(Int:D, Str, Item:D)) { }
+
+    cmp-ok MSeq.^json-item-default, &[=:=], Str, "sequence defaults to a guessed type";
+
+    my $mseq = MSeq.new(42, "foo", 13, Item.new(:info<helpful>, :code<abc4321>), "bar", Item.new(:info<more>, :code<e11>));
+
+    is $mseq.to-json(:sorted-keys),
+       q<[42,"foo",13,{"code":"abc4321","info":"helpful"},"bar",{"code":"e11","info":"more"}]>,
+       "sequence serialized";
+
+    my $deserialized = MSeq.from-json($mseq.to-json);
+
+    cmp-deeply $deserialized.List, $mseq.List, "deserialized is identical to the original";
+}
+
+subtest "Custom De-/serializers" => {
+    plan 2;
+
+    my class Item {
+        has Str $.info;
+        has Str $.code;
+
+        method List {
+            $!info, $!code
+        }
+
+        method from-list(@p) {
+            self.new: :info(@p[0]), :code(@p[1])
+        }
+
+        method is-an-item(@from) {
+            @from == 2 && @from.all ~~ Str:D
+        }
+    }
+
+    my class MSeq
+        is json(
+            :sequence(
+                Int,
+                (Str, :serializer({ "pfx:" ~ $^s }),
+                      :deserializer({ $^s.starts-with("pfx:") ?? $s.substr(4) !! $s })),
+                # We need a matcher here because List serializes into an array.
+                (Item:D, :serializer<List>, :deserializer<from-list>, :matcher<is-an-item>))) { }
+
+    my $mseq = MSeq.new(42, "foo", 13, Item.new(:info<helpful>, :code<abc4321>), "bar", Item.new(:info<more>, :code<e11>));
+
+    my $expected = q<[42,"pfx:foo",13,["helpful","abc4321"],"pfx:bar",["more","e11"]]>;
+    is $mseq.to-json(:sorted-keys), $expected, "sequence serialized with custom serializers";
+    cmp-deeply MSeq.from-json($expected), $mseq, "deserialized with custom deserializers and a matcher";
+}
+
+subtest "Multi-class" => {
+    plan 4;
+
+    my class Book is json {
+        has Str:D $.ISDN is required;
+        has Str:D $.title is required;
+    }
+
+    my class Paper is json {
+        has Str:D $.incoming is required;
+        has Str:D $.title is required;
+    }
+
+    my class MCSeq is json(:sequence(Book, Paper, Str:D, :default("<none>"))) {}
+
+    my $mcseq = MCSeq.new(
+                    Book.new(:ISDN<ISDN1234>, :title("The Guide")),
+                    Paper.new(:incoming<2023-ad-1>, :title("Bureocratic nonsense")),
+                    "reference1",
+                    "reference2" );
+
+    is $mcseq[$mcseq.elems], '<none>', "sequence returns a default when accessing out of bounds";
+
+    is $mcseq.to-json(:sorted-keys),
+       q<[{"ISDN":"ISDN1234","title":"The Guide"},{"incoming":"2023-ad-1","title":"Bureocratic nonsense"},"reference1","reference2"]>,
+       "sequence serialized";
+
+    my $deserialized = MCSeq.from-json($mcseq.to-json);
+
+    cmp-deeply $deserialized.List, $mcseq.List, "deserialized into a similar sequence";
+
+    $mcseq[$mcseq.elems] = Nil;
+    is $mcseq.tail, '<none>', "assigning a Nil sets a sequence element to the default";
+}
+
+subtest "Ambiguous Multi-class" => {
+    plan 4;
+
+    my role Vehicle is json(:implicit) {
+        has Str:D $.plate is required;
+        has Str:D $.owner is required;
+
+        multi method json-serialize-attr(::?CLASS:D: JSON::Class::Attr::Scalar:D $json-attr, Mu \value) {
+            nextsame unless $json-attr.json-name eq 'plate';
+
+            self.^name.lc ~ ":" ~ value
+        }
+
+        multi method json-deserialize-attr(JSON::Class::Attr::Scalar:D $json-attr, Str:D \value) {
+            nextsame unless $json-attr.json-name eq 'plate';
+            my $pfx = self.^name.lc ~ ":";
+            nextsame unless value.starts-with($pfx);
+            value.substr($pfx.chars)
+        }
+    }
+
+    my class Car is json does Vehicle {}
+    my class Truck is json does Vehicle {
+        method trucky-plate(%from) {
+            %from<plate>.starts-with(self.^name.lc ~ ":")
+        }
+    }
+
+    my class ASeq
+        is json(
+            :sequence(
+                (Car:D, matcher => { %^from<plate> andthen .starts-with("car:") orelse False }),
+                (Truck:D, :matcher<trucky-plate>) ))
+    {}
+
+    my $aseq =
+        ASeq.new:
+            Car.new(:plate<THEQSTN>, :owner("D.Addams?")),
+            Truck.new(:plate<ANSW42>, :owner("D.Thought, The"));
+
+    my $expected = q<[{"owner":"D.Addams?","plate":"car:THEQSTN"},{"owner":"D.Thought, The","plate":"truck:ANSW42"}]>;
+
+    is $aseq.to-json(:sorted-keys), $expected, "serialized using custom attribute serializer";
+
+    cmp-deeply ASeq.from-json($expected), $aseq, "deserialized, matchers resolving ambiguities";
+
+    my $no-match-json =
+    q<[{"owner":"D.Addams?","plate":"car:THEQSTN"},{"owner":"D.Thought, The","plate":"truck:ANSW42"},{"owner":"n","plate":"PLATE"}]>;
+
+    throws-like {
+            # This enforces deserialiazation of problematic element and must result in an exception
+            diag .[2] given ASeq.from-json($no-match-json);
+        },
+        JSON::Class::X::Deserialize::SeqItem,
+        :message(*.contains("no matching item definition found")),
+        "when no matcher claims a JSON object deserialization throws";
+
+    my class ASeqNM is json( :sequence(Car:D, Truck:D)) {}
+
+    throws-like {
+            # This enforces deserialiazation of problematic element and must result in an exception
+            diag .[0] given ASeqNM.from-json($no-match-json);
+        },
+        JSON::Class::X::Deserialize::SeqItem,
+        :message(*.contains("item definitions for types Car:D, Truck:D are matching, but only one is expected")),
+        "when more than one sequence type is matching a JSON object deserialization throws";
+}
+
+subtest "Errors" => {
+    plan 1;
+
+    throws-like
+        'my class SE is json(:sequence(:no-adverb)) {}',
+        JSON::Class::X::Trait::Argument,
+        "can't use unknown adverb with :sequnce declaration";
+}
+
+done-testing;

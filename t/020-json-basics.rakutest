@@ -1,0 +1,280 @@
+use v6.e.PREVIEW;
+use Test::Async;
+use JSON::Class:auth<zef:vrurg>;
+use JSON::Class::Config:auth<zef:vrurg>;
+use JSON::Fast;
+
+plan 7;
+
+subtest "Plain Types" => {
+    plan 6;
+
+    my enum EInt <E1 E2 E3>;
+    my enum EStr (EA => "val.A", EB => "val.B", EC => "val.C");
+    my class Foo is json {
+        has Int:D $.count is required;
+        has Num:D $.amount is required;
+        has Str:D $.def is required;
+        has Int $.optional;
+        has Bool:D $.flag is required;
+        has EInt:D $.int-enum is required;
+        has EStr:D $.str-enum is required;
+        has DateTime:D $.dt is required;
+    }
+
+    my $obj = Foo.new:
+                count => 42,
+                amount => 1.234e1,
+                def => "any would do",
+                :!flag,
+                :int-enum(E3),
+                :str-enum(EB),
+                dt => DateTime.new("2023-10-11T22:05:50.722882-04:00");
+
+    my $expected-json = q:to/JSON/;
+                        {
+                          "amount": 12.34e0,
+                          "count": 42,
+                          "def": "any would do",
+                          "dt": "2023-10-11T22:05:50.722882-04:00",
+                          "flag": false,
+                          "int-enum": "E3",
+                          "str-enum": "EB"
+                        }
+                        JSON
+
+    my $expected-enum-as-value = q:to/JSON/;
+                        {
+                          "amount": 12.34e0,
+                          "count": 42,
+                          "def": "any would do",
+                          "dt": "2023-10-11T22:05:50.722882-04:00",
+                          "flag": false,
+                          "int-enum": 2,
+                          "str-enum": "val.B"
+                        }
+                        JSON
+
+    cmp-deeply from-json($obj.to-json), from-json($expected-json), "output JSON is correct";
+
+    is $obj.to-json(:sorted-keys, :pretty).trim, $expected-json.trim, "formatted output";
+
+    nok $obj.to-json(:sorted-keys, :!pretty).contains("\n"), "turning off :pretty removes formatting from the output";
+
+    cmp-deeply from-json($obj.to-json(:enums-as-value)), from-json($expected-enum-as-value), "enums as values";
+
+    my $deserialization = Foo.from-json($expected-json);
+
+    cmp-deeply $deserialization, $obj, "deserialized into an identical object";
+
+    cmp-deeply Foo.from-json($expected-enum-as-value, :enums-as-value), $obj, "deserialized with enums-as-value";
+}
+
+subtest "Key Names" => {
+    plan 2;
+
+    my class JSONRec is json {
+        has Str:D $.def is json(:name<definition>) is required;
+    }
+
+    my $rec = JSONRec.new(:def("something meaningful"));
+    my $expected-json = q<{"definition":"something meaningful"}>;
+    is $rec.to-json, $expected-json, "altering attribute name works";
+    cmp-deeply JSONRec.from-json($expected-json), $rec, "deserialized with aliased named";
+}
+
+subtest "Arrays And Hashes" => {
+    plan 2;
+
+    my class Foo is json {
+        has @.list;
+        has %.mapping;
+    }
+
+    my $obj = Foo.new:
+        list => ("a", "b", 1, pi),
+        mapping => {
+            "key-a" => 42,
+            "key-b" => "The Answer",
+        };
+
+    my $expected-json = q<{"list":["a","b",1,3.141592653589793e0],"mapping":{"key-a":42,"key-b":"The Answer"}}>;
+    cmp-deeply from-json($obj.to-json), from-json($expected-json), "serialized";
+    cmp-deeply Foo.from-json($expected-json), $obj, "deserialized";
+}
+
+subtest "Undefineds" => {
+    plan 2;
+
+    my class Skipping is json(:skip-null, :implicit) {
+        has Str $.skip-default;
+        has Str $.skip-explicit is json(:skip-null);
+        has Str $.noskip-explicit is json(:!skip-null);
+    }
+
+    my class NonSkipping is json(:!skip-null, :implicit) {
+        has Str $.skip-default;
+        has Str $.skip-explicit is json(:skip-null);
+        has Str $.noskip-explicit is json(:!skip-null);
+    }
+
+    is Skipping.new.to-json(:sorted-keys), q<{"noskip-explicit":null}>, ":skip-null on class";
+    is NonSkipping.new.to-json(:sorted-keys), q<{"noskip-explicit":null,"skip-default":null}>, ":!skip-null on class";
+}
+
+subtest "Explicit/Implicit" => {
+    plan 16;
+
+    my class Impl1 is json {
+        has Int $.attr;
+    }
+
+    nok Impl1.^json-is-explicit, "by default a JSON class is implicit";
+    ok Impl1.^json-has-attr('$!attr'), "attribute of implicit class is marked as JSON";
+    ok Impl1.^json-has-key('attr'), "attribute of implicit class is found by JSON key";
+
+    my class Expl1 is json {
+        has Int $.attr;
+        has Str $.some is json;
+    }
+
+    ok Expl1.^json-is-explicit, "marking an attribute as JSON makes the class explicit by default";
+    ok Expl1.^json-has-attr('$!some'), "explicitly marked attribute is found";
+    ok Expl1.^json-has-key('some'), "explicitly marked attribute has a JSON key";
+    nok Expl1.^json-has-attr('$!attr'), "attribute with no `is json` is not known for de-/serialization";
+    nok Expl1.^json-has-key('attr'), "no JSON key for unmarked attribute";
+
+    my class Impl2 is json(:implicit) {
+        has Int $.attr;
+        has Bool $.flag is json(:name<flag1>);
+        has $.accessory is json(:skip);
+    }
+
+    nok Impl2.^json-is-explicit, "marking as :implicit manually works";
+    ok Impl2.^json-has-key("attr"), "there is a key for implicitly marked attribute on forcibly-implicit class";
+    ok Impl2.^json-has-key("flag1"), "there is a key for explicitly marked attribute on forcibly-implicit class";
+
+    ok Impl2.^json-get-attr('$!accessory').skip, "attribute with :skip";
+    nok Impl2.^json-has-key('accessory'), "attribute with :skip is not given a JSON key";
+
+    my $impl2 = Impl2.new(:attr(42), :!flag, :accessory(pi));
+    is $impl2.to-json(:sorted-keys), q<{"attr":42,"flag1":false}>, "attribute with :skip is omitted from serialization";
+
+    my $config = JSON::Class::Config.global.clone;
+    $config.set-severity(:easy);
+    $impl2 = Impl2.from-json(q<{"attr":2,"flag1":true,"accessory":1.234e1}>, :$config);
+    nok $impl2.accessory.defined, "skipped attribute is not deserialized";
+
+    my class Expl2 is json(:!implicit) {
+        has Int $.attr;
+        has Str $.some;
+    }
+
+    is Expl2.^json-attrs.elems, 0, "no attributes are marked as JSON implicitly with a forcibly-explicit class";
+}
+
+subtest "Laziness" => {
+    plan 28;
+
+    my subset Counter of Int where * >= 0;
+    my class Item is json(:implicit) {
+        has Str:D $.code is required;
+        has Counter:D $.count is required;
+        has Bool:D $.available is required is json(:lazy);
+    }
+
+    my %lazies;
+
+    my class Reference is json(:implicit) {
+        has Item $.item1;
+        has Item $.item2 is json(:name<replacement>);
+        has Str:D @.locations;
+
+        method json-build-attr(Str:D :$attribute, |c) {
+            %lazies{$attribute} = True;
+            nextsame
+        }
+    }
+
+    nok Item.^json-get-key("code").lazy, "a basic type attribute is not lazy";
+    nok Item.^json-get-key("count").lazy, "a definite subset of a basic type is not lazy by default";
+    ok Item.^json-get-key("available").lazy, "explicit declaration makes a basic type attribute lazy";
+
+    ok Reference.^json-get-key("item1").lazy, "a class type attribute is lazy by default";
+    ok Reference.^json-get-key("locations").lazy, "positionals are lazy by default";
+
+    ok Item.^can("json-has-available"), "basic type lazy attribute has a predicate method";
+    nok Item.^can("json-has-count"), "basic type non-lazy attribute doesn't have a predicate method";
+
+    ok Reference.^can("json-has-item1"), "a class type lazy attribute has predicate method";
+    ok Reference.^can("json-has-replacement"), "aliasing works for predicate methods";
+
+    my $item1 = Item.new(:code<INSANITY-AB1>, :count(0), :!available);
+    my $item2 = Item.new(:code<INSANITY-AB1a>, :count(42), :available);
+
+    my $ref = Reference.new: :$item1, :$item2, :locations("loc1", "loc2");
+
+    my $expected-json = q<{"item1":{"available":false,"code":"INSANITY-AB1","count":0},"locations":["loc1","loc2"],"replacement":{"available":true,"code":"INSANITY-AB1a","count":42}}>;
+
+    is $ref.to-json(:sorted-keys), $expected-json, "complex struct serialized";
+
+    my $deserialized = Reference.from-json($expected-json);
+
+    nok $deserialized.json-has-replacement, "lazy attribute has no value immediately following the deserialization";
+    cmp-deeply %lazies, %(), "control the previous test";
+    is $deserialized.item2.code, "INSANITY-AB1a", "the value of the lazy attribute is available upon request";
+    ok $deserialized.json-has-replacement, "lazy attribute has a value after the first use";
+    cmp-deeply %lazies, %('$!item2' => True), "control has registered attribute initialization";
+
+    nok $deserialized.json-has-locations, "positional is not initialized until gets read from";
+    cmp-deeply $deserialized.locations, <loc1 loc2>, "positional content is available upon request";
+    ok $deserialized.json-has-locations, "positional attribute has a value after the first use";
+    cmp-deeply %lazies, %('$!item2' => True, '@!locations' => True), "control has registered positional attribute initialization";
+
+    nok $deserialized.item2.json-has-available, "lazy basic type attribute has no value yet";
+    ok $deserialized.item2.available, "value of basic type attribute is available upon request";
+    ok $deserialized.item2.json-has-available, "lazy basic type attribute has a value after the first use";
+
+    cmp-deeply $deserialized, $ref, "complex struct deserialized";
+
+    my class EagerRef is json(:!lazy, :implicit) {
+        has Item $.item1;
+        has Item $.item2 is json(:lazy, :name<replacement>);
+        has Str @.locations;
+    }
+
+    nok EagerRef.^json-get-key("item1").lazy, "attribute isn't lazy by default in a non-lazy class";
+    nok EagerRef.^can("json-has-item1"), "no predicate method for a non-lazy attribute";
+    ok EagerRef.^json-get-attr('$!item2').lazy, "attribute is lazy in a non-lazy class if forced to";
+
+    $deserialized = EagerRef.from-json($expected-json);
+
+    is $deserialized.item1.code, "INSANITY-AB1", "non-lazy attribute value is available";
+
+    my class LazyRef is json(:lazy, :implicit) {
+        has Item $.item1;
+        has Item $.item2 is json(:!lazy, :name<replacement>);
+    }
+
+    nok LazyRef.^json-get-attr('$!item2').lazy, "attribute is eager with :!lazy";
+}
+
+subtest "Unused" => {
+    plan 2;
+
+    JSON::Class::Config.with-severity: :easy, {
+        my class Foo is json {
+            has Str $.a;
+            has Int $.b;
+        }
+
+        my $json = q<{"a":"a string","b":42,"c":3.1415926,"z":null}>;
+
+        my $foo = Foo.from-json($json);
+
+        cmp-deeply $foo.json-unused, {:c(3.1415926), :z(Any)}, "unsued JSON keys are preserved";
+        is $foo.to-json(:sorted-keys), $json, "unsused JSON keys are preserved after serialization";
+    }
+}
+
+done-testing;

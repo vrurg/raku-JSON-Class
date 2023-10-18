@@ -1,0 +1,75 @@
+use v6.e.PREVIEW;
+use Test::Async;
+use JSON::Class:auth<zef:vrurg>;
+use JSON::Class::Representation:auth<zef:vrurg>;
+
+plan 2;
+
+subtest "Standard Inheritance" => {
+    plan 2;
+
+    my role RJ1 is json {
+        has Str $.aa;
+    }
+
+    my class CJ1 does RJ1 is json {
+        has Int $.id;
+    }
+
+    my role RJ2 is json {
+        has Real $.bb;
+    }
+
+    my class Foo is CJ1 does RJ2 is json {
+        has Bool $.f;
+        has Real:D $.n = 1.2;
+    }
+
+    my $foo = Foo.new(:id(1), :aa<ok>, :!f, :bb(13.12));
+
+    is $foo.to-json(:sorted-keys),
+       q<{"aa":"ok","bb":13.12,"f":false,"id":1,"n":1.2}>,
+       "a class picks up attributes from all parents and roles";
+    cmp-deeply Foo.from-json($foo.to-json), $foo, "child class deserialization";
+}
+
+subtest "Using :parent" => {
+
+    # When we want a child class to serialize its parent class too.
+    my class C1 {
+        has Int $.count;
+        has Str $.what;
+    }
+
+    my class C2 {
+        has Str $.details;
+    }
+
+    my class CN {
+        has Num $.not-for-json;
+    }
+
+    # :parent, :parents, and :is are just aliases of the same thing
+    my class Foo is json(:is(C1, C2)) is CN {
+        has Bool $.available;
+    }
+
+    ok Foo.^parents(:local).grep(C1|C2).all ~~ JSON::Class::Representation, "inheriting via :parent JSONifies parents";
+    nok Foo.^parents(:local).grep(CN) ~~ JSON::Class::Representation,
+        "subclassing in the standard way leaves the parent unchaned";
+
+    cmp-ok Foo.^json-attrs(:k, :!local).Set, &[==], <$!count $!what $!details $!available>.Set,
+           "attributes of the :parent classes are all JSON-serializable";
+
+    my $foo = Foo.new(:count(12), :what("що-небудь"), :details("аби користь була"), :available, :not-for-json(pi));
+
+    my $expected = q<{"available":true,"count":12,"details":"аби користь була","what":"що-небудь"}>;
+
+    is $foo.to-json(:sorted-keys), $expected, "serialized";
+
+    cmp-deeply Foo.from-json($expected),
+               Foo.new(:count(12), :what("що-небудь"), :details("аби користь була"), :available),
+               "deserialized";
+}
+
+done-testing;

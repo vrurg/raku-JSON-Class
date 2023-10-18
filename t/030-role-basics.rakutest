@@ -1,0 +1,189 @@
+use v6.e.PREVIEW;
+use JSON::Class:auth<zef:vrurg>;
+use JSON::Class::Representation:auth<zef:vrurg>;
+use Test::Async;
+
+plan 5;
+
+subtest "Consuming JSON role by non-JSON class" => {
+    plan 4;
+
+    my role RJSON is json {
+        has Str $.definition;
+    }
+
+    my class C1 does RJSON {
+        has Int $.amount;
+    }
+
+    my $obj = C1.new(:definition("some"), :amount(1));
+
+    isa-ok C1, JSON::Class::Representation, "a JSON role makes a class serializable";
+
+    ok C1.^json-is-explicit, "JSONified class is explicit to prevent unwanted serialization";
+
+    is $obj.to-json(:sorted-keys), q<{"definition":"some"}>, "only role attributes are serialized";
+
+    cmp-deeply
+        C1.from-json($obj.to-json), C1.new(:definition("some")), "deserialization is identical to the original object";
+}
+
+subtest "Multi-role" => {
+    plan 3;
+
+    my role RJSON1 is json {
+        has Str $.definition;
+    }
+
+    my role RJSON2 is json {
+        has Real $.num;
+    }
+
+    my class C1 does RJSON1 does RJSON2 {
+        has Int $.amount;
+    }
+
+    my $obj = C1.new(:definition("some"), :amount(1), :num(1.234e1));
+
+    isa-ok C1, JSON::Class::Representation, "a JSON role makes a class serializable";
+
+    is $obj.to-json(:sorted-keys), q<{"definition":"some","num":12.34e0}>, "only role attributes are serialized";
+
+    cmp-deeply
+        C1.from-json($obj.to-json), C1.new(:definition("some"), :num(1.234e1)),
+        "deserialization is identical to the original object";
+}
+
+subtest "Explicit/Implcit" => {
+    plan 4;
+
+    my role RJSON1 is json(:implicit) {
+        has Str $.definition;
+        has Int $.count is json;
+    }
+
+    my role RJSON2 is json(:!implicit) {
+        has Real $.not-json;
+        has Bool $.json-flag is json(:name("flag"));
+    }
+
+    my class C1 does RJSON1 does RJSON2 {
+        has Str $.comment;
+    }
+
+    my $c1 = C1.new(:definition("some def"), :count(1), :not-json(12.34), :json-flag, :comment("make no sense here"));
+
+    is $c1.to-json(:sorted-keys),
+       q<{"count":1,"definition":"some def","flag":true}>,
+       "roles follow explicit/implicit rules";
+
+    cmp-deeply
+        C1.from-json($c1.to-json),
+        C1.new(:definition("some def"), :count(1), :json-flag),
+        "deserialization is identical to the original object of a non-JSON class";
+
+    my class C2 does RJSON1 does RJSON2 is json(:!implicit) {
+        has Int @.c2 is json;
+        has Str @.irrelevant;
+    }
+
+    my $c2 = C2.new(:definition("for explicit"), :count(12), :non-json(1.1), :!json-flag, :c2(12,13,42,666), :irrelevant(<a b c>));
+
+    is $c2.to-json(:sorted-keys),
+       q<{"c2":[12,13,42,666],"count":12,"definition":"for explicit","flag":false}>,
+       "JSON class doesn't override role declarations";
+
+    cmp-deeply
+        C2.from-json($c2.to-json),
+        C2.new(:definition("for explicit"), :count(12), :!json-flag, :c2(12,13,42,666)),
+        "deserialization is identical to the original object of a JSON class";
+}
+
+subtest "Skipping undefineds" => {
+    plan 4;
+
+    my role Skipping is json(:skip-null) {
+        has Int $.count;
+        has Str $.def;
+    }
+
+    my role NonSkipping is json(:!skip-null) {
+        has Bool $.flag;
+        has Str $.explain;
+    }
+
+    my class C1 does Skipping does NonSkipping { }
+
+    my $c1 = C1.new(:def("to be there"), :!flag);
+
+    is $c1.to-json(:sorted-keys),
+       q<{"def":"to be there","explain":null,"flag":false}>,
+       "roles respect skip-null";
+
+    cmp-deeply
+        C1.from-json($c1.to-json), $c1,
+        "deserialization of a non-JSON class is identical to the original object";
+
+    my class C2 does Skipping does NonSkipping is json(:!skip-null) {
+        has Real $.amount;
+        has Str $.summary;
+    }
+
+    my $c2 = C2.new(:def("will serialize"), :flag, :amount(12.42));
+
+    is $c2.to-json(:sorted-keys),
+       q<{"amount":12.42,"def":"will serialize","explain":null,"flag":true,"summary":null}>,
+       "JSON class doesn't override role declarations";
+
+    cmp-deeply
+        C2.from-json($c2.to-json),
+        $c2,
+        "deserialization of a JSON class is identical to the original object";
+}
+
+subtest "Lazyness" => {
+    plan 10;
+    my class Rec {
+        has Int $.code;
+        has Str $.def;
+    }
+
+    my role LazyRec is json {
+        has Rec $.lrec;
+    }
+
+    my role EagerRec is json(:!lazy) {
+        has Rec $.rec;
+    }
+
+    my %lazies;
+
+    my class C1 does LazyRec does EagerRec {
+        method json-build-attr(Str:D :$attribute, |c) {
+            %lazies{$attribute} = True;
+            nextsame
+        }
+    }
+
+    ok C1.^json-get-key("lrec").lazy, "lazy role attribute is lazy too";
+    nok C1.^json-get-key("rec").lazy, "non-lazy role attribute is non-lazy";
+
+    ok C1.^can('json-has-lrec'), "predicate method for lazy attribute";
+    nok C1.^can('json-has-rec'), "no predicate method for non-lazy attribute";
+
+    my $c1 = C1.from-json(q<{"lrec":{"code":1,"def":"postponed"},"rec":{"code":2,"def":"immediate"}}>);
+
+    nok $c1.json-has-lrec, "lazy attribute is not initialized yet";
+    cmp-deeply %lazies, %(), "control for the previous test";
+
+    cmp-deeply $c1.lrec, Rec.new(:code(1), :def("postponed")), "lazy attribute gets its value";
+
+    ok $c1.json-has-lrec, "lazy attribute is initialized";
+    cmp-deeply %lazies, %('$!lrec' => True), "control has registered attribute initialization";
+
+    my $expected = C1.new(rec => Rec.new(code => 2, def => "immediate"), lrec => Rec.new(code => 1, def => "postponed"));
+
+    cmp-deeply $c1, $expected, "deserialized correctly";
+}
+
+done-testing;

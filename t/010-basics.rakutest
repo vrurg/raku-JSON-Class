@@ -1,0 +1,30 @@
+use v6.e.PREVIEW;
+use Test::Async;
+use JSON::Class::Types:auth<zef:vrurg>;
+use JSON::Class::Utils:auth<zef:vrurg>;
+
+cmp-ok Mu, &[~~], JSONBasicType, "Mu is considered a basic type";
+cmp-ok Any, &[~~], JSONBasicType, "Any is considered a basic type";
+nok Promise ~~ JSONBasicType, "Promise isn't a basic type";
+
+class Foo {}
+class Bar { has $.a; }
+
+nok Foo ~~ JSONBasicType, "a user class is not a basic type";
+nok Bar ~~ JSONBasicType, "a user class with attribute is not a basic type";
+
+ok is-a-class-type(Foo), "a user class is detected as a 'class type'";
+ok is-a-class-type(Bar), "a user class with attribute is detected as a 'class type'";
+
+nok is-basic-type(Foo), "a user class is not considered as 'basic type'";
+ok is-basic-type(<42>), "an allomorph is a 'basic type'";
+
+enum EN <EN1 EN2 EN3>;
+
+ok is-basic-type(EN2), "an enumeration value is a 'basic type'";
+ok is-basic-type(EN), "an enumeration itself is a 'basic type'";
+
+cmp-ok nominalize-type(Int:D), &[=:=], Int, "nominalization of a definite";
+cmp-ok nominalize-type(Str:D(Numeric)), &[=:=], Str, "nominalization of a definite coercion type";
+
+done-testing;
