@@ -47,9 +47,6 @@ method json-configure-typeobject( Mu \obj,
         self.json-set-lazy(obj, $_);
         $eager = !$_;
     }
-    else {
-        self.json-set-lazy(obj, True);
-    }
 
     self.json-configure-defaults(obj, :$pretty, :$sorted-keys, :$eager);
 }

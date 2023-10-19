@@ -174,9 +174,10 @@ subtest "Explicit/Implicit" => {
 }
 
 subtest "Laziness" => {
-    plan 28;
+    plan 25;
 
     my subset Counter of Int where * >= 0;
+
     my class Item is json(:implicit) {
         has Str:D $.code is required;
         has Counter:D $.count is required;
@@ -237,26 +238,40 @@ subtest "Laziness" => {
 
     cmp-deeply $deserialized, $ref, "complex struct deserialized";
 
-    my class EagerRef is json(:!lazy, :implicit) {
-        has Item $.item1;
-        has Item $.item2 is json(:lazy, :name<replacement>);
-        has Str @.locations;
+    subtest "Explicitly Eager Class" => {
+        my class EagerRef is json(:!lazy, :implicit) {
+            has Item $.item1;
+            has Item $.item2 is json(:lazy, :name<replacement>);
+            has Str @.locations;
+        }
+
+        nok EagerRef.^json-get-key("item1").lazy, "attribute isn't lazy by default in a non-lazy class";
+        nok EagerRef.^can("json-has-item1"), "no predicate method for a non-lazy attribute";
+        ok EagerRef.^json-get-attr('$!item2').lazy, "attribute is lazy in a non-lazy class if forced to";
+
+        $deserialized = EagerRef.from-json($expected-json);
+
+        is $deserialized.item1.code, "INSANITY-AB1", "non-lazy attribute value is available";
+
+        my class LazyRef is json(:lazy, :implicit) {
+            has Item $.item1;
+            has Item $.item2 is json(:!lazy, :name<replacement>);
+        }
+
+        nok LazyRef.^json-get-attr('$!item2').lazy, "attribute is eager with :!lazy";
     }
 
-    nok EagerRef.^json-get-key("item1").lazy, "attribute isn't lazy by default in a non-lazy class";
-    nok EagerRef.^can("json-has-item1"), "no predicate method for a non-lazy attribute";
-    ok EagerRef.^json-get-attr('$!item2').lazy, "attribute is lazy in a non-lazy class if forced to";
+    subtest "Explicitly Lazy Class" => {
+        my class AllLazy is json(:lazy, :implicit) {
+            has Str $.base-typed;
+            has Int $.number is json(:name<num>);
+            has Item $.item is json(:!lazy);
+        }
 
-    $deserialized = EagerRef.from-json($expected-json);
-
-    is $deserialized.item1.code, "INSANITY-AB1", "non-lazy attribute value is available";
-
-    my class LazyRef is json(:lazy, :implicit) {
-        has Item $.item1;
-        has Item $.item2 is json(:!lazy, :name<replacement>);
+        ok AllLazy.^json-get-key('base-typed').lazy, "attribute of a basic type is lazy when the class is forced lazy";
+        ok AllLazy.^json-get-key('num').lazy, "explicit declration of an attribute still defaults to class' laziness";
+        nok AllLazy.^json-get-key('item').lazy, ":!lazy with an attribute still makes it eager";
     }
-
-    nok LazyRef.^json-get-attr('$!item2').lazy, "attribute is eager with :!lazy";
 }
 
 subtest "Unused" => {

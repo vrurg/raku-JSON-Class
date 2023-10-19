@@ -48,9 +48,13 @@ method build-nominal-type is raw {
 }
 
 method build-lazy(::?CLASS:D:) {
+    my $declarant-lazy = self.declarant.^json-is-lazy;
+
+    # If declarant mode is set explicitly, then use it indisputably.
+    return $declarant-lazy if self.declarant.^json-has-lazy;
+
     my \attr-type = nominalize-type($!attr.type);
-    self.declarant.^json-is-lazy &&
-        (attr-type ~~ JSON::Class::Jsonish || !(attr-type ~~ JSONBasicType | Map | List))
+    $declarant-lazy && (attr-type ~~ JSON::Class::Jsonish || !(attr-type ~~ JSONBasicType | Map | List))
 }
 
 method sigil { $!attr.name.substr(0,1) }

@@ -8,4 +8,6 @@ method json-set-lazy(Mu \obj, Bool:D $lazy) {
     $!json-lazy //= $lazy;
 }
 
-method json-is-lazy(Mu \obj) { $!json-lazy }
+method json-is-lazy(Mu) { $!json-lazy // True }
+
+method json-has-lazy(Mu) { $!json-lazy.defined }

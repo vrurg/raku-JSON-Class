@@ -40,7 +40,6 @@ method json-imply-attributes(Mu \obj, Bool :$local, Bool :$forced) {
                         && !(.name.substr(2,4) eq 'json-') })
         -> Attribute:D $attr
     {
-        my Bool $lazy = self.json-is-lazy(obj) && !is-basic-type($attr.type);
-        obj.^jsonify-attribute($attr, :$lazy, :skip($attr.name.starts-with('&')));
+        obj.^jsonify-attribute($attr, :skip($attr.name.starts-with('&')));
     }
 }
