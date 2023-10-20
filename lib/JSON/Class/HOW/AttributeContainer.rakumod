@@ -118,8 +118,8 @@ method jsonify-attribute( Mu \pkg,
                                   Bool :skip-null($),
                                   Str :name($),
                                   Bool :lazy($),
-                                  :$serializer, # (SerializerKind $?, *% where *.values.all ~~ SerializerKind),
-                                  :$deserializer, # (SerializerKind $?, *% where *.values.all ~~ SerializerKind),
+                                  :to-json(:$serializer), # (SerializerKind $?, *% where *.values.all ~~ SerializerKind),
+                                  :from-json(:$deserializer), # (SerializerKind $?, *% where *.values.all ~~ SerializerKind),
                                   *%extra ))
 {
     my @details;
