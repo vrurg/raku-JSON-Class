@@ -41,14 +41,17 @@ my Lock $jsonifications-lock .= new;
 my Mu:U $json-class-how;
 my Mu:U $json-representation;
 my Mu:U $json-object-class;
+my $std-types-lock = Lock.new;
 
 our sub set-std-typeobjects( Mu :$class-how is raw,
                              Mu :$object is raw,
                              Mu :$representation is raw --> Nil )
 {
-    $json-class-how := $class-how<>;
-    $json-representation := $representation<>;
-    $json-object-class := $object<>;
+    $std-types-lock.protect: {
+        $json-class-how := $class-how<>;
+        $json-representation := $representation<>;
+        $json-object-class := $object<>;
+    }
 }
 
 method json-class-how is raw { $json-class-how }
