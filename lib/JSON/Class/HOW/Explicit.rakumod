@@ -7,4 +7,6 @@ method json-set-explicit(Mu \obj, Bool:D $explicit) {
     $!json-explicit //= $explicit;
 }
 
-method json-is-explicit(Mu) { $!json-explicit }
+method json-is-explicit(Mu) { $!json-explicit // False }
+
+method json-has-explicit(Mu) { $!json-explicit.defined }
