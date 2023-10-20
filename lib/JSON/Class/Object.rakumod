@@ -179,3 +179,7 @@ multi method json-deserialize(%from, JSON::Class::Config :$config is copy) {
 
     $config.type-from(self.WHAT).json-create: |%profile
 }
+
+multi method json-deserialize(@from, JSON::Class::Config :$config) {
+    @from.map({ self.json-deserialize($_, :$config) }).Array
+}

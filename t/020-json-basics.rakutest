@@ -4,7 +4,7 @@ use JSON::Class:auth<zef:vrurg>;
 use JSON::Class::Config:auth<zef:vrurg>;
 use JSON::Fast;
 
-plan 7;
+plan 8;
 
 subtest "Plain Types" => {
     plan 6;
@@ -290,6 +290,22 @@ subtest "Unused" => {
         cmp-deeply $foo.json-unused, {:c(3.1415926), :z(Any)}, "unsued JSON keys are preserved";
         is $foo.to-json(:sorted-keys), $json, "unsused JSON keys are preserved after serialization";
     }
+}
+
+subtest "From An Array" => {
+    plan 2;
+    my class Foo is json {
+        has $.a;
+    }
+
+    my $json = q<[{"a":"str"},{"a":12.34},{"a":true},{"a":-13},[{"a":"nested"},{"a":2}]]>;
+    my $deserialized := Foo.from-json($json);
+    isa-ok $deserialized, Array, "deserializing from a JSON array produces an Array";
+    cmp-deeply
+        $deserialized,
+        [ Foo.new(a => "str"), Foo.new(a => 12.34), Foo.new(a => Bool::True), Foo.new(a => -13),
+            [Foo.new(a => "nested"), Foo.new(a => 2) ]],
+        "deserialized";
 }
 
 done-testing;
