@@ -39,7 +39,7 @@ subtest "Basics" => {
     throws-like { $sseq.push: True; }, X::TypeCheck::Assignment, "pushing a wrong type throws";
     throws-like { $sseq[1] = pi; }, X::TypeCheck::Assignment, "assigning a wrong type throws";
 
-    cmp-ok $sseq[$sseq.elems], &[=:=], Str, "accessing out of bounds element gives the default";
+    cmp-ok $sseq[$sseq.elems], &[===], Str, "accessing out of bounds element gives the default";
     throws-like
         { $sseq[$sseq.elems] = Nil; },
         X::TypeCheck::Assignment,

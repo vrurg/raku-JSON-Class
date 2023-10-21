@@ -165,10 +165,8 @@ method json-deserialize-item(::?CLASS:D: Int:D $idx, Mu $json-value is raw --> M
 method json-all-set { !$!json-unused-count }
 
 method AT-POS(::?CLASS:D: Int:D $idx --> Mu) is raw {
-    return @!json-items[$idx] if @!json-items.EXISTS-POS($idx);
+    return @!json-items[$idx] if @!json-items.EXISTS-POS($idx) || !@!json-raw.EXISTS-POS($idx);
     return self.^json-item-default if $idx > self.end;
-
-    return Nil unless $idx < +@!json-raw;
 
     my Mu $json-value := @!json-raw[$idx]:delete;
     if --$!json-unused-count == 0 {
@@ -195,6 +193,11 @@ multi method HAS-POS(::?CLASS:D: Int:D $pos, Bool:D :$has = True) {
 }
 multi method HAS-POS(::?CLASS:D: Iterable:D \positions, Bool:D :$has = True) {
     positions.map({ ! (@!json-items.EXISTS-POS[$_] ^^ $has) })
+}
+
+multi method DELETE-POS(::?CLASS:D: Int:D $pos) is raw {
+    @!json-raw.DELETE-POS($pos);
+    @!json-items.DELETE-POS($pos)
 }
 
 method elems(::?CLASS:D:) { @!json-raw.elems max @!json-items.elems }

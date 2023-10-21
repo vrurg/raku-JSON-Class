@@ -15,7 +15,7 @@ method json-set-item-default(Mu \item-default) {
     $!json-item-default := item-default if $!json-item-default =:= NOT-SET;
 }
 
-method json-setup-sequence(Mu \obj, +@definitions, Mu :$default) {
+method json-setup-sequence(Mu \obj, +@definitions) {
     my Mu $guessed-default := NOT-SET;
     $!json-item-default := NOT-SET;
 
