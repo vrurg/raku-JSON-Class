@@ -52,6 +52,17 @@ BEGIN {
             !! does.map(*<>).eager.List
     }
 
+    my proto sub is2list(|) {*}
+    multi sub is2list(NOT-SET) is raw { () }
+    multi sub is2list(Mu:U \parent) is raw { (parent,) }
+    multi sub is2list(Positional:D \parents) is raw { parents.eager.List }
+    multi sub is2list(Mu:D \wrong) {
+        JSON::Class::X::Trait::Argument.new(
+            :why(":is must be a class or a list of classes, not an instance of " ~ wrong.^name),
+            :singular
+        ).throw
+    }
+
     my sub jsonify-role( Mu:U \typeobj,
                          Bool :$implicit,
                          Bool :$lazy,
@@ -69,7 +80,7 @@ BEGIN {
             typeobj.HOW does JSON::Class::RoleHOW;
             typeobj.^json-set-explicit(!$_) with $implicit;
             typeobj.^json-set-skip-null($skip-null);
-            typeobj.^json-configure-typeobject( :$lazy, :$is, does => does2list($does) )
+            typeobj.^json-configure-typeobject( :$lazy, is => is2list($is), does => does2list($does) )
         }
         else {
             no-redeclare(typeobj, JSON::Class::HOW::Sequential, "role");
@@ -108,7 +119,7 @@ BEGIN {
             typeobj.^json-setup-sequence($sequence.List);
         }
 
-        typeobj.^json-configure-typeobject( :$lazy, :$pretty, :$sorted-keys, :$is, does => does2list($does) );
+        typeobj.^json-configure-typeobject( :$lazy, :$pretty, :$sorted-keys, is => is2list($is), does => does2list($does) );
     }
 
     my sub trait-capture(Mu \trait-arg) is raw {

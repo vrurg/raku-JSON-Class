@@ -4,6 +4,7 @@ unit role JSON::Class::HOW::SelfConfigure:ver($?DISTRIBUTION.meta<ver>):auth($?D
 use JSON::Class::Config;
 use JSON::Class::Jsonish;
 use JSON::Class::Internals;
+use JSON::Class::Utils;
 
 has $!json-incorporated-roles;
 
@@ -29,17 +30,21 @@ method json-configure-typeobject( Mu \obj,
                                   Bool :$pretty,
                                   Bool :$sorted-keys,
                                   :does(:@roles),
-                                  :is(:$parents) )
+                                  :is(:@parents) )
 {
     self.json-incorporate-roles(obj, obj, @roles);
     self.add_role(obj, $_) for @roles;
 
-    with $parents -> @p {
-        for @p -> Mu \parent-class {
-            my \jpclass =
-                (parent-class ~~ JSON::Class::Jsonish ?? parent-class !! JSON::Class::Config.jsonify(parent-class));
-            self.add_parent: obj, jpclass;
+    for @parents -> Mu \parent-class {
+        if parent-class.DEFINITE || parent-class.HOW !~~ Metamodel::ClassHOW {
+            JSON::Class::X::Trait::Argument.new(
+                :why(type-or-instance(parent-class) ~ " passed with :is, but a class was expected"),
+                :singular
+            ).throw
         }
+        my \jpclass =
+            (parent-class ~~ JSON::Class::Jsonish ?? parent-class !! JSON::Class::Config.jsonify(parent-class));
+        self.add_parent: obj, jpclass;
     }
 
     my $eager;

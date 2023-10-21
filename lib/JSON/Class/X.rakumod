@@ -3,12 +3,6 @@ unit module JSON::Class::X:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.met
 
 use JSON::Class::Utils;
 
-# use nqp;
-
-# my sub type-or-instance(Mu \what) {
-#     (nqp::isconcrete(nqp::decont(what)) ?? "an instance of " !! "a type object ") ~ what.^name
-# }
-
 role Base is Exception {}
 
 role Typed {
