@@ -7,12 +7,275 @@ C<JSON::Class> - general purpose JSON de-/serialization for Raku
 
 =begin code
 
-clas Record is json {
+role Base is json(:!skip-null) {
+    has Num:D $.size is required is json(:name<volume>);
+}
+
+clas Record is json does Base {
     has Int $.count;
     has Str $.description;
 }
 
-say Record.new(:count(42), :description("The Answer")).to-json;
+say Record.new(:count(42), :description("The Answer"), :size(1.2e0)).to-json;
 =end code
+
+=head1 DESCRIPTION
+
+This module is an alternative to the family of L<C<JSON::Marshal>|https://raku.land/zef:jonathanstowe/JSON::Marshal>,
+L<C<JSON::Unmarshal>|https://raku.land/zef:raku-community-modules/JSON::Unmarshal>,
+L<C<JSON::Class>|https://raku.land/zef:jonathanstowe/JSON::Class> modules.  It tries to get rid of their weak points and
+shifts the locus of control from class' outers to its inners. In other words, the class itself is responsible for its
+de-/serialization in first place. Though it's perhaps, the primary difference, it's far from being the only one.
+
+Also, this module tries to follow the standards of C<LibXML::Class> modules, even though adapted for differing domain of
+JSON. First of all, they share the same view on the locus of responsibility. Second, they try to implement declarative
+semantics in first place.
+
+From here on whenever C<JSON::Class> name is used it refers to this module unless otherwise stated or implied by the
+context.
+
+=head1 BASICS
+
+=head2 Basic Or "Complex" Types
+
+Some protocols of C<JSON::Class> depend on the kind of type involved. Basic types are considered to be I<simple> or
+I<trivially marshalled>. Currently these are L<C<Mu>|https://docs.raku.org/type/Mu>,
+L<C<Any>|https://docs.raku.org/type/Any>, L<C<Bool>|https://docs.raku.org/type/Bool>, or consuming
+L<C<Numeric>|https://docs.raku.org/type/Numeric>, L<C<Stringy>|https://docs.raku.org/type/Stringy>,
+L<C<Enumeration>|https://docs.raku.org/type/Enumeration> roles.
+
+A "complex" type is expected to have marshallizable attributes.
+
+=head2 Marshalling
+
+JSON marshalizing requires declaring corresponding entities as JSON-ones, or I<JSONification>. Normally this is done
+by using trait C<is json> with classes, roles, or attributes. This is declarative, or explicit, JSONification.
+
+It is also possible that implicit jsonification can be used when necessary or desirable. Normally C<JSON::Class> attempts
+to implement it in a user-transparent way. For example:
+
+=begin code :lang<raku>
+class Record {...}
+class Archive is json {
+    has Record:D @.records;
+}
+
+my $arch = Archive.new;
+... add records to the archive ...
+$arch.to-json;
+=end code
+
+The class C<Record> above would be implicitly JSONified to produce serialization of a single record. But the JSONified
+version would never pop on the surface. So, when the archive is deserialized C<@.records> would still contain instances
+of the original C<Record>.
+
+=head2 Trait
+
+Trait C<is json> is used for nearly every declaration of JSON elements. The only other trait we have is C<json-wrap>,
+but it is too early to discuss it.
+
+How something is marshalled is mostly defined by the trait's arguments.
+
+=head2 Declarant
+
+In a context of attribute-related discussion it is the object where the attribute was declared in.
+
+=head2 Config
+
+Marshalling of deep structures often requires sharing of common options, modifying the process. This is implemented
+by using a I<configuration> object. A configuration belongs to a dynamic context of marshalling.
+
+There is also a global configuration singleton used when no other configuration provided.
+
+=head2 Sequences
+
+C<JSON::Class> uses term "sequence" for something that is rather an array and, most definitely, not a sequence in Raku
+view. It was borrowed from C<LibXML::Class> where it was adopted from XML schema definitions. A sequence is primarily
+defined by its two properties:
+
+=item its elements are lazily deserialized on demand
+=item it does its best to serve as a container for multiple types, including user classes
+
+=head2 Lazyness
+
+Deserialization of big deeply nested structures could be a long process, no matter if we need an element of the
+structure right away, or it is going to be requested later, or not used at all. C<JSON::Class> attempts to bring some
+relieve by postponing deserialization for later time.
+
+=head2 Explicit Or Implicit Typeobjects
+
+It could be tedious to marshal a class with many attributes. Most use cases assume that entrie object would end up
+mapped into a JSON structure. Therefore C<JSON::Class> defaults to I<implicit> declaration where all public or C<is
+built> attributes are JSONified wihout needing explicit C<is json> trait. This is the case demoed in the SYNOPSIS.
+
+In explicit mode one has to manually apply the trait to marshallizable attributes.
+
+=head2 Declaration
+
+As it was stated earlier, C<is json> is the primary and, basically, the only declarator used by the module. The trait
+accepts various arguments to modify the declaration according to one's needs. For example, an explicit class is to be
+declared as:
+
+=begin code :lang<raku>
+class ComplexOne is json(:!implicit) {...}
+=end code
+
+Within the class an attribute for marshalling is to be also marked with C<is json>:
+
+=begin code :lang<raku>
+has SomeType $.st is required is json(:skip-null, :!lazy);
+=end code
+
+=head2 Trait Arguments
+
+=head3 Common For Classes And Roles
+
+=begin item
+C<Bool> B<C<:implicit>>
+
+Set typeobject explicit/implicit mode. Omitting this argument assumes that the typeoject is implicit unless at least one
+attribute marked explicitly in which case the entire typeobject becomes explicit.  See
+L<I<implicit.raku>|../../../examples/implicit.raku>.
+=end item
+
+=begin item
+C<Bool> B<C<:lazy>>
+
+Set typeobject lazyness. When the argument is omitted attributes are set to I<non-lazy> if they have a I<basic type>,
+and set to I<lazy> otherwise.
+
+When the argument is used all attributes of the typeobject use it as their default, unless their own mode is set
+manually. See L<I<decl-lazy.raku>|../../../examples/decl-lazy.raku>.
+=end item
+
+=begin item
+C<Bool> B<C<:skip-null>>
+
+If I<True> then attributes of this typeobject are not serialized if their value is undefined. When omitted then value of
+this parameter is obtained from the configuration object. See
+L<I<020-json-basics.rakutest>|../../../t/020-json-basics.rakutest>, subtest "Undefineds".
+=end item
+
+=begin item
+C<Bool> B<C<:sequence(...)>>
+
+This type object is a sequence. See L<Sequences|#Sequences> section.
+=end item
+
+=begin item
+B<C<:is(...)>>, B<C<:does(...)>>
+
+These arguments allow to incorporate additional non-JSON parent classes and/or roles. See L<Incorporation|#Incorporation>
+section.
+=end item
+
+=head3 Class-only
+
+=begin item
+C<Bool> B<C<:pretty>>, C<Bool> B<C<:sorted-keys>>
+
+This two arguments set default values for corresponding config parameters but only if the type object is the initiator
+of serialization. Normally it means that method C<to-json> is called on an instance of this typeobject, and that the
+call is not made inside a dynamic context of another C<to-json>-initiated serialization. More practically, it means
+that dynamic variable C<$*JSON-CLASS-CONFIG> is not set.
+=end item
+
+=head3 Attribute
+
+Parameters set via C<is json> trait for attributes are normally overriding these set by its declarant.
+
+=begin item
+C<Bool> B<C<:skip>>
+
+Don't ever marshallize this attribute. Mostly useful for C<:implicit> typeobjects when one or more attributes are to be
+ignored. Negation of this argument makes no sense.
+=end item
+
+=begin item
+C<Bool> B<C<:skip-null>>
+
+Set C<skip-null> parameter individually for this attribute, no matter what is set for the declarant.
+=end item
+
+=begin item
+Str B<C<:name>>
+
+Normally key name of a JSON object to which an attribute marshallizes is given after attribute's name, omitting its
+sigil and twigil. With C<:name> this value can be altered to something different.
+=end item
+
+=begin item
+C<Bool> B<C<:lazy>>
+
+Force laziness mode of this attribute.
+=end item
+
+=begin item
+C<Bool> B<C<:serializer(...)>>, C<Bool> B<C<:deserializer(...)>>
+
+Allowed aliases are C<:to-json> and C<:from-json>, correspondingly.
+
+Specify custom marshallizers for the attribute. Normally that'd be either a method name on attribute's type, or an
+explicit code object. But there are more options possible.
+=end item
+
+=head1 QUICK INTRO
+
+=head2 Basic Types
+
+...
+
+=head1 DETAILS
+
+=head2 Marshalling Protocols
+
+C<JSON::Class> doesn't actually create or read JSON itself. This task is offloaded to a 3rd-party module. For now it is
+L<C<JSON::Fast>|https://modules.raku.org/dist/JSON::Fast>, but theoretically it could be any other module.
+
+C<JSON::Class> task is to either deal with whatever is returned by a JSON parser, or supply JSON generator with a
+serializable data structure like L<C<Hash>|https://docs.raku.org/type/Hash>, or
+L<C<Array>|https://docs.raku.org/type/Array>. The structure must represent the entrie object we're about to marshall.
+
+There are four key method in the core of the process:
+
+=begin item
+B<C<from-json>>
+
+Takes either a JSON string, or a deserialized array, or a hash. If all passes good then either an instance of its class
+(or a subclass) would be returned, or an array of instances. Arrays could even be nested, depending on the original JSON
+structure.
+=end item
+
+=begin item
+B<C<to-json>>
+
+Can only be invoked on an instance of its class. If no errors happen during serialization, a JSON string is returned.
+Though is given C<:raw> named argument the method would return just a L<C<Hash>|https://docs.raku.org/type/Hash>.
+=end item
+
+=begin item
+B<C<json-serialize>>, B<C<json-deserialize>>
+
+These two methods are the immediate marshalling executors. They only deal with de-/serialized data structures.
+=end item
+
+The difference in functionality between these methods is that C<from-json> and C<to-json> are "administrators": their
+primary task is to prepare configuration context (see the next section). Then, depending on arguments, they either
+parse JSON source, or produce a JSON string. Otherwise they delegate to C<json-serizlie> or C<json-deserialize> methods.
+
+=head2 Configuration Context
+
+Serialization and deserialization protocols use a configuration object to find out about various paramters, affecting
+the process. More detailed description of the parameters can be found in L<C<JSON::Class::Config>|Class/Config.md> documentation.
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENSE>|../../../LICENSE> file in this distribution.
 
 =end rakudoc
