@@ -54,7 +54,7 @@ method build-lazy(::?CLASS:D:) {
     return $declarant-lazy if self.declarant.^json-has-lazy;
 
     my \attr-type = nominalize-type($!attr.type);
-    $declarant-lazy && (attr-type ~~ JSON::Class::Jsonish || !(attr-type ~~ JSONBasicType | Map | List))
+    ? ($declarant-lazy && (attr-type ~~ JSON::Class::Jsonish || !(attr-type ~~ JSONBasicType | Map | List)))
 }
 
 method sigil { $!attr.name.substr(0,1) }
