@@ -1,0 +1,109 @@
+=begin rakudoc
+=head1 DETAILS
+
+This document tries to explain some in-depth implementation details for better understanding the internal kitchen of the
+module. How much information is provided here depends on how much spare time and free energy the author has for this
+paper.
+
+=head2 Marshalling Protocols
+
+C<JSON::Class> doesn't actually create or read JSON itself. This task is offloaded to a 3rd-party module. For now it is
+L<C<JSON::Fast>|https://modules.raku.org/dist/JSON::Fast>, but theoretically it could be any other module.
+
+C<JSON::Class> task is to either deal with whatever is returned by a JSON parser, or supply JSON generator with a
+serializable data structure like L<C<Hash>|https://docs.raku.org/type/Hash>, or
+L<C<Array>|https://docs.raku.org/type/Array>. The structure must represent the entire object we're about to marshall.
+
+There are four key method in the core of the process:
+
+=begin item
+B<C<from-json>>
+
+Takes either a JSON string, or a deserialized array, or a hash. If all passes good then either an instance of its class
+(or a subclass) would be returned, or an array of instances. Arrays could even be nested, depending on the original JSON
+structure.
+=end item
+
+=begin item
+B<C<to-json>>
+
+Can only be invoked on an instance of its class. If no errors happen during serialization, a JSON string is returned.
+Though is given C<:raw> named argument the method would return just a L<C<Hash>|https://docs.raku.org/type/Hash>.
+=end item
+
+=begin item
+B<C<json-serialize>>, B<C<json-deserialize>>
+
+These two methods are the immediate marshalling executors. They only deal with de-/serialized data structures.
+=end item
+
+The difference in functionality between these methods is that C<from-json> and C<to-json> are "administrators": their
+primary task is to prepare configuration context (see the next section). Then, depending on arguments, they either
+parse JSON source, or produce a JSON string. Otherwise they delegate to C<json-serizlie> or C<json-deserialize> methods.
+
+=head2 Configuration Context
+
+Serialization and deserialization protocols use a configuration object to find out about various paramters, affecting
+the process. More detailed description of the parameters can be found in L<C<JSON::Class::Config>|Class/Config.md>
+documentation. Here we only focus on how configuration object is handled by C<JSON::Class>.
+
+When C<to-json> or C<from-json> methods are invoked for an instance of JSONified class they create a configuration
+context by setting a C<$*JSON-CLASS-CONFIG> dynamic variable to an instance of C<JSON::Class::Config>. In most simple
+cases the instance would be unmodified global, or C<$*JSON-CLASS-CONFIG>, or user-supplied config object as in the
+following example:
+
+=begin code :lang<raku>
+my $config = JSON::Class::Config.new;
+$obj.to-json(:$config);
+=end code
+
+The C<:config> named argument can be a hash of configuration paramters too:
+
+=begin code :lang<raku>
+$obj.to-json(config => { :pretty, :sorted-keys, :enums-as-value });
+=end code
+
+This this case this is equivalient to:
+
+=begin code :lang<raku>
+my $config = JSON::Class::Config.new: :pretty, :sorted-keys, :enums-as-value;
+$obj.to-json(:$config);
+=end code
+
+Yet, the context configuration parameters can be modified with:
+
+=item Method named arguments C<:pretty>, C<:sorted-keys>, C<:enums-as-value>, C<:spacing> - these have the highest priority
+=item Class default config paramters (see an example above), but these are only have any effect if there is no active configuration context; i.e. C<$*JSON-CLASS-CONFIG> doesn't exists
+
+=head2 What We Operate With
+
+The module internally never deals with JSON sources except when submitting them to a parser
+(L«C«JSON::Fast»|https://raku.land/cpan:TIMOTIMO/JSON::Fast») or returning the result of C<to-json> routine of the
+module. C<JSON::Class> manipulates with hashes, arrays, or L<C<Cool>|https://docs.raku.org/type/Cool> values. This is
+important to remember when reading the following sections.
+
+=head2 Custom Marshallers
+
+When the standard means of marshalling an object doesn't do what you need custom marshallers can be used. The most common
+and straitforward way is to specify attribute serializer or/and deserializers with C<is json> trait:
+
+=begin code :lang<raku>
+has $.attr is json( :serializer(-> $attr-value { ... do somethgin }),
+                    :deserializer(-> $json-value { .. do something }) );
+=end code
+
+I<Note> that C<:to-json> and C<:from-json> aliases can be used instead.
+
+...
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENSE>|../../../LICENSE> file in this distribution.
+
+=end rakudoc
