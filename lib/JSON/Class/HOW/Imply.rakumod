@@ -37,7 +37,7 @@ method json-imply-attributes(Mu \obj, Bool :$local, Bool :$forced) {
 
     for @attrs.grep({ (.has_accessor || .is_built)
                         && !self.json-has-attr(obj, .name, :local)
-                        && !(.name.substr(2,4) eq 'json-') })
+                        && !(.name.substr(2).starts-with('json-')) })
         -> Attribute:D $attr
     {
         obj.^jsonify-attribute($attr, :skip($attr.name.starts-with('&')));
