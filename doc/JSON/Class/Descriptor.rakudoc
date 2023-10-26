@@ -1,0 +1,49 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::Descriptor> - base role for attribute and sequence item descriptors
+
+=head1 DESCRIPTION
+
+C<JSON::Class> doesn't modify attribute objects of a class meta-object. Instead, it manipulates with their
+I<descriptors>, as described in L<Descriptors> section of L<C<JSON::Class::Details>>.
+
+=head1 METHODS
+
+=begin item
+B<C<method name()>>
+
+Descriptor name. Informational for using in various messages.
+=end item
+
+=begin item
+B<C<method type()>>
+
+Constraint type.
+=end item
+
+=begin item
+B<C<method value-type()>>
+
+For TYPE<Positional> and TYPE<Associative> types this must be constraint type of their values. For example, in the following declaration this would be C<Str:D>:
+
+=begin code :lang<raku>
+has Str:D @.keys;
+=end code
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Details>|Details.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENSE>|../../../LICENSE> file in this distribution.
+=end rakudoc

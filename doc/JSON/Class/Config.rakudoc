@@ -1,0 +1,32 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::Config> - C<JSON::Class> configuration
+
+=head1 METHODS
+
+=begin item
+B<C<method new(...)>>
+
+The following attributes can be set with the constructor:
+
+=begin item
+C<Str> B<C<:$severity>>
+
+Can be one of "easy", "warn", "strict". See methods C<severity>, C<alert>, C<notify> for more details.
+=end item
+=begin item
+C<Bool> B<C<:$easy>>, C<Bool> B<C<:$warn>>, C<Bool> B<C<:$strict>>
+
+Alternate way to set the severity.
+=end item
+=begin item
+C<Bool> B<C<:$defaults>>
+
+Set default helpers for standard types. Currently it is TYPE<DateTime> supported which is serialized to a string by
+default.
+=end item
+
+=end item
+
+=end rakudoc
