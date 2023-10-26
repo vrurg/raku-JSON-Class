@@ -70,16 +70,15 @@ multi method json-serialize-attr(::?CLASS:D: JSON::Class::Attr::Associative:D $j
 }
 
 method json-serialize(::?CLASS:D: JSON::Class::Config :$config is copy) is raw {
+    my $*JSON-CLASS-SELF := self;
     $config //= self.json-config;
+    my $skip-null = $config.skip-null;
     my @profile = |(.pairs with $!json-unused);
-    for self.json-class.^json-attrs(:!local).values.grep(!*.skip) -> JSON::Class::Attr:D $json-attr {
+    for self.json-class.^json-attrs(:!local, :v).grep(!*.skip) -> JSON::Class::Attr:D $json-attr {
         my $*JSON-CLASS-DESCRIPTOR := $json-attr;
-        with $json-attr.get_value(self) -> \value {
-            @profile.push:
-                $json-attr.json-name => self.json-serialize-attr($json-attr, value);
-        }
-        elsif !($json-attr.skip-null // $config.skip-null) {
-            @profile.push: $json-attr.json-name => Nil;
+        my \value = self.json-serialize-attr($json-attr, $json-attr.get_value(self));
+        if value.DEFINITE || !($json-attr.skip-null // $skip-null) {
+            @profile.push: $json-attr.json-name => value;
         }
     }
     @profile.Hash
