@@ -29,7 +29,7 @@ method json-config-class is raw { JSON::Class::Config }
 
 method json-config {
     $*JSON-CLASS-CONFIG
-        // self.json-config-context: :config(JSON::Class::Config.global), |self.json-config-defaults, { $^config }
+        // self.json-config-context: :config(self.json-config-class.global), |self.json-config-defaults, { $^config }
 }
 
 method json-guess-serializer(Str:D $kind, JSON::Class::Descriptor:D $descr, Mu \value --> Code) {
@@ -257,8 +257,8 @@ multi method json-config-context(&code, :$config, *%twiddles) is raw {
             orelse (%config
                 ?? self.json-config-class.new(|%config, |%twiddles)
                 !! ( (%twiddles || %defaults)
-                        ?? JSON::Class::Config.global.dup(|%defaults, |%twiddles)
-                        !! JSON::Class::Config.global )));
+                        ?? self.json-config-class.global.dup(|%defaults, |%twiddles)
+                        !! self.json-config-class.global )));
     {
         my $*JSON-CLASS-CONFIG := $json-config;
         &code($json-config)
