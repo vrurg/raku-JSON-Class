@@ -117,6 +117,7 @@ method json-serialize-item(::?CLASS:D: JSON::Class::ItemDescriptor:D $descr, Mu 
 }
 
 method json-serialize(::?CLASS:D:) is raw {
+    my $*JSON-CLASS-SELF := self;
     my $iter = self.iterator;
     gather loop {
         last if (my Mu $item := $iter.pull-one) =:= IterationEnd;
@@ -128,6 +129,7 @@ method json-serialize(::?CLASS:D:) is raw {
 }
 
 multi method json-deserialize(@from, JSON::Class::Config :$config is copy) {
+    my $*JSON-CLASS-SELF := self;
     $config //= self.json-config;
     my \seq-class = $config.type-from(self.WHAT);
 

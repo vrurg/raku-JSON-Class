@@ -146,6 +146,7 @@ multi method json-deserialize-attr(JSON::Class::Attr::Scalar:D $json-attr, Mu \v
 }
 
 multi method json-deserialize(%from, JSON::Class::Config :$config is copy) {
+    my $*JSON-CLASS-SELF := self;
     $config //= self.json-config;
     my \json-class = self.json-class;
     my $lazy-class = json-class.^json-is-lazy;
@@ -181,5 +182,6 @@ multi method json-deserialize(%from, JSON::Class::Config :$config is copy) {
 }
 
 multi method json-deserialize(@from, JSON::Class::Config :$config) {
+    my $*JSON-CLASS-SELF := self;
     @from.map({ self.json-deserialize($_, :$config) }).Array
 }
