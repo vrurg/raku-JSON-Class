@@ -140,7 +140,7 @@ subtest "Multi-class" => {
 }
 
 subtest "Ambiguous Multi-class" => {
-    plan 4;
+    plan 5;
 
     my role Vehicle is json(:implicit) {
         has Str:D $.plate is required;
@@ -184,6 +184,14 @@ subtest "Ambiguous Multi-class" => {
     is $aseq.to-json(:sorted-keys), $expected, "serialized using custom attribute serializer";
 
     cmp-deeply ASeq.from-json($expected), $aseq, "deserialized, matchers resolving ambiguities";
+
+    my class ASeqC is json( :sequence(Car:D, Truck:D) ) {}
+
+    my $config = JSON::Class::Config.new;
+    $config.set-helpers: Car, matcher => { %^from<plate> andthen .starts-with("car:") orelse False };
+    $config.set-helpers: Truck, :matcher<trucky-plate>;
+
+    cmp-deeply ASeqC.from-json($expected, :$config), ASeqC.clone-from($aseq), "with config-set matchers";
 
     my $no-match-json =
     q<[{"owner":"D.Addams?","plate":"car:THEQSTN"},{"owner":"D.Thought, The","plate":"truck:ANSW42"},{"owner":"n","plate":"PLATE"}]>;

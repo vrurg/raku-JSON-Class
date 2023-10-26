@@ -114,6 +114,9 @@ subtest "Skipping undefineds" => {
 
     my class C1 does Skipping does NonSkipping { }
 
+    diag "count.skip-null:", C1.^json-get-key('count').skip-null;
+    diag "explain.skip-null:", C1.^json-get-key('explain').skip-null;
+
     my $c1 = C1.new(:def("to be there"), :!flag);
 
     is $c1.to-json(:sorted-keys),

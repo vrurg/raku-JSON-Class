@@ -3,7 +3,7 @@ use Test::Async;
 use JSON::Class:auth<zef:vrurg>;
 use MONKEY-SEE-NO-EVAL;
 
-plan 3;
+plan 4;
 
 subtest "Code" => -> $subtest {
     plan 7;
@@ -126,6 +126,41 @@ subtest "De-/serializer can reject" => {
         Foo.from-json($foo.to-json), $foo,
         "deserialization is identical to the original";
     is $skipped-deserializations, 8, "skip-count for deserialization";
+}
+
+subtest "Context Variables" => {
+    plan 4;
+
+    my class Foo is json(:skip-null) {
+        has Real $.n
+            is json(
+                :serializer({ $*JSON-CLASS-SELF.n2s($_) }),
+                :deserializer({ $*JSON-CLASS-SELF.s2n($_) }) );
+
+        multi method new(Real $n) { self.bless: :$n }
+
+        proto method n2s(|) {*}
+        multi method n2s(Real:U \t) { t.^name }
+        multi method n2s(Real:D \n) { n.^name ~ ":" ~ n }
+
+        method s2n(Str:D $from) {
+            if $from.contains(":") {
+                my ($type, $val) = $from.split(":");
+                return $val."$type"()
+            }
+            ::($from)
+        }
+    }
+
+    my $foo = Foo.new(pi);
+    my $expected = q<{"n":"Num:3.141592653589793"}>;
+    is $foo.to-json, $expected, "serialized a definite";
+    cmp-deeply Foo.from-json($expected), $foo, "deserialized a typed definite";
+
+    $foo = Foo.new(Rat);
+    $expected = q<{"n":"Rat"}>;
+    is $foo.to-json, $expected, "serialized an undefined";
+    cmp-deeply Foo.from-json($expected), $foo, "deserialized an undefined";
 }
 
 done-testing;
