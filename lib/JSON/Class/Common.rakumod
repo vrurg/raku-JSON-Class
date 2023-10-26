@@ -106,6 +106,7 @@ multi method json-try-serializer( ::?CLASS:D:
                                   --> Mu )
     is raw
 {
+    my $*JSON-CLASS-DESCRIPTOR := $descr;
     with self.json-guess-serializer($kind, $descr, value) -> &serializer {
         return try-user-code(&serializer, \(value), &fallback)
     }
@@ -120,6 +121,7 @@ multi method json-try-deserializer(&deserializer, Mu \from-value, &fallback --> 
 }
 
 multi method json-try-deserializer(Str:D $kind, JSON::Class::Descriptor:D $descr, Mu \from-value, &fallback --> Mu) {
+    my $*JSON-CLASS-DESCRIPTOR := $descr;
     with self.json-guess-deserializer($kind, $descr) -> &deserializer {
         my \args =
             &deserializer ~~ Method ?? \(nominalize-type($descr.kind-type($kind)), from-value) !! \(from-value);
