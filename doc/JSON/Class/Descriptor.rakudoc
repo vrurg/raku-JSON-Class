@@ -6,7 +6,7 @@ C<JSON::Class::Descriptor> - base role for attribute and sequence item descripto
 =head1 DESCRIPTION
 
 C<JSON::Class> doesn't modify attribute objects of a class meta-object. Instead, it manipulates with their
-I<descriptors>, as described in L<Descriptors> section of L<C<JSON::Class::Details>>.
+I<descriptors>, as described in I<Descriptors> section of L<C<JSON::Class::Details>|Details.md>.
 
 =head1 METHODS
 
@@ -25,11 +25,116 @@ Constraint type.
 =begin item
 B<C<method value-type()>>
 
-For TYPE<Positional> and TYPE<Associative> types this must be constraint type of their values. For example, in the following declaration this would be C<Str:D>:
+For L<C<Positional>|https://docs.raku.org/type/Positional> and L<C<Associative>|https://docs.raku.org/type/Associative>
+types this must be constraint type of their values. For example, for the following declaration this would be C<Str:D>:
 
 =begin code :lang<raku>
-has Str:D @.keys;
+has Str:D @.keys is json;
 =end code
+
+=end item
+
+=begin item
+B<C<method nominal-type()>>
+
+Nominalization of the C<value-type>. I.e. for C<Str:D()> it would be just nominal C<Str>.
+=end item
+
+=begin item
+B<C<method set-serializer(|)>>
+
+Set serializer for this element. Particular implementation of the method depends on role consumer.
+=end item
+
+=begin item
+B<C<method set-deserializer(|)>>
+
+Set deserializer for this element. Particular implementation of the method depends on role consumer.
+=end item
+
+=begin item
+B<C<method register-helper(Str:D $stage, Str:D $kind, $helper)>>
+
+Registers a helper in form of a code object or a method name string. Values of C<$stage> and C<$kind> are not
+constrained, but normally these would be one of C<JSONStages> from L<C<JSON::Class::Types>|Types.md> and I<'attribute'>, or
+I<'item'>, or I<'value'>, or I<'key'>.
+
+Thread safe.
+=end item
+
+=begin item
+B<C<method helper(Str:D $stage, Str:D $kind)>>
+
+Returns a helper for a C<$stage>+C<$kind> pair or C<Nil> if no such one.
+
+Thread safe.
+=end item
+
+=begin item
+B<C<method has-helper(Str:D $stage, Str:D $kind)>>
+
+Tell if we have a helper for the stage and the kind.
+
+Thread safe.
+=end item
+
+=begin item
+B<C<method serializer(Str:D $kind)>>
+
+A shortcut for I<'to-json'> stage.
+
+Thread safe.
+=end item
+
+=begin item
+B<C<method deserializer(Str:D $kind)>>
+
+A shortcut for I<'from-json'> stage.
+
+Thread safe.
+=end item
+
+=begin item
+B<C<method declarant()>>
+
+Returns the type object for which this descriptor was created. It can be a role or a class. For example:
+
+=begin code :lang<raku>
+role Key is json {
+    has Str $.key;
+}
+=end code
+
+Descriptor for C<$!key> attribute would return C<Key> as its declarant.
+=end item
+
+=begin item
+B<C<proto method kind-type(Str:D $kind)>>
+
+Return the type object for which marshaller of the C<$kind> would apply. For example:
+
+=begin code :lang<raku>
+has Str:D %.shortname{Int:D} is json;
+=end code
+
+I<'value'> type is C<Str:D>, I<'key'> type is C<Int:D>.
+
+Normally one wouldn't care about these as they're used internally for marshalling purposes. But implementing own
+descriptor may require adding candidates to this C<proto>.
+=end item
+
+=begin item
+B<C<proto method kind-stage(Str:D $stage, Str:D $kind)>>
+
+This method is necessary to map stage+kind pair into L<C<JSON::Class::Config>|Config.md> helper stage. In other words, if
+a marshaller wants to find out if there is a custom helper registered for a type then it would do something like:
+
+=begin code :lang<raku>
+$config.helper($value-type, $descriptor.kind-stage('from-json', 'match'))
+=end code
+
+We use I<'match'> as the kind because it is currently the only case where this method returns something different from
+C<$stage>.
 =end item
 
 =head1 SEE ALSO
@@ -45,5 +150,6 @@ has Str:D @.keys;
 
 Artistic License 2.0
 
-See the L<I<LICENSE>|../../../LICENSE> file in this distribution.
+See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
 =end rakudoc
+

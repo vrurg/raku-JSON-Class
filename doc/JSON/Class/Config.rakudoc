@@ -5,6 +5,8 @@ C<JSON::Class::Config> - C<JSON::Class> configuration
 
 =head1 METHODS
 
+=head2 General Purpose
+
 =begin item
 B<C<method new(...)>>
 
@@ -15,18 +17,345 @@ C<Str> B<C<:$severity>>
 
 Can be one of "easy", "warn", "strict". See methods C<severity>, C<alert>, C<notify> for more details.
 =end item
-=begin item
-C<Bool> B<C<:$easy>>, C<Bool> B<C<:$warn>>, C<Bool> B<C<:$strict>>
 
-Alternate way to set the severity.
+=begin item
+Severity flags:
+=item C<Bool> B<C<:$easy>>
+=item C<Bool> B<C<:$warn>>
+=item C<Bool> B<C<:$strict>>
+
+Alternate way to set the severity. Only one at a time can be used.
 =end item
+
 =begin item
 C<Bool> B<C<:$defaults>>
 
-Set default helpers for standard types. Currently it is TYPE<DateTime> supported which is serialized to a string by
-default.
+Set default helpers for standard types. Currently it is L<C<DateTime>|https://docs.raku.org/type/DateTime> supported
+which is serialized to a string by default.
+=end item
+
+=begin item
+Configuration parameters:
+=item C<Bool> B<C<:$allow-jsonc>>C< = False>
+=item C<Bool> B<C<:$eager>>C< = False>
+=item C<Bool> B<C<:$enums-as-value>>C< = False>
+=item C<Bool> B<C<:$pretty>>C< = False>
+=item C<Bool> B<C<:$skip-null>>C< = True>
+=item C<Bool> B<C<:$sorted-keys>>C< = False>
+=item C<UInt> B<C<:$spacing>>C< = 2>
+
+See corresponding methods for the meaning of each parameter.
 =end item
 
 =end item
 
+=begin item
+B<C<method global(*%)>>
+
+Returns the global configuration object instance. For the first time it possible to set global defaults by passing
+to the method the same arguments as for the C<new> method. This is because the global doesn't exists until requested
+for the first time.
+
+I<Remember> that invoking most methods on C<JSON::Class::Config> typeobject directly redirects to the global meaning
+that any such call can be the first to vivify the object.
+=end item
+
+=begin item
+B<C<method profile()>>
+
+Creates a profile hash which can be used as named arguments to create a new config instance. For example:
+
+=begin code :lang<raku>
+my $config = JSON::Class::Config().new(|JSON::Class::Config().profile(), :!eager)
+=end code
+
+=end item
+
+=begin item
+B<C<method dup(*%twiddles)>>
+
+This method duplicates it's invocator, similarly to C<clone>, but using method C<new> to create a completely new object.
+Basically, the C<profile> method example can be changed as:
+
+=begin code :lang<raku>
+my $config = JSON::Class::Config().dup(:!eager)
+=end code
+
+=end item
+
+=head2 Properties
+
+Note that with regard to configuration properties C<JSON::Class::Config> is immutable.
+
+=begin item
+B<C<method allow-jsonc()>>
+
+Allow JSONC standard.
+See L<C<JSON::Fast> from-json argument|https://raku.land/cpan:TIMOTIMO/JSON::Fast#allow-jsonc>.
+=end item
+
+=begin item
+B<C<method pretty()>>
+
+Turn on JSON formatting.
+See L<C<JSON::Fast> to-json argument|https://raku.land/cpan:TIMOTIMO/JSON::Fast#pretty>.
+=end item
+
+=begin item
+B<C<method spacing()>>
+
+Level of indentation when is C<$config.pretty>.
+See L<C<JSON::Fast> to-json argument|https://raku.land/cpan:TIMOTIMO/JSON::Fast#pretty>.
+=end item
+
+=begin item
+B<C<method sorted-keys()>>
+
+Sort JSON key in the output.
+See L<C<JSON::Fast> to-json argument|https://raku.land/cpan:TIMOTIMO/JSON::Fast#sorted-keys>.
+=end item
+
+=begin item
+B<C<method enums-as-value()>>
+
+Treat enums by their underlying values.
+See L<C<JSON::Fast> to-json argument|https://raku.land/cpan:TIMOTIMO/JSON::Fast#enum-as-value>
+=end item
+
+=begin item
+B<C<method skip-null()>>
+
+Skip undefined values by default. JSON classes, roles, and individual attributes can override this default.
+=end item
+
+=begin item
+B<C<method eager()>>
+
+If I<True> lazy deserialization is disabled.
+=end item
+
+=head2 Utility
+
+=begin item
+B<C<proto method jsonify(|)>>
+
+This method JSONifies it only positional argument. Works with both type objects and instances.
+
+=begin item
+B<C<multi method jsonify(Mu:U $what, |)>>
+
+This method nominalizes C<$what> and JSONifies it.
+=end item
+
+=begin item
+B<C<multi method jsonify(Mu:U :$nominal-what, Bool :$local)>>
+
+This candidate is for cases where one knows exactly that the typeobject is nominal. Otherwise is identical to the
+previous candidate. In fact, it is the previous using this one.
+=end item
+
+=begin item
+B<C<multi method jsonify(Mu:D $obj, |)>>
+
+This method creates a JSONified copy of C<$obj> by first JSONifying its C<.WHAT> class then using its C<clone-from>
+method to transfer attribute values from $obj to the JSONified copy.
+=end item
+
+=end item
+
+=begin item
+B<C<method set-helpers(Mu $type, :to-json(:$serializer), :from-json(:$deserializer), :$matcher, *%helpers)>>
+
+Set universal helper for a typeobject C<$type>. This is helpful when class is used by a few JSONified structures.
+
+The meaning of helpers should be clear. As a little reminder, C<:$matcher> is described in the I<Sequences> section
+of L<C<JSON::Class>|../Class.md> documentation.
+
+Helpers can be either code objects, or method names on C<$type>.
+
+C<$type> can be any class, not necessarily a JSON one. For example, the default helpers for
+L<C<DateTime>|https://docs.raku.org/type/DateTime>, installed when C<:$defaults> of C<JSON::Class::Config> constructor
+is I<True>, are set like this:
+
+=begin code :lang<raku>
+self.set-helpers(DateTime, :to-json<Str>, :from-json<new>, matcher => -> Str:D:D:D:D:D $from {
+    ?try {
+        DateTime.new($from)
+    }
+})
+=end code
+
+With them a C<DateTime> instance would always be represented as a string.
+
+Setting custom helpers is allowed as keys of C<%helpers> slurpy:
+
+=begin code :lang<raku>
+$config.set-helpers: Foo, validator => &make-sure-foo-is-well-formed;
+=end code
+
+Apparently, these won't be used by the C<JSON::Class> itself and would only serve for one's code purposes.
+=end item
+
+=begin item
+B<C<method helper(Mu $type, Str:D $stage)>>
+
+Get a helper for C<$stage> where stage is I<'to-json'>, I<'from-json'>, I<'match'>, or a key from C<%helpers> slurpy
+of C<set-helper> method..
+=end item
+
+=begin item
+B<C<method serializer(Mu $what)>>
+
+Get serialzier for object C<$what>. Similar to C<$config.helper($what, 'to-json')>.
+=end item
+
+=begin item
+B<C<method deserializer(Mu $what)>>
+
+Get deserialzier for object C<$what>. Similar to C<$config.helper($what, 'from-json')>
+=end item
+
+=begin item
+B<C<method matcher(Mu $what)>>
+
+Get matcher for object C<$what>. Similar to C<$config.helper($what, 'match')>
+=end item
+
+=begin item
+B<C<proto method map-type(|)>>
+
+This method installs type mapping. See I<Type Mapping> section in L<C<JSON::Class::Details>|Details.md>.
+
+=begin item
+B<C<multi method map-type(Mu:U \from-type, Mu:U \to-type)>>
+
+Simply install a mapping.
+=end item
+
+=begin item
+B<C<multi method map-type(Mu:U \wrapper)>>
+
+This is a simplified version of the previous candidate which can be used for classes with C<is json-wrap> applied.
+See I<Type Mapping> section in L<C<JSON::Class::Details>|Details.md>.
+=end item
+
+=begin item
+B<C<method map-type(Pair:D $map)>>
+
+C<$config.map-type((FromType) => ToType))> is just an alternative way to do C<$config.map-type(FromType, ToType)>.
+Mostly useful to provide support for the C<map-types> method.
+=end item
+
+=end item
+
+=begin item
+B<C<method map-types(*@maps)>>
+
+To install multiple mappings at once. Each item of maps can be either a list of two elements C<(FromType, ToType)>,
+or a JSON wrapper class, or a L<C<Pair>|https://docs.raku.org/type/Pair> – see the C<map-type> method candidates:
+
+=begin code :lang<raku>
+class AWrapperClass is json-wrap(OriginalClass) {...}
+
+$config.map-types:
+    (Foo, Bar),
+    AWrapperClass,
+    (Baz) => Fubar;
+=end code
+
+Simply choose which one works better for you.
+=end item
+
+=begin item
+B<C<method type-from(Mu:U \from-type)>>
+
+Returns C<to-type>, installed with a C<map-type> class for C<from-type>.
+=end item
+
+=begin item
+B<C<method set-severity(Bool :$easy, Bool :$warn, Bool :$strict)>>
+
+Set the severity of C<JSON::Class> reaction to errors or warnings. See methods C<alert> and C<notify>.
+=end item
+
+=begin item
+B<C<method severity(--> Str:D)>>
+
+Returns current severity.
+=end item
+
+=begin item
+B<C<method with-severity(&code, Bool :$easy, Bool :$warn, Bool :$strict)>>
+
+Executes C<&code> with temporarily set severity level. Say, one wants to hide errors for a task; or vice versa, make
+sure no error gets lost.
+=end item
+
+=begin item
+B<C<proto method alert(|)>>
+
+Depending on the current severity level, would do nothing, or issue a warning with C<warn> routine, or throw an
+exception.
+
+Candidates are:
+
+=begin item
+B<C<multi method alert(Exception:D $ex)>>
+
+This is the primary which does all the job.
+=end item
+
+=begin item
+B<C<multi method alert(*@msg)>>
+
+Same as calling with C<JSON::Class::X::AdHoc> exception instance. Message is formed by joining C<gist>s of C<@msg>
+elements.
+=end item
+
+=end item
+
+=begin item
+B<C<method notify(*@msg)>>
+
+This method is similar to C<alert> except that it only warns with a message formed of C<gist>s of C<@msg>. Unless
+the severity is C<easy>, of course.
+=end item
+
+=begin item
+B<C<method to-json-profile(--> Map:D)>>
+
+This method returns a L<C<Map>|https://docs.raku.org/type/Map> with named arguments for
+L<C<JSON::Fast>|https://raku.land/cpan:TIMOTIMO/JSON::Fast> C<to-json> routine:
+
+=begin code :lang<raku>
+to-json($data, |$config.to-json-profile);
+=end code
+=end item
+
+=begin item
+B<C<method from-json-profile()>>
+
+Returns a L<C<Map>|https://docs.raku.org/type/Map> with named arguments for
+L<C<JSON::Fast>|https://raku.land/cpan:TIMOTIMO/JSON::Fast> C<from-json> routine:
+
+=begin code :lang<raku>
+from-json($json, |$config.from-json-profile);
+=end code
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Details>|Details.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENSE>|../../../../LICENSE> file in this distribution.
 =end rakudoc
+

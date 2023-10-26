@@ -238,6 +238,63 @@ serializing Int|12
 
 =end item
 
+=head2 Type Mapping
+
+C<JSON::Class> supports deserialization type mapping which allows user code to override 3rd-party standard types with
+their own classes.
+
+For example, let's say there is an API module for a web-service which de-JSONifies a REST response into an instance of
+C<Web::Service::Response>. The raw response object is barely useful for us and we decide to subclass it with
+C<MyProject::Response> which extends the original class functionality for our needs. Now it all winds down to rather
+simple code if the C<Web::Service> module is using C<JSON::Class>:
+
+=begin code :lang<raku>
+JSON::Class::Config().map-type(Web::Service::Response(), MyProject::Response());
+my $web-service = Web::Service().new();
+await($web-service.request().andthen({
+    say(.response().^name())
+}))
+=end code
+
+That's all folks! Committing away the first line of the example will result in I<Web::Service::Response> output again.
+
+A well-behaving C<Web::Service> module would allow to submit a custom L<C<JSON::Class::Config>|Config.md>
+object, but the global one will do too...
+
+... unless the C<Web::Service> creates and uses its own config, but that's an ethical problem beyond this documentation
+area of responsibility!
+
+For the sake of declarative syntax, there is C<is json-wrap> trait which allows to declare a sub-class as a replacement:
+
+=begin code :lang<raku>
+class MyProject::Response is json-wrap(Web::Service::Response) {
+    ...
+}
+=end code
+
+The trait doesn't install the mapping automatically though. This might be undesirable. One would still need a call like
+this to activate it:
+
+=begin code :lang<raku>
+$config.map-type: MyProject::Response;
+=end code
+
+=head2 Descriptors
+
+C<JSON::Class> avoids modifying attribute objects of meta-object of a class. Instead, it creates a registry of them
+where the information about the ways of JSONifying their values is kept. The details of registry implementation are
+irrelevant, all we need to know is that it holds instances of I<descriptors>. There are two kinds of descriptors:
+
+=item I<attribute descriptors> for attributes of a JSON class
+=item I<item descriptors> for items of a JSON sequence
+
+Each JSONified type obejct has its own registry. When a new JSON class or sequence is built registries from parent
+classes or JSON roles consumed are merged to form the full picture of what's to be marshalled.
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+
 =head1 COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
@@ -246,7 +303,7 @@ serializing Int|12
 
 Artistic License 2.0
 
-See the L<I<LICENSE>|../../../LICENSE> file in this distribution.
+See the L<I<LICENSE>|../../../../LICENSE> file in this distribution.
 
 =end rakudoc
 

@@ -6,12 +6,11 @@ C<JSON::Class> - general purpose JSON de-/serialization for Raku
 =head1 SYNOPSIS
 
 =begin code
-
 role Base is json(:!skip-null) {
     has Num:D $.size is required is json(:name<volume>);
 }
 
-clas Record is json does Base {
+class Record is json does Base {
     has Int $.count;
     has Str $.description;
 }
@@ -27,9 +26,9 @@ L<C<JSON::Class>|https://raku.land/zef:jonathanstowe/JSON::Class> modules.  It t
 shifts the locus of control from class' outers to its inners. In other words, the class itself is responsible for its
 de-/serialization in first place. Though it's perhaps, the primary difference, it's far from being the only one.
 
-Also, this module tries to follow the standards of C<LibXML::Class> modules, even though adapted for differing domain of
-JSON. First of all, they share the same view on the locus of responsibility. Second, they try to implement declarative
-semantics in first place.
+Also, this module tries to follow the standards of L<C<LibXML::Class>|https://raku.land/zef:vrurg/LibXML::Class> module
+by adapting them for differing domain of JSON. First of all, they share the same view on the locus of responsibility.
+Second, they try to implement declarative semantics in first place.
 
 From here on whenever C<JSON::Class> name is used it refers to this module unless otherwise stated or implied by the
 context.
@@ -44,15 +43,15 @@ L<C<Any>|https://docs.raku.org/type/Any>, L<C<Bool>|https://docs.raku.org/type/B
 L<C<Numeric>|https://docs.raku.org/type/Numeric>, L<C<Stringy>|https://docs.raku.org/type/Stringy>,
 L<C<Enumeration>|https://docs.raku.org/type/Enumeration> roles.
 
-A "complex" type is expected to have marshallizable attributes.
+A "complex" type is expected to have marshallable attributes.
 
-=head2 Marshalling
+=head2 Marshalling And JSONification
 
-JSON marshalizing requires declaring corresponding entities as JSON-ones, or I<JSONification>. Normally this is done
+JSON marshalling requires declaring corresponding entities as JSON-ones, or I<JSONification>. Normally this is done
 by using trait C<is json> with classes, roles, or attributes. This is declarative, or explicit, JSONification.
 
-It is also possible that implicit jsonification can be used when necessary or desirable. Normally C<JSON::Class> attempts
-to implement it in a user-transparent way. For example:
+It is also possible that implicit jsonification can be used when necessary or desirable. Normally C<JSON::Class>
+attempts to implement it in a user-transparent way. For example:
 
 =begin code :lang<raku>
 class Record {...}
@@ -66,8 +65,8 @@ $arch.to-json;
 =end code
 
 The class C<Record> above would be implicitly JSONified to produce serialization of a single record. But the JSONified
-version would never pop on the surface. So, when the archive is deserialized C<@.records> would still contain instances
-of the original C<Record>.
+version would never pop on the surface. So, when the archive is deserialized C<@.records> will contain instances of the
+original C<Record>.
 
 =head2 Trait
 
@@ -87,16 +86,26 @@ by using a I<configuration> object. A configuration belongs to a dynamic context
 
 There is also a global configuration singleton used when no other configuration provided.
 
-=head2 Sequences
+=head2 JSON Class
 
-C<JSON::Class> uses term "sequence" for something that is rather an array and, most definitely, not a sequence in Raku
-view. It was borrowed from C<LibXML::Class> where it was adopted from XML schema definitions. A sequence is primarily
-defined by its two properties:
+A I<JSON class> is one which has C<is json> trait applied. Sometimes, depending on the context and especially when
+referring to an instance of the class, another term I<JSON object> can be used.
+
+=head2 JSON Sequence
+
+I<JSON sequence> is also a class with C<is json> trait applied, but the trait is given C<:sequence> argument.
+
+Term "sequence" is used here for something that is rather an array and, most definitely, not a sequence
+(L<C<Seq>|https://docs.raku.org/type/Seq>) in Raku view. The term was borrowed from
+L<C<LibXML::Class>|https://raku.land/zef:vrurg/LibXML::Class>, which implements the same concept, and where it was
+adopted from XML schema definitions.
+
+A sequence is primarily defined by its two properties:
 
 =item its elements are lazily deserialized on demand
 =item it does its best to serve as a container for multiple types, including user classes
 
-=head2 Lazyness
+=head2 Laziness
 
 Deserialization of big deeply nested structures could be a long process, no matter if we need an element of the
 structure right away, or it is going to be requested later, or not used at all. C<JSON::Class> attempts to bring some
@@ -104,11 +113,11 @@ relieve by postponing deserialization for later time.
 
 =head2 Explicit Or Implicit Typeobjects
 
-It could be tedious to marshal a class with many attributes. Most use cases assume that entrie object would end up
+It could be tedious to marshal a class with many attributes. Most use cases assume that entire object would end up
 mapped into a JSON structure. Therefore C<JSON::Class> defaults to I<implicit> declaration where all public or C<is
 built> attributes are JSONified wihout needing explicit C<is json> trait. This is the case demoed in the SYNOPSIS.
 
-In explicit mode one has to manually apply the trait to marshallizable attributes.
+In explicit mode one has to manually apply the trait to marshallable attributes.
 
 =head2 Declaration
 
@@ -125,6 +134,37 @@ Within the class an attribute for marshalling is to be also marked with C<is jso
 =begin code :lang<raku>
 has SomeType $.st is required is json(:skip-null, :!lazy);
 =end code
+
+=head2 Naming Convention
+
+With only few exception, names of all attributes and methods introduced by C<JSON::Class> distribution are starting with
+C<json-> prefix. This rule may not be followed by some internal data structures, but is almost 100% true to what is
+injected into JSONified typeobject as part of their public or private API.
+
+There is a consequence to this rule: implicit JSONification of attributes skip those with C<json->-prefixed names:
+
+=begin item :example("examples/json-pfx-attr.raku") :mtime(1698031726)
+From L<examples/json-pfx-attr.raku|../../../examples/json-pfx-attr.raku>
+
+=begin code :example :lang("raku")
+class Foo is json(:implicit) {
+    has Int $.foo;
+    has Str $.json-invisible;
+}
+
+my $foo = Foo.new(:foo(42), :json-invisible("The Answer"));
+say "JSON      : ", $foo.to-json;
+say "Attribute : ", $foo.json-invisible;
+=end code
+
+Sample output:
+
+=begin output :example
+JSON      : {"foo":42}
+Attribute : The Answer
+=end output
+
+=end item
 
 =head2 Trait Arguments
 
@@ -187,7 +227,7 @@ Parameters set via C<is json> trait for attributes are normally overriding these
 =begin item
 C<Bool> B<C<:skip>>
 
-Don't ever marshallize this attribute. Mostly useful for C<:implicit> typeobjects when one or more attributes are to be
+Don't ever marshalize this attribute. Mostly useful for C<:implicit> typeobjects when one or more attributes are to be
 ignored. Negation of this argument makes no sense.
 =end item
 
@@ -200,7 +240,7 @@ Set C<skip-null> parameter individually for this attribute, no matter what is se
 =begin item
 Str B<C<:name>>
 
-Normally key name of a JSON object to which an attribute marshallizes is given after attribute's name, omitting its
+Normally key name of a JSON object to which an attribute serializes is given after attribute's name, omitting its
 sigil and twigil. With C<:name> this value can be altered to something different.
 =end item
 
@@ -215,58 +255,961 @@ C<Bool> B<C<:serializer(...)>>, C<Bool> B<C<:deserializer(...)>>
 
 Allowed aliases are C<:to-json> and C<:from-json>, correspondingly.
 
-Specify custom marshallizers for the attribute. Normally that'd be either a method name on attribute's type, or an
-explicit code object. But there are more options possible.
+Specify custom marshallers for the attribute. Normally that'd be either a method name on attribute's type, or an
+explicit code object. For associative and positional attributes additional marshallers for keys and values are available
+via C<:key> and C<:value> named arguments. Apparently, only the latter works with positionals:
+
+=begin code :lang<raku>
+has %.assoc is json(
+    :serializer(
+        key => { "pfx-" ~ $^key },
+        value => { $^value.raku } ),
+    :deserializer(
+        key => { $^from.substr(4) },
+        value => { $^from.EVAL } ));
+=end code
+
+See 'Custom Marshallers' in L<C<JSON::Class::Details>|Class/Details.md>.
 =end item
 
-=head1 QUICK INTRO
+=head2 Sequences
 
-=head2 Basic Types
-
-...
-
-=head1 DETAILS
-
-=head2 Marshalling Protocols
-
-C<JSON::Class> doesn't actually create or read JSON itself. This task is offloaded to a 3rd-party module. For now it is
-L<C<JSON::Fast>|https://modules.raku.org/dist/JSON::Fast>, but theoretically it could be any other module.
-
-C<JSON::Class> task is to either deal with whatever is returned by a JSON parser, or supply JSON generator with a
-serializable data structure like L<C<Hash>|https://docs.raku.org/type/Hash>, or
-L<C<Array>|https://docs.raku.org/type/Array>. The structure must represent the entrie object we're about to marshall.
-
-There are four key method in the core of the process:
+A class is declared as a JSON sequence with C<:sequence> argument of the C<is json> trait. The argument can be one or
+few typeobject declarations and an optional C<:default> adverb. A typeobject declaration can be either:
 
 =begin item
-B<C<from-json>>
+a plain typeobject
 
-Takes either a JSON string, or a deserialized array, or a hash. If all passes good then either an instance of its class
-(or a subclass) would be returned, or an array of instances. Arrays could even be nested, depending on the original JSON
-structure.
+Int:D:D
 =end item
 
 =begin item
-B<C<to-json>>
+a typeobject with modifiers as a list
 
-Can only be invoked on an instance of its class. If no errors happen during serialization, a JSON string is returned.
-Though is given C<:raw> named argument the method would return just a L<C<Hash>|https://docs.raku.org/type/Hash>.
+    (Foo, :&serializer, :&deserializer)
 =end item
 
 =begin item
-B<C<json-serialize>>, B<C<json-deserialize>>
+a L<C<Pair>|https://docs.raku.org/type/Pair> of a type object and a list of modifiers:
 
-These two methods are the immediate marshalling executors. They only deal with de-/serialized data structures.
+    (Bar) => (:to-json(&bar2json), :from-json(&json2bar))
 =end item
 
-The difference in functionality between these methods is that C<from-json> and C<to-json> are "administrators": their
-primary task is to prepare configuration context (see the next section). Then, depending on arguments, they either
-parse JSON source, or produce a JSON string. Otherwise they delegate to C<json-serizlie> or C<json-deserialize> methods.
+Typeobject modifiers are:
 
-=head2 Configuration Context
+=item B<C<:$serializer>> AKA B<C<:$to-json>>
+=item B<C<:$deserializer>> AKA B<C<:$from-json>>
+=item B<C<:$matcher>>
 
-Serialization and deserialization protocols use a configuration object to find out about various paramters, affecting
-the process. More detailed description of the parameters can be found in L<C<JSON::Class::Config>|Class/Config.md> documentation.
+The last one's meaning is explained below in this section.
+
+The C<:default> argument is similar in meaning to the C<is default> trait: it sets the default value to be used when
+C<Nil> is assigned into a sequence position, or when out of bounds position is queried:
+
+=begin code :lang<raku>
+class JSeq is json(:sequence(..., :default(42))) {}
+
+say JSeq.new.[0]; # 42
+=end code
+
+Default value is not obliged to be a concrete value.
+
+Whenever a sequence is declared with multiple types it is equivalent to declaring an array with a subset matching all
+the same types:
+
+=begin code :lang<raku>
+class JSeq is json(:sequece(Int:D, Str:D, Foo)) {}
+=end code
+
+be like:
+
+=begin code :lang<raku>
+my subset JSeqOf of Mu where Int:D | Str:D | Foo;
+my JSeqOF @jseq;
+=end code
+
+=begin item
+I<Note>
+
+There is a potential problem with this declaration: assigning a C<Nil> will result in a type mismatch because
+the default value would me L<C<Mu>|https://docs.raku.org/type/Mu>, but it doesn't match the subset. Therefore safe way
+to do it would be something like:
+
+=begin code :lang<raku>
+class JSeq is json(:sequece(Int:D, Str:D, Foo, :default(Foo))) {}
+=end code
+
+=end item
+
+=head3 The Multitype Matching Problem
+
+When a sequence is declared with two or more classes that are not basic types a problem of matching JSON object into a
+class arises. Apparently, JSON itself lacks any means of distinguishing one JSON object from another I<(kids, let's say
+"Hello!" to JavaScript OO!)>. In other words, having something like:
+
+=begin code :lang<JSON>
+[
+    {"key1": 1, "key2":"a string"},
+    {"keyA": 3.1415926, "keyB": "const"}
+]
+=end code
+
+One wouldn't be able to tell what classes each item represents. The only way for us to tell is to guess. When we see:
+
+=begin code :lang<raku>
+class Foo {
+    has Int $.key1;
+    has Str $.key2;
+}
+class Bar {
+    has Num $.keyA;
+    has Str $.keyB;
+}
+=end code
+
+It is rather clear that the first JSON object is for C<Foo>, and the other one – for C<Bar>.
+
+This is what C<JSON::Class> sequence basically does: it compares sets of keys per each class-candidate to the key of
+a JSON object. This works well until a very rare case pops up where two classes has the same key names. Say:
+
+=begin code :lang<raku>
+class Book {
+    has Str:D $.id is required;
+    has Str:D $.name is requried;
+}
+class Article {
+    has Str:D $.id is required;
+    has Str:D $.name is required;
+}
+=end code
+
+The default matching algorithm would fail here with C<JSON::Class::X::Deserialize::SeqItem> exception. One can work
+around the problem by introducing extra layers of data, for example. But what if we know that IDs of a book and an
+article are sufficiently different to tell exactly which is is which? For example, book ID could start with I<ISBN:>,
+whereas article ID starts with a date-based I<YYYY-MM-DD:> prefix? In this case one can use custom matchers to tell
+one JSON object from another:
+
+=begin item :example("examples/book-article-seq.raku") :mtime(1698277143)
+From L<examples/book-article-seq.raku|../../../examples/book-article-seq.raku>
+
+=begin code :example :lang("raku")
+class Book {
+    has Str:D $.id is required;
+    has Str:D $.name is required;
+}
+class Article {
+    has Str:D $.id is required;
+    has Str:D $.name is required;
+
+    method is-an-article(%from) {
+        ? (%from<id> ~~ /^ \d ** 4 '-' \d ** 2 '-' \d ** 2 ':'/)
+    }
+}
+
+sub is-a-book(%from) { %from<id>.starts-with("ISBN:") }
+
+class BoxOfPapers is json(:sequence( (Book, :matcher(&is-a-book)), (Article, :matcher<is-an-article>) )) {}
+
+my $json = q:to/JSON/;
+[
+    {"id": "ISBN:1234", "name": "The Guide"},
+    {"id": "2006-04-01:the-pop-one", "name":"What's the programmer's most popular book out there?"}
+]
+JSON
+
+my $box = BoxOfPapers.from-json($json);
+say $box.map(*.gist).join("\n");
+=end code
+
+Sample output:
+
+=begin output :example
+Book.new(id => "ISBN:1234", name => "The Guide")
+Article.new(id => "2006-04-01:the-pop-one", name => "What's the programmer's most popular book out there?")
+=end output
+
+=end item
+
+There are other ways of solving this task that involve custom marshalling where we can manipulate with serializable data
+or keys to inject clues as to what's the source type of JSON object was.
+
+=head4 Alternative Solutions To Matching
+
+A universal matcher for type can also be set using L<C<JSON::Class::Config>|Class/Config.md> C<set-helpers> method.
+
+Another way is to try overriding C<json-guess-descriptor> method of L<C<JSON::Class::Sequence>|Class/Sequence.md>.
+But to do so one is better be familiar with the internals of C<JSON::Class>.
+
+=head1 DYNAMIC VARIABLES
+
+=begin item
+C<JSON::Class::Config> B<C<$*JSON-CLASS-CONFIG>>
+
+Configuration object. When not available it means we're out of the context of C<to-json> or C<from-json> methods.
+=end item
+
+=begin item
+B<C<$*JSON-CLASS-SELF>>
+
+The invocant of C<json-serialize> or C<json-deserialize> methods.
+=end item
+
+=begin item
+L<C<JSON::Class::Descriptor>|Class/Descriptor.md> B<C<$*JSON-CLASS-DESCRIPTOR>>
+
+Descriptor of the currently being marshalled attribute or sequence item.
+=end item
+
+=head1 QUICK INTRO BY EXAMPLE
+
+This section contains a series of working code examples demonstrating different features of this module. The samples are
+slightly stripped down to keep focus on their functionality and don't bother you with boilerplate. Their full code can
+be found under I<examples/> subdirectory of the distribution.
+
+=head2 Explicit/Implicit
+
+=begin item :example("examples/decl-implicit.raku") :mtime(1697903108)
+From L<examples/decl-implicit.raku|../../../examples/decl-implicit.raku>
+
+=begin code :example :lang("raku")
+class Foo is json {
+    has $.foo;
+}
+
+say "Foo is explicit: ", Foo.^json-is-explicit, "\n",
+    " has 'foo' key : ", Foo.^json-has-key('foo');
+
+class Bar is json {
+    has $.bar1;
+    has $.bar2 is json;
+}
+
+say "Bar is explicit: ", Bar.^json-is-explicit, "\n",
+    " has 'bar1' key: ", Bar.^json-has-key('bar1'), "\n",
+    " has 'bar2' key: ", Bar.^json-has-key('bar2');
+=end code
+
+Sample output:
+
+=begin output :example
+Foo is explicit: False
+ has 'foo' key : True
+Bar is explicit: True
+ has 'bar1' key: False
+ has 'bar2' key: True
+=end output
+
+=end item
+
+=head2 Inheritance And Role
+
+=begin item :example("examples/simple-inherit.raku") :mtime(1697920402)
+From L<examples/simple-inherit.raku|../../../examples/simple-inherit.raku>
+
+=begin code :example :lang("raku")
+role R is json {
+    has Bool $.flag;
+}
+
+class C1 does R is json {
+    has Int $.count;
+}
+
+class C2 is json is C1 {
+    has Str $.what;
+}
+
+my $obj = C2.new(:count(3), :what("whatever you like"), :flag);
+say $obj.to-json(:pretty, :sorted-keys);
+=end code
+
+Sample output:
+
+=begin output :example
+{
+  "count": 3,
+  "flag": true,
+  "what": "whatever you like"
+}
+=end output
+
+=end item
+
+=head2 Incorporation
+
+Notice that except for C<C3>, all other classes and roles are not JSONified. Only attributes of C<C1> and C<R1> are
+serialized.
+
+=begin item :example("examples/incorporation.raku") :mtime(1697922482)
+From L<examples/incorporation.raku|../../../examples/incorporation.raku>
+
+=begin code :example :lang("raku")
+role R1 {
+    has Bool $.flag;
+}
+
+role R2 {
+    has Num $.cost;
+}
+
+class C1 {
+    has Int $.count;
+}
+
+class C2 {
+    has Num $.total;
+}
+
+class C3 is json(:is(C1), :does(R1)) does R2 is C2 {
+    has Str $.what;
+}
+
+my $obj = C3.new(:count(3), :what("whatever you like"), :flag, :cost(1.2e0), :total(1e3));
+say $obj.to-json(:pretty, :sorted-keys);
+=end code
+
+Sample output:
+
+=begin output :example
+{
+  "count": 3,
+  "flag": true,
+  "what": "whatever you like"
+}
+=end output
+
+=end item
+
+=head2 Laziness
+
+=begin item :example("examples/decl-lazy.raku") :mtime(1697903807)
+From L<examples/decl-lazy.raku|../../../examples/decl-lazy.raku>
+
+=begin code :example :lang("raku")
+class Item {
+    has $.something;
+}
+
+class Foo is json {
+    has Str $.foo;   # Basic types are eager by default
+    has Item $.item; # Non-basic types is lazy by default
+}
+
+say "--- Foo";
+say "    .foo lazy      : ", Foo.^json-get-key("foo").lazy;
+say "    .item lazy     : ", Foo.^json-get-key("item").lazy;
+
+class Bar is json(:lazy, :implicit) {
+    has Str $.bar;
+    has Item $.item;
+    has Item $.item2 is json(:!lazy);
+}
+
+say "--- Bar";
+say "    .bar is lazy   : ", Bar.^json-get-key('bar').lazy;
+say "    .item is lazy  : ", Bar.^json-get-key('item').lazy;
+say "    .item2 is lazy : ", Bar.^json-get-key('item2').lazy;
+
+class Baz is json(:!lazy, :implicit) {
+    has Str $.baz;
+    has Item $.item;
+    has Item $.item2 is json(:lazy);
+}
+
+say "--- Baz";
+say "    .baz lazy      : ", Baz.^json-get-key("baz").lazy;
+say "    .item lazy     : ", Baz.^json-get-key("item").lazy;
+say "    .item2 lazy    : ", Baz.^json-get-key("item2").lazy;
+=end code
+
+Sample output:
+
+=begin output :example
+--- Foo
+    .foo lazy      : False
+    .item lazy     : True
+--- Bar
+    .bar is lazy   : True
+    .item is lazy  : True
+    .item2 is lazy : False
+--- Baz
+    .baz lazy      : False
+    .item lazy     : False
+    .item2 lazy    : True
+=end output
+
+=end item
+
+=head2 Config Defaults
+
+C<C1> specify config defaults but they affect the output only when the immediate instance of the class is serialized.
+Otherwise if a subclass instance is serialized then its defaults are used. This is to preserve the uniformity of
+serialization.
+
+=begin item :example("examples/config-defaults.raku") :mtime(1697923309)
+From L<examples/config-defaults.raku|../../../examples/config-defaults.raku>
+
+=begin code :example :lang("raku")
+class C1 is json(:pretty, :sorted-keys) {
+    has Int $.count;
+    has Str $.what;
+}
+
+class C2 is C1 is json(:!skip-null) { }
+
+my $c1 = C1.new(:count(42), :what("The Answer"));
+say "--- C1 serialization:\n", $c1.to-json;
+my $c2 = C2.new(:count(42), :what("The Answer"));
+say "--- C2 serialization:\n", $c2.to-json;
+=end code
+
+Sample output:
+
+=begin output :example
+--- C1 serialization:
+{
+  "count": 42,
+  "what": "The Answer"
+}
+--- C2 serialization:
+{"what":"The Answer","count":42}
+=end output
+
+=end item
+
+=head2 Sequence
+
+This example is a bit verbose from both code and output perspective. It's point is to demonstrate the difference between
+an array and a JSON Sequence type. The following aspects a worth paying attention to:
+
+=begin item
+Multi-type support. See I<The Multitype Matching Problem> section above.
+=end item
+
+=begin item
+Lazy deserialization of individual elements of the sequence. This may come handy when dealing with big arrays of objects
+where only few of them are actually needed.
+=end item
+
+Apparently, this example doesn't cover all of C<JSON::Class> sequence features.
+
+=begin item :example("examples/simple-sequence.raku") :mtime(1697931699)
+From L<examples/simple-sequence.raku|../../../examples/simple-sequence.raku>
+
+=begin code :example :lang("raku")
+class Item1 is json {
+    has Str $.id;
+    has Int $.quantity;
+}
+
+class Item2 is json {
+    has Str $.section;
+    has Str $.chapter;
+}
+
+class JSeq is json(:sequence(Str:D, Item1:D, Item2:D, :default<removed>)) {
+    method json-deserialize-item($idx, \json-value) is raw {
+        say "... deserializing [$idx] ...";
+        nextsame
+    }
+}
+
+my $jseq = JSeq.new("something", Item2.new(:section<A>, :chapter("22.1")));
+
+$jseq.push: Item1.new(:id<EBCA-12F>, :quantity(13));
+$jseq.push: "final";
+
+say "--- Initial    : ", $jseq.to-json;
+$jseq[1]:delete;
+say "--- 2nd deleted: ", $jseq.to-json;
+my $deserialized := JSeq.from-json: q<["something",{"quantity":12,"id":"9123-BBB"},"different",{"section":"B","chapter":"2.9b"}]>;
+for ^$deserialized.elems -> $idx {
+    say "--- $idx ---";
+    say "Deserialized before accessing? ", $deserialized[$idx]:has;
+    say "Item: ", $deserialized[$idx].raku;
+    say "Deserialized after accessing? ", $deserialized[$idx]:has;
+}
+=end code
+
+Sample output:
+
+=begin output :example
+--- Initial    : ["something",{"chapter":"22.1","section":"A"},{"quantity":13,"id":"EBCA-12F"},"final"]
+--- 2nd deleted: ["something","removed",{"id":"EBCA-12F","quantity":13},"final"]
+--- 0 ---
+Deserialized before accessing? False
+... deserializing [0] ...
+Item: "something"
+Deserialized after accessing? True
+--- 1 ---
+Deserialized before accessing? False
+... deserializing [1] ...
+Item: Item1.new(id => "9123-BBB", quantity => 12)
+Deserialized after accessing? True
+--- 2 ---
+Deserialized before accessing? False
+... deserializing [2] ...
+Item: "different"
+Deserialized after accessing? True
+--- 3 ---
+Deserialized before accessing? False
+... deserializing [3] ...
+Item: Item2.new(section => "B", chapter => "2.9b")
+Deserialized after accessing? True
+=end output
+
+=end item
+
+=head2 Array Attributes
+
+=begin item :example("examples/typed-array.raku") :mtime(1697933699)
+From L<examples/typed-array.raku|../../../examples/typed-array.raku>
+
+=begin code :example :lang("raku")
+class Rec {
+    has Str:D $.description is required;
+}
+
+class Struct is json(:implicit) {
+    has Array:D[Real:D] @.matrix;
+    has Rec:D %.rec is json(:name<records>);
+}
+
+my $struct =
+    Struct.new:
+        matrix => [
+            [1, 2],
+            [pi, e],
+            [42.12, 13.666, 4321],
+        ],
+        rec => {
+            R1 => Rec.new(:description("test description")),
+            R2 => Rec.new(:description("test description 2")),
+        };
+
+say "=== Serializing ===";
+say $struct.to-json(:pretty, :sorted-keys);
+
+say "=== Deserializing ===";
+my $deserialized =
+    Struct.from-json:
+        q<{"matrix":[[3,4,5],[3.141592653589793e0,2.718281828459045e0],[42.0,32.16,99]],
+           "records":{"R1":{"description":"for the first"},"R2":{"description":"for the second"}}}>;
+
+say "Has .matrix: ", $deserialized.json-has-matrix;
+say "Has .rec   : ", $deserialized.json-has-records; # JSON key name is used for method name
+say "Matrix     : ", $deserialized.matrix;
+say "Has .matrix: ", $deserialized.json-has-matrix;
+say "Has .rec   : ", $deserialized.json-has-records;
+say "Records    : ", $deserialized.rec;
+say "Has .matrix: ", $deserialized.json-has-matrix;
+say "Has .rec   : ", $deserialized.json-has-records;
+=end code
+
+Sample output:
+
+=begin output :example
+=== Serializing ===
+{
+  "matrix": [
+    [
+      1,
+      2
+    ],
+    [
+      3.141592653589793e0,
+      2.718281828459045e0
+    ],
+    [
+      42.12,
+      13.666,
+      4321
+    ]
+  ],
+  "records": {
+    "R1": {
+      "description": "test description"
+    },
+    "R2": {
+      "description": "test description 2"
+    }
+  }
+}
+=== Deserializing ===
+Has .matrix: False
+Has .rec   : False
+Matrix     : [[3 4 5] [3.141592653589793 2.718281828459045] [42 32.16 99]]
+Has .matrix: True
+Has .rec   : False
+Records    : {R1 => Rec.new(description => "for the first"), R2 => Rec.new(description => "for the second")}
+Has .matrix: True
+Has .rec   : True
+=end output
+
+=end item
+
+=head2 Using Configuration And Type Mapping
+
+These two subjects are tightly bound to each other, hence single example for both subjects.
+
+=begin item :example("examples/config-and-type-map.raku") :mtime(1697934688)
+From L<examples/config-and-type-map.raku|../../../examples/config-and-type-map.raku>
+
+=begin code :example :lang("raku")
+# To set global defaults .global to be invoked as early as possible or otherwise the global config can be vivified
+# somewhere else with standard defaults.
+JSON::Class::Config.global: :pretty, :sorted-keys, :!skip-null;
+
+class Record is json {
+    has Int $.count;
+    has Str $.what;
+}
+
+class Status {
+    has Str $.code;
+    has Bool $.verified;
+    has Str $.notes;
+}
+
+# Indicate that this class wants to replace Record whenever possible.
+class RecWrapper is json-wrap(Record) {
+    has Bool $.available is mooish(:lazy);
+
+    method build-available {
+        $.count > 0;
+    }
+}
+
+class StatusTools is Status {
+    # Just a mockup of what could be used for accessing some API, for example.
+    method update-record {
+        "will-update" => $.code
+    }
+}
+
+JSON::Class::Config.map-types: RecWrapper, (Status) => StatusTools;
+
+class Foo is json {
+    has Record:D $.record is required is json(:name<rec>);
+    has Status:D $.status is required is json(:name<st>);
+}
+
+say "--- Using global config with type maps";
+my $foo =
+    Foo.from-json:
+        q<{"rec":{"count":0,"what":"irrelevant"},"st":{"code":"1A-CD3","verified":false,"notes":"to be done"}}>;
+
+say ".record attribute type: ", $foo.record.^name;
+say ".status attribute type: ", $foo.status.^name;
+
+$foo.status.update-record;
+
+say "Serialization of mapped types:\n", $foo.to-json.indent(2);
+
+say "--- Using custom config with no type maps";
+my $config = JSON::Class::Config.new;
+
+$foo = Foo.from-json:
+            q<{"rec":{"count":0,"what":"irrelevant"},"st":{"code":"1A-CD3","verified":false,"notes":"to be done"}}>,
+            :$config;
+
+say ".record attribute type: ", $foo.record.^name;
+say ".status attribute type: ", $foo.status.^name;
+
+try { $foo.status.update-record };
+say "We expect an exception here: ", $!.^name;
+say "Exception message: ", $!.message;
+
+say "Serialization with custom config using standard defaults:\n", $foo.to-json(:$config).indent(2);
+=end code
+
+Sample output. Notice how different configuration defaults affect serialization output without passing any arguments
+to the C<to-json> method:
+
+=begin output :example
+--- Using global config with type maps
+.record attribute type: RecWrapper
+.status attribute type: StatusTools
+Serialization of mapped types:
+  {
+    "rec": {
+      "count": 0,
+      "what": "irrelevant"
+    },
+    "st": {
+      "code": "1A-CD3",
+      "notes": "to be done",
+      "verified": false
+    }
+  }
+--- Using custom config with no type maps
+.record attribute type: Record
+.status attribute type: Status
+We expect an exception here: X::Method::NotFound
+Exception message: No such method 'update-record' for invocant of type 'Status'
+Serialization with custom config using standard defaults:
+  {"st":{"code":"1A-CD3","notes":"to be done","verified":false},"rec":{"what":"irrelevant","count":0}}
+=end output
+
+=end item
+
+=head2 Custom Serialziers And Deserializers
+
+There are more than we can fit into this example. We can have individual custom marshalling for hash and array values,
+and hash keys too. We can specify marshallers for sequence elements too.
+
+=begin item :example("examples/custom-marshallers.raku") :mtime(1697936641)
+From L<examples/custom-serializers.raku|../../../examples/custom-serializers.raku>
+
+=begin code :example :lang("raku")
+class Record is json {
+    has Str $.description is json( :serializer({ "pfx:" ~ $_ }),    # :to-json alias can be used instead
+                                   :deserializer({ .substr(4) }) ); # :from-json can be used instead
+}
+
+class Article is json {
+    has Str $.title;
+
+    method serialize {
+        %{ "-ttl-" => $!title }
+    }
+    method deserialize(%p) {
+        die "bad profile" unless %p<-ttl->;
+        self.new: title => %p<-ttl->;
+    }
+}
+
+class Foo is json {
+    has Record:D $.rec is required;
+    has Article:D $.article is required;
+}
+
+my $config = JSON::Class::Config.new(:pretty, :sorted-keys);
+$config.set-helpers: Article, serializer => 'serialize', deserializer => 'deserialize';
+
+my $foo = Foo.new:
+            rec => Record.new(:description("means nothing")),
+            article => Article.new(:title("The Deep Thought: Complexity Of The Answer"));
+
+say "Custom serializers affect JSON:\n", $foo.to-json(:$config).indent(2);
+# "article" key is affected, but "rec" is using attribute's marshallizers.
+say "Serializing with default config:\n", $foo.to-json(:pretty, :sorted-keys).indent(2);
+
+$foo = Foo.from-json:
+        q<{"rec":{"description":"pfx:stuff"},"article":{"-ttl-":"The Deep Thought: Gimme A Bit More Time"}}>,
+        :$config;
+
+say "Custom deserializers handle 'weird' JSON:\n", $foo.raku.indent(2);
+=end code
+
+Sample output:
+
+=begin output :example
+Custom serializers affect JSON:
+  {
+    "article": {
+      "-ttl-": "The Deep Thought: Complexity Of The Answer"
+    },
+    "rec": {
+      "description": "pfx:means nothing"
+    }
+  }
+Serializing with default config:
+  {
+    "article": {
+      "title": "The Deep Thought: Complexity Of The Answer"
+    },
+    "rec": {
+      "description": "pfx:means nothing"
+    }
+  }
+Custom deserializers handle 'weird' JSON:
+  Foo.new(rec => Record.new(description => "stuff"), article => Article.new(title => "The Deep Thought: Gimme A Bit More Time"))
+=end output
+
+=end item
+
+=head2 Skipping Custom Marshalling
+
+Here we use custom marshallers too, this time for array values. But there is a trick: serializer and deserializer do
+not modify every third value. To do so they call C<json-I-cant> routine giving up the task to C<JSON::Class>
+
+=begin item :example("examples/skipping-marshalling.raku") :mtime(1697936920)
+From L<examples/skipping-marshalling.raku|../../../examples/skipping-marshalling.raku>
+
+=begin code :example :lang("raku")
+my $skiped-serializations = 0;
+my $skipped-deserializations = 0;
+
+class Foo is json {
+    has Int:D @.counts is json(
+        :serializer(
+            value => -> $v {
+                if $v % 3 == 0 {
+                    ++$skiped-serializations;
+                    json-I-cant
+                }
+                $v * 1000
+            } ),
+        :deserializer(
+            value => -> $v {
+                if $v < 1000 {
+                    ++$skipped-deserializations;
+                    json-I-cant
+                }
+                $v div 1000
+            } ));
+}
+
+my $foo = Foo.new(counts => ^22);
+
+my $json = $foo.to-json;
+
+say $json;
+say Foo.from-json($json);
+say "I skipped ", $skiped-serializations, " serializations and ", $skipped-deserializations, " deserializations";
+=end code
+
+Sample output:
+
+=begin output :example
+{"counts":[0,1000,2000,3,4000,5000,6,7000,8000,9,10000,11000,12,13000,14000,15,16000,17000,18,19000,20000,21]}
+Foo.new(counts => Array[Int:D].new(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21))
+I skipped 8 serializations and 8 deserializations
+=end output
+
+=end item
+
+=head1 METHODS
+
+=head2 JSONified Class
+
+=begin item
+B<C<method to-json(:$config, Bool :$raw, Bool :$pretty, Bool :$sorted-keys, Bool :$enums-as-value, UInt :$spacing)>>
+
+Serialize an instance of JSON class. Arguments:
+
+=begin item
+L<C<JSON::Class::Config:D>|Class/Config.md> B<C<:$config>>, B<C<:%config>>
+
+Either a configuration object or a profile hash which will be used to create one.
+=end item
+
+=begin item
+C<Bool> B<C<:$raw>>
+
+If I<True> then the method will return raw serialization of the object, i.e. a L<C<Hash>|https://docs.raku.org/type/Hash>.
+=end item
+
+=begin item
+C<Bool> B<C<:$pretty>>, C<Bool> B<C<:$sorted-keys>>, C<Bool> B<C<:$enums-as-value>>, C<UInt> B<C<:$spacing>>
+
+Same as L<C<JSON::Fast>|https://raku.land/cpan:TIMOTIMO/JSON::Fast> C<to-json> arguments.
+=end item
+
+=end item
+
+=begin item
+B<C<proto method from-json(|)>>
+=item B<C<method from-json(Str:D $json, :$config, Bool :$allow-jsonc, Bool :$enums-as-value)>>
+=item B<C<method from-json(%json, :$config, Bool :$allow-jsonc, Bool :$enums-as-value)>>
+=item B<C<method from-json(@json, :$config, Bool :$allow-jsonc, Bool :$enums-as-value)>>
+
+Deserialize JSON class from either a JSON string, or raw hash or array.
+
+=begin item
+C<Str:d> B<C<$json>>
+
+JSON source
+=end item
+
+=begin item
+B<C<%json>>, B<C<@json>>
+
+Deserialize from pre-parsed JSON data. A hash is only making sense for a JSON class. An array can be fed to both
+JSON class and JSON sequence; each will treat it differently.
+=end item
+
+=begin item
+C<JSON::Class::Config:D> B<C<:$config>>, B<C<:%config>>
+
+Either a configuration object or a profile hash which will be used to create one.
+=end item
+
+=begin item
+C<Bool> B<C<:$allow-jsonc>>, C<Bool> B<C<:$enums-as-value>>
+
+Same as L<C<JSON::Fast>|https://raku.land/cpan:TIMOTIMO/JSON::Fast> C<from-json> arguments.
+=end item
+
+=end item
+
+=begin item
+B<C<method json-serialize(JSON::Class::Config :$config)>>
+
+Implements the actual serialization task.
+=end item
+
+=begin item
+B<C<method json-deserialize($from, JSON::Class::Config:D :$config)>>
+
+Implements the actual deserialization task. C<$from> can be a hash or an array. JSON sequences only accept arrays.
+=end item
+
+=begin item
+B<C<method json-create(|)>>
+
+This method acts almost like C<new>, but the difference is in what class it eventually creates. If it belongs to a
+run-time JSONified class, i.e. to one created by L<C<JSON::Class::Config>|Class/Config.md> C<jsonify> method, then C<json-create> would
+return an instance of the original class, not its JSONification.
+
+Normally one doesn't need to use this method. But if it comes down to manually instantiating JSON classes then it would
+be preferred over the standard constructor.
+=end item
+
+=begin item
+B<C<method clone-from(Mu $obj, *%twiddles)>>
+
+This method allows to create an instance of its class using attribute values of C<$obj>. The point is that it makes it
+possible to have a copy of type different from that of C<$obj>. C<JSON::Class> uses it to JSONify instances of non-JSON
+classes, for example.
+
+I<Note> that this is one of few methods whose names don't start with C<json-> prefix.
+=end item
+
+=begin item
+B<C<method json-all-set()>>
+
+Returns I<True> if all postponed JSON data have been lazily deserialized.
+=end item
+
+=begin item
+B<C<method json-config-class()>>
+
+Returns the default configuration class type object. Overridable.
+=end item
+
+=begin item
+B<C<method json-config()>>
+
+Get the currently active configuration object if invoked within an active configuration context. Otherwise creates a
+new configuration context using class' defaults and returns its config.
+=end item
+
+=begin item
+B<C<method json-config-context(&code, :$config, *%twiddles)>>
+
+Creates a new configuration context by pulling in defaults for the config from various sources. Invokes user C<&code>
+with C<$*JSON-CLASS-CONFIG> context variable set with a configuration object. L<C<JSON::Class::Details>|Class/Details.md>
+has some more information on how configuration context gets built.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class::Config>|Class/Config.md>
+=item L<C<JSON::Class::Descriptor>|Class/Descriptor.md>
+=item L<C<JSON::Class::Object>|Class/Object.md>
+=item L<C<JSON::Class::Sequence>|Class/Sequence.md>
 
 =head1 COPYRIGHT
 
@@ -276,6 +1219,7 @@ the process. More detailed description of the parameters can be found in L<C<JSO
 
 Artistic License 2.0
 
-See the L<I<LICENSE>|../../../LICENSE> file in this distribution.
+See the L<I<LICENCE>|../../../LICENCE> file in this distribution.
 
 =end rakudoc
+
