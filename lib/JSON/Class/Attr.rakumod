@@ -31,7 +31,7 @@ method build-value-type {...}
 method set-serializer {...}
 method set-deserializer {...}
 
-submethod TWEAK(:$serializer, :$deserializer) {
+submethod TWEAK(:to-json(:$serializer), :from-json(:$deserializer)) {
     with $serializer {
         self.set-serializer( | .List.Capture );
     }
