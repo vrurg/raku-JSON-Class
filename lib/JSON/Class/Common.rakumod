@@ -63,6 +63,18 @@ method json-guess-deserializer(Str:D $kind, JSON::Class::Descriptor:D $descr) is
     $deserializer // Nil
 }
 
+method json-helper(Mu $type is raw, Str:D $stage) {
+    my $config = self.json-config;
+    my $helper = $config.helper($type, $stage);
+
+    if $helper ~~ Str:D {
+        return $_ with $type.^find_method($helper);
+        JSON::Class::X::NoMethod.new( :$type, :method-name($helper), :hint("needed for '$stage' stage") ).throw
+    }
+
+    $helper
+}
+
 my sub try-user-code(&code, Capture:D \args, &fallback --> Mu) is raw {
     my Mu $rc;
     my $use-fallback := True;
@@ -167,13 +179,11 @@ multi method json-deserialize-value( Mu \dest-type,
     multi sub j2v(JSONBasicType, Any:D \value) is raw is default { value }
 
     multi sub j2v(Mu \final-type, Any:D \value) is raw {
-        with $config.deserializer(final-type) -> &deserializer {
-            return self.json-try-deserializer:
-                        &deserializer, value,
-                        { $config.jsonify(final-type).json-deserialize(value, :$config) }
+        my &fallback = { $config.jsonify(final-type).json-deserialize(value, :$config) };
+        with self.json-helper(final-type, 'from-json') {
+            return self.json-try-deserializer($_, value)
         }
-
-        $config.jsonify(final-type).json-deserialize(value, :$config)
+        &fallback()
     }
 
     j2v( $config.type-from(dest-type), from-value )
@@ -219,8 +229,8 @@ multi method json-serialize-value(::?CLASS:D: Mu, JSONBasicType \value) { value 
 multi method json-serialize-value(::?CLASS:D: Mu, Mu:D \value) is raw {
     my $config := self.json-config;
     my &fallback = { $config.jsonify(value).json-serialize(:$config) };
-    with $config.serializer(value.WHAT) -> &serializer {
-        return self.json-try-serializer(&serializer, \(value), &fallback)
+    with self.json-helper(value.WHAT, 'to-json') {
+        self.json-try-serializer($_, \(value), &fallback)
     }
     &fallback()
 }
