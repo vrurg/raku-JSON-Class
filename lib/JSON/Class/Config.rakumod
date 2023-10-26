@@ -191,15 +191,17 @@ multi method matcher(::?CLASS:D: Mu $what is raw) {
     %!helpers{nominalize-type($what)}{JSMatch} // Nil
 }
 
+my constant %STAGE-MAP = serializer => JSSerialize, deserializer => JSDeserialize;
+
 proto method helper(|) {*}
 multi method helper(::?CLASS:U: |c) { self.global.helper(|c) }
 multi method helper(::?CLASS:D: Mu $what is raw, Str:D $stage) {
     $!helpers-lock.lock;
     LEAVE $!helpers-lock.unlock;
-    %!helpers{nominalize-type($what)}{$stage} // Nil
+    %!helpers{nominalize-type($what)}{%STAGE-MAP{$stage} // $stage} // Nil
  }
 
-proto method map-type(|c) {*}
+proto method map-type(|) {*}
 multi method map-type(::?CLASS:U: |c) { self.global.map-type(|c) }
 multi method map-type(::?CLASS:D: Mu:U \from-type, Mu:U \to-type --> Nil) {
     $!type-map-lock.lock;
