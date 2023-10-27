@@ -39,7 +39,7 @@ method json-all-set(::?CLASS:D:) {
     ! $!json-lazies
 }
 
-proto method json-serialize-attr(::?CLASS:D: JSON::Class::Attr:D, Mu:D, |) {*}
+proto method json-serialize-attr(::?CLASS:D: JSON::Class::Attr:D, Mu, |) {*}
 multi method json-serialize-attr(::?CLASS:D: JSON::Class::Attr::Scalar:D $json-attr, Mu \value) {
     self.json-try-serializer:
         'attribute', $json-attr, value,
