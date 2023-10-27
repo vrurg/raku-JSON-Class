@@ -64,7 +64,7 @@ COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENSE
+LICENCE
 =======
 
 Artistic License 2.0

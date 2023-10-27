@@ -143,7 +143,7 @@ injected into JSONified typeobject as part of their public or private API.
 
 There is a consequence to this rule: implicit JSONification of attributes skip those with C<json->-prefixed names:
 
-=begin item :example("examples/json-pfx-attr.raku") :mtime(1698031726)
+=begin item :example("examples/json-pfx-attr.raku") :mtime(1698417912)
 From L<examples/json-pfx-attr.raku|../../../examples/json-pfx-attr.raku>
 
 =begin code :example :lang("raku")
@@ -389,7 +389,7 @@ article are sufficiently different to tell exactly which is is which? For exampl
 whereas article ID starts with a date-based I<YYYY-MM-DD:> prefix? In this case one can use custom matchers to tell
 one JSON object from another:
 
-=begin item :example("examples/book-article-seq.raku") :mtime(1698277143)
+=begin item :example("examples/book-article-seq.raku") :mtime(1698417912)
 From L<examples/book-article-seq.raku|../../../examples/book-article-seq.raku>
 
 =begin code :example :lang("raku")
@@ -468,7 +468,7 @@ be found under I<examples/> subdirectory of the distribution.
 
 =head2 Explicit/Implicit
 
-=begin item :example("examples/decl-implicit.raku") :mtime(1698354706)
+=begin item :example("examples/decl-implicit.raku") :mtime(1698417912)
 From L<examples/decl-implicit.raku|../../../examples/decl-implicit.raku>
 
 =begin code :example :lang("raku")
@@ -503,7 +503,7 @@ Bar is explicit: True
 
 =head2 Inheritance And Role
 
-=begin item :example("examples/simple-inherit.raku") :mtime(1697920402)
+=begin item :example("examples/simple-inherit.raku") :mtime(1698417912)
 From L<examples/simple-inherit.raku|../../../examples/simple-inherit.raku>
 
 =begin code :example :lang("raku")
@@ -540,7 +540,7 @@ Sample output:
 Notice that except for C<C3>, all other classes and roles are not JSONified. Only attributes of C<C1> and C<R1> are
 serialized.
 
-=begin item :example("examples/incorporation.raku") :mtime(1697922482)
+=begin item :example("examples/incorporation.raku") :mtime(1698417912)
 From L<examples/incorporation.raku|../../../examples/incorporation.raku>
 
 =begin code :example :lang("raku")
@@ -582,7 +582,7 @@ Sample output:
 
 =head2 Laziness
 
-=begin item :example("examples/decl-lazy.raku") :mtime(1697903807)
+=begin item :example("examples/decl-lazy.raku") :mtime(1698417912)
 From L<examples/decl-lazy.raku|../../../examples/decl-lazy.raku>
 
 =begin code :example :lang("raku")
@@ -646,7 +646,7 @@ C<C1> specify config defaults but they affect the output only when the immediate
 Otherwise if a subclass instance is serialized then its defaults are used. This is to preserve the uniformity of
 serialization.
 
-=begin item :example("examples/config-defaults.raku") :mtime(1697923309)
+=begin item :example("examples/config-defaults.raku") :mtime(1698417912)
 From L<examples/config-defaults.raku|../../../examples/config-defaults.raku>
 
 =begin code :example :lang("raku")
@@ -693,7 +693,7 @@ where only few of them are actually needed.
 
 Apparently, this example doesn't cover all of C<JSON::Class> sequence features.
 
-=begin item :example("examples/simple-sequence.raku") :mtime(1697931699)
+=begin item :example("examples/simple-sequence.raku") :mtime(1698417912)
 From L<examples/simple-sequence.raku|../../../examples/simple-sequence.raku>
 
 =begin code :example :lang("raku")
@@ -762,7 +762,7 @@ Deserialized after accessing? True
 
 =head2 Array Attributes
 
-=begin item :example("examples/typed-array.raku") :mtime(1697933699)
+=begin item :example("examples/typed-array.raku") :mtime(1698417912)
 From L<examples/typed-array.raku|../../../examples/typed-array.raku>
 
 =begin code :example :lang("raku")
@@ -852,7 +852,7 @@ Has .rec   : True
 
 These two subjects are tightly bound to each other, hence single example for both subjects.
 
-=begin item :example("examples/config-and-type-map.raku") :mtime(1697934688)
+=begin item :example("examples/config-and-type-map.raku") :mtime(1698417912)
 From L<examples/config-and-type-map.raku|../../../examples/config-and-type-map.raku>
 
 =begin code :example :lang("raku")
@@ -948,7 +948,7 @@ Serialization of mapped types:
 We expect an exception here: X::Method::NotFound
 Exception message: No such method 'update-record' for invocant of type 'Status'
 Serialization with custom config using standard defaults:
-  {"st":{"code":"1A-CD3","notes":"to be done","verified":false},"rec":{"what":"irrelevant","count":0}}
+  {"st":{"notes":"to be done","verified":false,"code":"1A-CD3"},"rec":{"what":"irrelevant","count":0}}
 =end output
 
 =end item
@@ -958,7 +958,7 @@ Serialization with custom config using standard defaults:
 There are more than we can fit into this example. We can have individual custom marshalling for hash and array values,
 and hash keys too. We can specify marshallers for sequence elements too.
 
-=begin item :example("examples/custom-marshallers.raku") :mtime(1697936641)
+=begin item :example("examples/custom-marshallers.raku") :mtime(1698417912)
 From L<examples/custom-serializers.raku|../../../examples/custom-serializers.raku>
 
 =begin code :example :lang("raku")
@@ -1034,7 +1034,7 @@ Custom deserializers handle 'weird' JSON:
 Here we use custom marshallers too, this time for array values. But there is a trick: serializer and deserializer do
 not modify every third value. To do so they call C<json-I-cant> routine giving up the task to C<JSON::Class>
 
-=begin item :example("examples/skipping-marshalling.raku") :mtime(1697936920)
+=begin item :example("examples/skipping-marshalling.raku") :mtime(1698417912)
 From L<examples/skipping-marshalling.raku|../../../examples/skipping-marshalling.raku>
 
 =begin code :example :lang("raku")
@@ -1216,7 +1216,7 @@ has some more information on how configuration context gets built.
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-=head1 LICENSE
+=head1 LICENCE
 
 Artistic License 2.0
 

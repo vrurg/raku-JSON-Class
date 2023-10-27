@@ -52,10 +52,10 @@ COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENSE
+LICENCE
 =======
 
 Artistic License 2.0
 
-See the [*LICENSE*](../../../../LICENSE) file in this distribution.
+See the [*LICENCE*](../../../../LICENCE) file in this distribution.
 

@@ -128,8 +128,8 @@ The following example is, perhaps, the best demonstration of how marshalling wor
 
         ### Serializing ###
         Attribute-level serializes: {k1 => 2023-10-23, k2 => 3.141592653589793, k3 => v3.4}
-        Key-level serializes  : k3
         Key-level serializes  : k2
+        Key-level serializes  : k3
         Key-level serializes  : k1
         {"idx":{"Foo.k1":"Date.new(2023,10,23)","Foo.k2":"3.141592653589793e0","Foo.k3":"v3.4"}}
 
@@ -137,10 +137,10 @@ The following example is, perhaps, the best demonstration of how marshalling wor
         Attribute-level deserializes: {Foo.k1 => Date.new(2023,10,23), Foo.k2 => 3.141592653589793e0, Foo.k3 => v3.4}
         Key-level deserializes  : 'Foo.k1'
         Value-level deserializes: 'Date.new(2023,10,23)'
-        Key-level deserializes  : 'Foo.k2'
-        Value-level deserializes: '3.141592653589793e0'
         Key-level deserializes  : 'Foo.k3'
         Value-level deserializes: 'v3.4'
+        Key-level deserializes  : 'Foo.k2'
+        Value-level deserializes: '3.141592653589793e0'
         Foo.new(idx => ${"oo.k1" => Date.new(2023,10,23), "oo.k2" => 3.141592653589793e0, "oo.k3" => v3.4})
 
 We see here default marshallers for the attribute itself and marshallers for keys and values. The default marshallers are using `json-I-cant` to fallback to key/value ones because otherwise these wouldn't be invoked.
@@ -192,7 +192,7 @@ Ok, but what if we want to marshall using JSON class owns methods? It can be don
         Serializing Num: {"n":"Num"}
 
         Deserializing a Rat: Rat|-621/50
-        Deserializing a type: Int|U2274472627536
+        Deserializing a type: Int|U3324726349136
 
 ### Marshaller Signature Match
 
@@ -271,10 +271,10 @@ COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENSE
+LICENCE
 =======
 
 Artistic License 2.0
 
-See the [*LICENSE*](../../../../LICENSE) file in this distribution.
+See the [*LICENCE*](../../../../LICENCE) file in this distribution.
 

@@ -47,10 +47,10 @@ Exists for compatibility with other components of this distribution. Currently i
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-=head1 LICENSE
+=head1 LICENCE
 
 Artistic License 2.0
 
-See the L<I<LICENSE>|../../../../LICENSE> file in this distribution.
+See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
 =end rakudoc
 

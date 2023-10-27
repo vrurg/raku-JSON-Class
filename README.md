@@ -825,7 +825,7 @@ These two subjects are tightly bound to each other, hence single example for bot
         We expect an exception here: X::Method::NotFound
         Exception message: No such method 'update-record' for invocant of type 'Status'
         Serialization with custom config using standard defaults:
-          {"st":{"code":"1A-CD3","notes":"to be done","verified":false},"rec":{"what":"irrelevant","count":0}}
+          {"st":{"notes":"to be done","verified":false,"code":"1A-CD3"},"rec":{"what":"irrelevant","count":0}}
 
 Custom Serialziers And Deserializers
 ------------------------------------
@@ -1046,7 +1046,7 @@ COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENSE
+LICENCE
 =======
 
 Artistic License 2.0

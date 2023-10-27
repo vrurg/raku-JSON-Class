@@ -84,7 +84,7 @@ Returns C<JSMatch> of C<JSONStages> (see L<C<JSON::Class::Types>|Types.md>).
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-=head1 LICENSE
+=head1 LICENCE
 
 Artistic License 2.0
 
