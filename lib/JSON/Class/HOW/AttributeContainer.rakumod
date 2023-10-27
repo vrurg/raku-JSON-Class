@@ -65,7 +65,7 @@ method json-attrs(Mu \obj, Bool:D :$local = True, *%adv (Bool :$p, Bool :$k, Boo
     hash-by-adv($attr-registry, %adv, :what('method ^json-attrs'), :source(obj.^name))
 }
 
-method json-attrs-by-key(Mu \obj, Bool:D :$local, *%adv (Bool :$p, Bool :$k, Bool :$kv, Bool :$v)) is raw {
+method json-attrs-by-key(Mu \obj, Bool:D :$local = True, *%adv (Bool :$p, Bool :$k, Bool :$kv, Bool :$v)) is raw {
     my $attr-registry;
     if $local {
         $attr-registry :=
