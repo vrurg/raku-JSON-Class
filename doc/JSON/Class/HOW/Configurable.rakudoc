@@ -1,0 +1,37 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::HOW::Configurable> – role for meta-objects capable of keeping configuration defaults
+
+=head1 METHODS
+
+=begin item
+B<C<method json-has-config-defaults(Mu)>>
+
+Tell if any defaults were set.
+=end item
+
+=begin item
+B<C<method json-config-defaults(Mu)>>
+
+Returns a hash of configuration parameters with their values.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Details>|Details.md>
+=item L<C<JSON::Class::ClassHOW>|../ClassHOW.md>
+=item L<C<JSON::Class::RoleHOW>|../RoleHOW.md>
+=item L<C<JSON::Class::RoleHOW>|../SequenceHOW.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENCE
+
+Artistic License 2.0
+
+See the L<I<LICENCE>|../../../../../LICENCE> file in this distribution.
+=end rakudoc

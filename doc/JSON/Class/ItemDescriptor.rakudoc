@@ -1,0 +1,93 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::ItemDescriptor> - descriptor for sequence item
+
+=head1 ATTRIBUTES
+
+=begin item
+C<Mu >B<C<$.type>>
+
+Item constraint type. I.e. when C<class JSeq is json(:sequence(Str:D))> it will be C<Str:D>.
+=end item
+
+=begin item
+C<Mu >B<C<$.nominal-type>>
+
+Nominalization of C<$.type>.
+=end item
+
+=begin item
+C<Str >B<C<$.name>>
+
+Name to report this descriptor in messages.
+=end item
+
+=head1 METHODS
+
+=begin item
+B<C<method set-serializer($item?)>>
+
+Set custom item serializer.
+=end item
+
+=begin item
+B<C<method set-deserializer($item?)>>
+
+Set custom item deserializer.
+=end item
+
+=begin item
+B<C<method has-matcher()>>
+
+Returns I<True> if custom matcher is set for this item.
+=end item
+
+=begin item
+B<C<method set-matcher($matcher?)>>
+
+Set custom matcher for this item.
+=end item
+
+=begin item
+B<C<method matcher()>>
+
+Return custom matcher for this item
+=end item
+
+=begin item
+B<C<multi method kind-type('match')>>
+
+Returns C<$.type>.
+=end item
+
+=begin item
+B<C<multi method kind-type('item')>>
+
+Returns C<$.type>.
+=end item
+
+=begin item
+B<C<multi method kind-stage(JSDeserialize, 'match')>>
+
+Returns C<JSMatch> of C<JSONStages> (see L<C<JSON::Class::Types>|Types.md>).
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Details>|Details.md>
+=item L<C<JSON::Class::Descriptor>|Descriptor.md>
+=item L<C<JSON::Class::Types>|Types.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+=end rakudoc
+

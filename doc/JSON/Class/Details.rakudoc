@@ -41,6 +41,33 @@ The difference in functionality between these methods is that C<from-json> and C
 primary task is to prepare configuration context (see the next section). Then, depending on arguments, they either
 parse JSON source, or produce a JSON string. Otherwise they delegate to C<json-serizlie> or C<json-deserialize> methods.
 
+=head2 Object Architechture
+
+A JSONified class or sequence are built by C<is json> trait injecting corresponding roles into the classes themselves
+and into their meta-classes.
+
+JSON classes get L<C<JSON::Class::Representation>|Representation.md> role, and their meta gets
+L<C<JSON::Class::ClassHOW>|ClassHOW.md>.
+
+JSON sequences get L<C<JSON::Class::Sequential>|Sequential.md>, and their meta gets
+L<C<JSON::Class::SequenceHOW>|SequenceHOW.md>.
+
+JSON roles doesn't actually implement any functionality by themselves, therefore only their meta objects are modified.
+If a role declared as sequence the meta received L<C<JSON::Class::HOW::Sequential>|HOW/Sequential.md>; otherwise it is
+L<C<JSON::Class::RoleHOW>|RoleHOW.md>.
+
+Declarations of L<C<JSON::Class::Representation>|Representation.md> and L<C<JSON::Class::Sequential>|Sequential.md>
+roles include classes L<C<JSON::Class::Object>|Object.md> and L<C<JSON::Class::Sequence>|Sequence.md> as their parents.
+Though such structure could look like an overkill at first, it allows a JSONified type to be subclasses with no extra
+hassle because access to the most used metaobject interfaces is proxied by the roles where C<::?CLASS> symbol points at
+the JSONified type, no matter what the MRO of an object is. For example:
+
+=begin code :lang<raku>
+class Foo is json {...}
+class Bar is Foo {...}
+say Bar.json-class; # (Foo) – the method is implemented by JSON::Class::Representation
+=end code
+
 =head2 Configuration Context
 
 Serialization and deserialization protocols use a configuration object to find out about various paramters, affecting
@@ -276,7 +303,7 @@ The trait doesn't install the mapping automatically though. This might be undesi
 this to activate it:
 
 =begin code :lang<raku>
-$config.map-type: MyProject::Response;
+$config.map-type(MyProject::Response())
 =end code
 
 =head2 Descriptors

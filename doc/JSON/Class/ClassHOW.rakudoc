@@ -1,0 +1,35 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::ClassHOW> – meta of JSONified classes
+
+=head1 METHODS
+
+=begin item
+B<C<method json-FROM(Mu \obj)>>
+
+Returns C<obj.WHAT>. But for implicitly JSONified classes using the C<jsonify> method of
+L<C<JSON::Class::Config>|Config.md> this method will return the original class.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Details>|Details.md>
+=item L<C<JSON::Class::Representation>|Representation.md>
+=item L<C<JSON::Class::Object>|Object.md>
+=item L<C<JSON::Class::HOW::AttributeContainer>|HOW/AttributeContainer.md>
+=item L<C<JSON::Class::HOW::Configurable>|HOW/Configurable.md>
+=item L<C<JSON::Class::HOW::Explicit>|HOW/Explicit.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENCE
+
+Artistic License 2.0
+
+See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+=end rakudoc
+

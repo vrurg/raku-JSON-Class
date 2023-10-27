@@ -1,0 +1,56 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::Sequential> – base role for JSON sequences
+
+=head1 METHODS
+
+=begin item
+B<C<method json-class()>>
+
+Returns the class C<is json> trait was applied to.
+=end item
+
+=begin item
+B<C<method json-config-defaults()>>
+
+Returns a hash of configuration properties to be used as defaults for a new L<C<JSON::Class::Config>|Config.md>
+instance. See also L<C<JSON::Class>|../Class.md> and L<C<JSON::Class::Details>|Details.md>.
+=end item
+
+=begin item
+B<C<method json-array-type()>>
+
+Returns a parameterization of L<C<Array>|https://docs.raku.org/type/Array> which would be validating against sequence
+types, listed in the trait arguments. Same array type backs L<C<JSON::Class::Sequence>|Sequence.md> functionality.
+=end item
+
+=begin item
+B<C<method json-item-descriptors(|)>>
+
+Redirects to the same name method of L<C<JSON::Class::SequenceHOW>|SequenceHOW.md>.
+=end item
+
+=begin item
+B<C<method json-create(*%profile)>>
+
+Exists for compatibility with other components of this distribution. Currently it is just a redirect to C<new>.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Sequence>|Sequence.md>
+=item L<C<JSON::Class::SequenceHOW>|SequenceHOW.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENSE>|../../../../LICENSE> file in this distribution.
+=end rakudoc
+

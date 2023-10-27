@@ -1039,6 +1039,8 @@ SEE ALSO
 
   * [`JSON::Class::Sequence`](Class/Sequence.md)
 
+  * [`JSON::Class::Types`](Class/Types.md)
+
 COPYRIGHT
 =========
 

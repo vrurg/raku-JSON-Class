@@ -1,0 +1,32 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::SequenceHOW> – meta for JSON sequences
+
+=head1 METHODS
+
+=begin item
+B<C<method json-array-type()>>
+
+Returns an L<C<Array>|https://docs.raku.org/type/Array> type parameterized with sequence types.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Details>|Details.md>
+=item L<C<JSON::Class::Sequential>|Sequential.md>
+=item L<C<JSON::Class::Sequence>|Sequence.md>
+=item L<C<JSON::Class::HOW::Laziness>|HOW/Laziness.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENCE
+
+Artistic License 2.0
+
+See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+=end rakudoc
+

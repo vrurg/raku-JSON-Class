@@ -113,6 +113,10 @@ SEE ALSO
 
   * [`JSON::Class::Details`](Details.md)
 
+  * [`JSON::Class::Attr`](Attr.md)
+
+  * [`JSON::Class::ItemDescriptor`](ItemDescriptor.md)
+
 COPYRIGHT
 =========
 

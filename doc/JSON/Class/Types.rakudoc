@@ -1,0 +1,59 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::Types> - standard types of C<JSON::Class>
+
+=head1 DESCRIPTION
+
+=head2 C<role CloneFrom>
+
+Implements C<clone-from> method. Method signature is:
+
+=item B<C<method clone-from(Mu:D $obj, *%twiddles)>>
+
+In a way, this method is identical to cloning but allows to clone for a different type object. It does so by pulling in
+attributes of C<$obj>, creating a C<%profile> where keys are attribute base names, and then by submitting the profile
+and C<%twiddles> to the constructor C<new>: C<self.new(|%profile, |%twiddles)>.
+
+=head2 C<subset JSONBasicType>
+
+This subset matches what L<C<JSON::Class>|../Class.md> considers a "basic type". For now it would be one of the
+following:
+
+=item C<Numeric>
+=item C<String>
+=item C<Bool>
+=item C<Enumeration>
+=item C<Mu>
+=item C<Any>
+
+The last two are checked for exact match. I.e. a L<C<Failure>|https://docs.raku.org/type/Failure> is not a basic type.
+
+=head2 C<subset JSONHelper>
+
+This subset matches only conrete string, or code, or an undefined C<Any>.
+
+=head2 C<enum JSONStages>
+
+Enumerate marshalling stages. Elements are:
+
+=item C<JSSerialize> => I<'to-json'>
+=item C<JSDeserialize> => I<'from-json'>
+=item C<JSMatch> => I<'match'>
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Details>|Details.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+=end rakudoc
+

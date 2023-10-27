@@ -141,6 +141,8 @@ C<$stage>.
 
 =item L<C<JSON::Class>|../Class.md>
 =item L<C<JSON::Class::Details>|Details.md>
+=item L<C<JSON::Class::Attr>|Attr.md>
+=item L<C<JSON::Class::ItemDescriptor>|ItemDescriptor.md>
 
 =head1 COPYRIGHT
 

@@ -1,0 +1,79 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::HOW::AttributeContainer> – role for meta-objects that serve as JSON attribute containers
+
+=head1 METHODS
+
+=begin item
+B<C<method json-attrs(Mu, Bool:D :$local, Bool :$p, Bool :$k, Bool :$kv, Bool :$v)>>
+
+Returns a registry of JSON attribute descriptors.
+
+=begin item
+C<Bool:D> B<C<:$local>>C< = True>
+
+Only attributes of the class itself and directly consumed roles. With C<:!local> attributes of parent or incorporated
+JSON classes are included too.
+=end item
+
+=begin item
+C<Bool> B<C<:$p, :$k, :$v, :$kv>>
+
+Similarly to many standard Raku routines, these adverbs request for list of pairs, keys, values, and keys and values to
+be returned. By I<values> we mean attribute descriptor objects.
+=end item
+
+=end item
+
+=begin item
+B<C<method json-attrs-by-key(Bool :$local = True, Bool :$p, Bool :$k, Bool :$v, Bool :$kv)>>
+
+Similar to C<json-attrs>, but the registry returned is keyed with JSON keys, not Raku attribute names.
+=end item
+
+=begin item
+B<C<method json-get-attr(Mu, $attr, Bool:D :$local = True)>>
+
+Get attribute descriptor for an attribute. The attribute can be specified either by its name, or by
+L<C<Attribute>|https://docs.raku.org/type/Attribute> object.
+=end item
+
+=begin item
+B<C<method json-has-attr(Mu, $attr, Bool :$local = True)>>
+
+Tell if attribute has a descriptor. Can be given a name or an L<C<Attribute>|https://docs.raku.org/type/Attribute>
+object.
+=end item
+
+=begin item
+B<C<method json-get-key(Mu, Str:D $json-key, Bool :$local = True)>>
+
+Get attribute descriptor for a JSON key name.
+=end item
+
+=begin item
+B<C<method json-has-key(Mu, Str:D $json-key, Bool :$local = True)>>
+
+Tell if we have a descriptor for the give JSON key.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Details>|Details.md>
+=item L<C<JSON::Class::ClassHOW>|../ClassHOW.md>
+=item L<C<JSON::Class::RoleHOW>|../RoleHOW.md>
+=item L<C<JSON::Class::HOW::Laziness>|Laziness.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENCE
+
+Artistic License 2.0
+
+See the L<I<LICENCE>|../../../../../LICENCE> file in this distribution.
+=end rakudoc
+

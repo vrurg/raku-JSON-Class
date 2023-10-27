@@ -1,0 +1,66 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::Object> – parent of JSONified classes
+
+=head1 DESCRIPTION
+
+This class is injected into the list of parent of any JSONified class. It implements the essential functionality of
+class serialization. See more in L<C<JSON::Class::Details>|Details.md>.
+
+=head1 METHODS
+
+Some methods of this class are already covered by L<C<JSON::Class>|../Class.md> page.
+
+=begin item
+B<C<method json-unused()>>
+
+Returns a hash with keys for which no corresponding attributes are found.
+=end item
+
+=begin item
+B<C<method json-lazies()>>
+
+Returns a hash of keys not yet consumed by lazy deserialization
+=end item
+
+=begin item
+B<C<proto method json-serialize-attr(JSON::Class::Attr:D $attribute-descriptor, Mu \value)>>
+
+Multi-candidates of this proto take care of L<C<JSON::Class::Attr::Scalar>|Attr/Scalar.md>,
+L<C<JSON::Class::Attr::Postional>|Attr/Postional.md>, and L<C<JSON::Class::Attr::Associative>|Attr/Associative.md>
+descriptors each.
+=end item
+
+=begin item
+B<C<method json-build-attr(Str:D :$attribute)>>
+
+This method is invoked by L<C<AttrX::Mooish> to lazily build a JSON attribute.
+|https://raku.land/zef:vrurg/AttrX::Mooish>
+=end item
+
+=begin item
+B<C<proto method json-deserialize-attr(|)>>
+
+Similarly to the C<json-serialize-attr> method, candidates of this proto take care of deserializing each kind of
+attribute descriptor.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Details>|Details.md>
+=item L<C<JSON::Class::Representation>|Representation.md>
+=item L<C<JSON::Class::ClassHOW>|ClassHOW.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENSE>|../../../../LICENSE> file in this distribution.
+=end rakudoc
+

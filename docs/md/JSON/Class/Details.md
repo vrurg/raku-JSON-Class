@@ -29,6 +29,25 @@ There are four key method in the core of the process:
 
 The difference in functionality between these methods is that `from-json` and `to-json` are "administrators": their primary task is to prepare configuration context (see the next section). Then, depending on arguments, they either parse JSON source, or produce a JSON string. Otherwise they delegate to `json-serizlie` or `json-deserialize` methods.
 
+Object Architechture
+--------------------
+
+A JSONified class or sequence are built by `is json` trait injecting corresponding roles into the classes themselves and into their meta-classes.
+
+JSON classes get [`JSON::Class::Representation`](Representation.md) role, and their meta gets [`JSON::Class::ClassHOW`](ClassHOW.md).
+
+JSON sequences get [`JSON::Class::Sequential`](Sequential.md), and their meta gets [`JSON::Class::SequenceHOW`](SequenceHOW.md).
+
+JSON roles doesn't actually implement any functionality by themselves, therefore only their meta objects are modified. If a role declared as sequence the meta received [`JSON::Class::HOW::Sequential`](HOW/Sequential.md); otherwise it is [`JSON::Class::RoleHOW`](RoleHOW.md).
+
+Declarations of [`JSON::Class::Representation`](Representation.md) and [`JSON::Class::Sequential`](Sequential.md) roles include classes [`JSON::Class::Object`](Object.md) and [`JSON::Class::Sequence`](Sequence.md) as their parents. Though such structure could look like an overkill at first, it allows a JSONified type to be subclasses with no extra hassle because access to the most used metaobject interfaces is proxied by the roles where `::?CLASS` symbol points at the JSONified type, no matter what the MRO of an object is. For example:
+
+```raku
+class Foo is json {...}
+class Bar is Foo {...}
+say Bar.json-class; # (Foo) – the method is implemented by JSON::Class::Representation
+```
+
 Configuration Context
 ---------------------
 
@@ -228,7 +247,7 @@ class MyProject::Response is json-wrap(Web::Service::Response) {
 The trait doesn't install the mapping automatically though. This might be undesirable. One would still need a call like this to activate it:
 
 ```raku
-$config.map-type: MyProject::Response;
+$config.map-type(MyProject::Response())
 ```
 
 Descriptors

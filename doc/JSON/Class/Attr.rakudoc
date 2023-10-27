@@ -1,0 +1,77 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::Attr> – base role for attribute descriptors
+
+=head1 ATTRIBUTES
+
+=begin item
+C<Bool >B<C<$.skip>>
+
+Skip this attribute altogether:
+
+=begin code :lang<raku>
+has $.attr is json(:skip);
+=end code
+
+=end item
+
+=begin item
+C<Str:D >B<C<$.json-name>>
+
+Name of JSON object key. Unless manually altered by user, it is attribute base name.
+=end item
+
+=begin item
+C<Bool >B<C<$.lazy>>
+
+I<True> if attribute is lazily deserialized.
+=end item
+
+=head1 METHODS
+
+=begin item
+B<C<method set-serializer()>>, B<C<method set-deserializer()>>
+
+These methods must be implemented by particular attribute descriptor class.
+=end item
+
+=begin item
+B<C<method sigil()>>
+
+Gives attribute sigil.
+=end item
+
+=begin item
+B<C<method skip-null()>>
+
+I<True> if this attribute only serializable with a defined value.
+=end item
+
+=begin item
+B<C<method kind-type('attribute')>>
+
+Returns attribute constraint type.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Details>|Details.md>
+=item L<C<JSON::Class::Descriptor>|Descriptor.md>
+=item L<C<JSON::Class::Attr::Associative>|Attr/Associative.md>
+=item L<C<JSON::Class::Attr::Positional>|Attr/Positional.md>
+=item L<C<JSON::Class::Attr::Scalar>|Attr/Scalar.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+
+=end rakudoc
+

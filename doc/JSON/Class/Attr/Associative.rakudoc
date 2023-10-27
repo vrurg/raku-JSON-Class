@@ -1,0 +1,63 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::Attr::Associative> – descriptor of C<%>-sigilled attributes
+
+=head1 ATTRIBUTES
+
+=begin item
+C<Mu >B<C<$.key-type>>
+
+Constraint type of associative keys. for C<has %.assoc{Foo:D}> it will be C<Foo:D>.
+=end item
+
+=begin item
+C<Mu >B<C<$.nominal-keytype>>
+
+Nominalized C<$.key-type>. For the above example it will be C<Foo>.
+=end item
+
+=head1 METHODS
+
+=begin item
+B<C<method set-serializer($attribute?, :$value, :$key)>>
+
+Set custom serializers for the attribute. Argument names reflect the kinds of serializers.
+=end item
+
+=begin item
+B<C<method set-deserializer($attribute?, :$value, :$key)>>
+
+Set custom deserializers for the attribute. Argument names reflect the kinds of serializers.
+=end item
+
+=begin item
+B<C<multi method kind-type('value')>>
+
+Returns value type of the associative. I.e. for C<has Bar:D %.assoc> it would be C<Bar:D>.
+=end item
+
+=begin item
+B<C<multi method kind-type('key')>>
+
+Returns C<self.key-type> of the associative.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Details>|Details.md>
+=item L<C<JSON::Class::Descriptor>|../Descriptor.md>
+=item L<C<JSON::Class::Attr>|../Attr.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+=end rakudoc
+

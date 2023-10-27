@@ -1,0 +1,38 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::Attr::Scalar> - descriptor of C<$>-sigilled attributes
+
+=head1 METHODS
+
+=begin item
+B<C<method set-serializer($attribute?)>>
+
+Set custom serializers for the attribute.
+=end item
+
+=begin item
+B<C<method set-deserializer($attribute?)>>
+
+Set custom deserializers for the attribute.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|../Class.md>
+=item L<C<JSON::Class::Details>|Details.md>
+=item L<C<JSON::Class::Descriptor>|../Descriptor.md>
+=item L<C<JSON::Class::Attr>|../Attr.md>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+
+=end rakudoc
+

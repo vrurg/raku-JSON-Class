@@ -468,7 +468,7 @@ be found under I<examples/> subdirectory of the distribution.
 
 =head2 Explicit/Implicit
 
-=begin item :example("examples/decl-implicit.raku") :mtime(1697903108)
+=begin item :example("examples/decl-implicit.raku") :mtime(1698354706)
 From L<examples/decl-implicit.raku|../../../examples/decl-implicit.raku>
 
 =begin code :example :lang("raku")
@@ -1210,6 +1210,7 @@ has some more information on how configuration context gets built.
 =item L<C<JSON::Class::Descriptor>|Class/Descriptor.md>
 =item L<C<JSON::Class::Object>|Class/Object.md>
 =item L<C<JSON::Class::Sequence>|Class/Sequence.md>
+=item L<C<JSON::Class::Types>|Class/Types.md>
 
 =head1 COPYRIGHT
 
