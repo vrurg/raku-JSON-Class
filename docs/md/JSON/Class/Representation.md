@@ -1,40 +1,33 @@
-rakudoc
-=======
+# rakudoc
 
-NAME
-====
+# NAME
 
 `JSON::Class::Representation` – base role of JSONified classes (not sequences)
 
-METHODS
-=======
+# METHODS
 
-  * **`method json-class()`**
-
+  - **`method json-class()`**
+    
     Returns the base class `is json` trait was applied to.
 
-  * **`method json-config-defaults()`**
-
+  - **`method json-config-defaults()`**
+    
     Returns a hash of configuration properties to be used as defaults for a new [`JSON::Class::Config`](Config.md) instance. See also [`JSON::Class`](../Class.md) and [`JSON::Class::Details`](Details.md).
 
-SEE ALSO
-========
+# SEE ALSO
 
-  * [`JSON::Class`](../Class.md)
+  - [`JSON::Class`](../Class.md)
 
-  * [`JSON::Class::Object`](Object.md)
+  - [`JSON::Class::Object`](Object.md)
 
-  * [`JSON::Class::ClassHOW`](ClassHOW.md)
+  - [`JSON::Class::ClassHOW`](ClassHOW.md)
 
-COPYRIGHT
-=========
+# COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENCE
-=======
+# LICENCE
 
 Artistic License 2.0
 
-See the [*LICENCE*](../../../../LICENCE) file in this distribution.
-
+See the [*docs/md/LICENCE*](../../LICENCE) file in this distribution.

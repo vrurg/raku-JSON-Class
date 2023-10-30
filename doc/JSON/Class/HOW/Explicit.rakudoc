@@ -19,11 +19,11 @@ I<False> if the flag was not explicitly set for the class.
 
 =head1 SEE ALSO
 
-=item L<C<JSON::Class>|../Class.md>
-=item L<C<JSON::Class::Details>|Details.md>
-=item L<C<JSON::Class::ClassHOW>|../ClassHOW.md>
-=item L<C<JSON::Class::RoleHOW>|../RoleHOW.md>
-=item L<C<JSON::Class::RoleHOW>|../SequenceHOW.md>
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<JSON::Class::ClassHOW>|rakudoc:JSON::Class::ClassHOW>
+=item L<C<JSON::Class::RoleHOW>|rakudoc:JSON::Class::RoleHOW>
+=item L<C<JSON::Class::RoleHOW>|rakudoc:JSON::Class::RoleHOW>
 
 =head1 COPYRIGHT
 
@@ -33,5 +33,6 @@ I<False> if the flag was not explicitly set for the class.
 
 Artistic License 2.0
 
-See the L<I<LICENCE>|../../../../../LICENCE> file in this distribution.
+See the L<I<docs/LICENCE>|file:docs/LICENCE> file in this distribution.
 =end rakudoc
+

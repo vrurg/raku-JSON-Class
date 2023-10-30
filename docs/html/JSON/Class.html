@@ -1,0 +1,1284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>JSON::Class</title>
+    <meta charset="UTF-8">
+    <style>hr,
+img {
+    box-sizing: content-box
+}
+body::after,
+body::before,
+hr::after,
+hr::before {
+    display: table;
+    content: ""
+}
+a,
+a:not([href]) {
+    text-decoration: none
+}
+
+hr,
+svg:not(:root) {
+    overflow: hidden
+}
+
+img,
+table tr {
+    background-color: #fff
+}
+
+pre,
+table {
+    overflow: auto
+}
+
+dl,
+dl dt,
+hr,
+pre code,
+pre>code,
+td,
+th {
+    padding: 0
+}
+
+input,
+pre code {
+    overflow: visible
+}
+
+pre,
+pre code {
+    word-wrap: normal
+}
+
+body {
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    color: #333;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 16px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    width: 820px;
+    margin: 2em auto;
+}
+
+a {
+    background-color: transparent;
+    -webkit-text-decoration-skip: objects;
+    color: #4078c0
+}
+
+a:active,
+a:hover {
+    outline-width: 0;
+    text-decoration: underline
+}
+
+h1 {
+    margin: .67em 0
+}
+
+img {
+    border-style: none;
+    max-width: 100%
+}
+
+h1,
+h2 {
+    padding-bottom: .3em;
+    border-bottom: 1px solid #eee
+}
+
+input {
+    font: inherit;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit
+}
+
+* {
+    box-sizing: border-box
+}
+
+strong {
+    font-weight: 600
+}
+
+body::after,
+hr::after {
+    clear: both
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    display: block;
+    width: 100%
+}
+
+blockquote {
+    margin: 0;
+    padding: 0 1em;
+    color: #777;
+    border-left: .25em solid #ddd
+}
+
+ol ol,
+ul ol {
+    list-style-type: lower-roman
+}
+
+ol ol ol,
+ol ul ol,
+ul ol ol,
+ul ul ol {
+    list-style-type: lower-alpha
+}
+
+dd {
+    margin-left: 0
+}
+
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace
+}
+
+pre {
+    font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace
+}
+
+input {
+    -webkit-font-feature-settings: "liga" 0;
+    font-feature-settings: "liga" 0
+}
+
+body>:first-child {
+    margin-top: 0!important
+}
+
+body>:last-child {
+    margin-bottom: 0!important
+}
+
+a:not([href]) {
+    color: inherit
+}
+
+blockquote,
+dl,
+ol,
+p,
+pre,
+table,
+ul {
+    margin-top: 0;
+    margin-bottom: 16px
+}
+
+hr {
+    background: #e7e7e7;
+    height: .25em;
+    margin: 24px 0;
+    border: 0
+}
+
+blockquote>:first-child {
+    margin-top: 0
+}
+
+blockquote>:last-child {
+    margin-bottom: 0
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25
+}
+
+dl dt,
+table th {
+    font-weight: 700
+}
+
+h1 code,
+h1 tt,
+h2 code,
+h2 tt,
+h3 code,
+h3 tt,
+h4 code,
+h4 tt,
+h5 code,
+h5 tt,
+h6 code,
+h6 tt {
+    font-size: inherit
+}
+
+h1 {
+    font-size: 2em
+}
+
+h2 {
+    font-size: 1.5em
+}
+
+h3 {
+    font-size: 1.25em
+}
+
+h4 {
+    font-size: 1em
+}
+
+h5 {
+    font-size: .875em
+}
+
+h6 {
+    font-size: .85em;
+    color: #777
+}
+
+ol,
+ul {
+    padding-left: 2em
+}
+
+ol ol,
+ol ul,
+ul ol,
+ul ul {
+    margin-top: 0;
+    margin-bottom: 0
+}
+
+li>p {
+    margin-top: 16px
+}
+
+li+li {
+    margin-top: .25em
+}
+
+dl dt {
+    margin-top: 16px;
+    font-size: 1em;
+    font-style: italic
+}
+
+dl dd {
+    padding: 0 16px;
+    margin-bottom: 16px
+}
+
+table td,
+table th {
+    padding: 6px 13px;
+    border: 1px solid #ddd
+}
+
+table tr {
+    border-top: 1px solid #ccc
+}
+
+table tr:nth-child(2n) {
+    background-color: #f8f8f8
+}
+
+code {
+    padding: .2em 0;
+    margin: 0;
+    font-size: 85%;
+    background-color: rgba(0, 0, 0, .04);
+    border-radius: 3px
+}
+
+code::after,
+code::before {
+    letter-spacing: -.2em;
+    content: "\00a0"
+}
+
+pre>code {
+    margin: 0;
+    font-size: 100%;
+    word-break: normal;
+    white-space: pre;
+    background: 0 0;
+    border: 0
+}
+
+pre {
+    padding: 16px;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border-radius: 3px
+}
+
+pre code {
+    display: inline;
+    max-width: auto;
+    margin: 0;
+    line-height: inherit;
+    background-color: transparent;
+    border: 0
+}
+
+pre code::after,
+pre code::before {
+    content: normal
+}
+
+kbd {
+    display: inline-block;
+    padding: 3px 5px;
+    font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    line-height: 10px;
+    color: #555;
+    vertical-align: middle;
+    background-color: #fcfcfc;
+    border: 1px solid #ccc;
+    border-bottom-color: #bbb;
+    border-radius: 3px;
+    box-shadow: inset 0 -1px 0 #bbb
+}
+
+hr {
+    border-bottom-color: #eee
+}
+</style>
+
+    
+</head>
+
+<body class="pod">
+    <div id="___top"></div>
+    <nav class="indexgroup">
+<table id="TOC">
+<caption><h2 id="TOC_Title">Table of Contents</h2></caption>
+<tr class="toc-level-1"><td class="toc-number">1</td><td class="toc-text"><a href="#NAME">NAME</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">2</td><td class="toc-text"><a href="#SYNOPSIS">SYNOPSIS</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">3</td><td class="toc-text"><a href="#DESCRIPTION">DESCRIPTION</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">4</td><td class="toc-text"><a href="#BASICS">BASICS</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.1</td><td class="toc-text"><a href='#Basic_Or_"Complex"_Types'>Basic Or "Complex" Types</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.2</td><td class="toc-text"><a href="#Marshalling_And_JSONification">Marshalling And JSONification</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.3</td><td class="toc-text"><a href="#Trait">Trait</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.4</td><td class="toc-text"><a href="#Declarant">Declarant</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.5</td><td class="toc-text"><a href="#Config">Config</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.6</td><td class="toc-text"><a href="#JSON_Class">JSON Class</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.7</td><td class="toc-text"><a href="#JSON_Sequence">JSON Sequence</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.8</td><td class="toc-text"><a href="#Laziness">Laziness</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.9</td><td class="toc-text"><a href="#Explicit_Or_Implicit_Typeobjects">Explicit Or Implicit Typeobjects</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.10</td><td class="toc-text"><a href="#Declaration">Declaration</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.11</td><td class="toc-text"><a href="#Naming_Convention">Naming Convention</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.12</td><td class="toc-text"><a href="#Trait_Arguments">Trait Arguments</a></td></tr>
+<tr class="toc-level-3"><td class="toc-number">4.12.1</td><td class="toc-text"><a href="#Common_For_Classes_And_Roles">Common For Classes And Roles</a></td></tr>
+<tr class="toc-level-3"><td class="toc-number">4.12.2</td><td class="toc-text"><a href="#Class-only">Class-only</a></td></tr>
+<tr class="toc-level-3"><td class="toc-number">4.12.3</td><td class="toc-text"><a href="#Attribute">Attribute</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.13</td><td class="toc-text"><a href="#Sequences">Sequences</a></td></tr>
+<tr class="toc-level-3"><td class="toc-number">4.13.1</td><td class="toc-text"><a href="#The_Multitype_Matching_Problem">The Multitype Matching Problem</a></td></tr>
+<tr class="toc-level-4"><td class="toc-number">4.13.1.1</td><td class="toc-text"><a href="#Alternative_Solutions_To_Matching">Alternative Solutions To Matching</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">5</td><td class="toc-text"><a href="#DYNAMIC_VARIABLES">DYNAMIC VARIABLES</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">6</td><td class="toc-text"><a href="#QUICK_INTRO_BY_EXAMPLE">QUICK INTRO BY EXAMPLE</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.1</td><td class="toc-text"><a href="#Explicit/Implicit">Explicit/Implicit</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.2</td><td class="toc-text"><a href="#Inheritance_And_Role">Inheritance And Role</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.3</td><td class="toc-text"><a href="#Incorporation">Incorporation</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.4</td><td class="toc-text"><a href="#Laziness">Laziness</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.5</td><td class="toc-text"><a href="#Config_Defaults">Config Defaults</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.6</td><td class="toc-text"><a href="#Sequence">Sequence</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.7</td><td class="toc-text"><a href="#Array_Attributes">Array Attributes</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.8</td><td class="toc-text"><a href="#Using_Configuration_And_Type_Mapping">Using Configuration And Type Mapping</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.9</td><td class="toc-text"><a href="#Custom_Serialziers_And_Deserializers">Custom Serialziers And Deserializers</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.10</td><td class="toc-text"><a href="#Skipping_Custom_Marshalling">Skipping Custom Marshalling</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">7</td><td class="toc-text"><a href="#METHODS">METHODS</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">7.1</td><td class="toc-text"><a href="#JSONified_Class">JSONified Class</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">8</td><td class="toc-text"><a href="#SEE_ALSO">SEE ALSO</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">9</td><td class="toc-text"><a href="#COPYRIGHT">COPYRIGHT</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">10</td><td class="toc-text"><a href="#LICENCE">LICENCE</a></td></tr>
+
+</table>
+</nav>
+
+
+    <div class="pod-body">
+    <section>
+<h1 id="NAME"><a class="u" href="#___top" title="go to top of document">NAME</a></h1>
+<p><code>JSON::Class</code> - general purpose JSON de-/serialization for Raku</p>
+<h1 id="SYNOPSIS"><a class="u" href="#___top" title="go to top of document">SYNOPSIS</a></h1>
+<pre class="pod-block-code">role Base is json(:!skip-null) {
+    has Num:D $.size is required is json(:name&lt;volume&gt;);
+}
+
+class Record is json does Base {
+    has Int $.count;
+    has Str $.description;
+}
+
+say Record.new(:count(42), :description("The Answer"), :size(1.2e0)).to-json;
+</pre>
+<h1 id="DESCRIPTION"><a class="u" href="#___top" title="go to top of document">DESCRIPTION</a></h1>
+<p>This module is an alternative to the family of <a href="https://raku.land/zef:jonathanstowe/JSON::Marshal"><code>JSON::Marshal</code></a>, <a href="https://raku.land/zef:raku-community-modules/JSON::Unmarshal"><code>JSON::Unmarshal</code></a>, <a href="https://raku.land/zef:jonathanstowe/JSON::Class"><code>JSON::Class</code></a> modules. It tries to get rid of their weak points and shifts the locus of control from class' outers to its inners. In other words, the class itself is responsible for its de-/serialization in first place. Though it's perhaps, the primary difference, it's far from being the only one.</p>
+<p>Also, this module tries to follow the standards of <a href="https://raku.land/zef:vrurg/LibXML::Class"><code>LibXML::Class</code></a> module by adapting them for differing domain of JSON. First of all, they share the same view on the locus of responsibility. Second, they try to implement declarative semantics in first place.</p>
+<p>From here on whenever <code>JSON::Class</code> name is used it refers to this module unless otherwise stated or implied by the context.</p>
+<h1 id="BASICS"><a class="u" href="#___top" title="go to top of document">BASICS</a></h1>
+<h2 id='Basic_Or_"Complex"_Types'><a class="u" href="#___top" title="go to top of document">Basic Or "Complex" Types</a></h2>
+<p>Some protocols of <code>JSON::Class</code> depend on the kind of type involved. Basic types are considered to be <em>simple</em> or <em>trivially marshalled</em>. Currently these are <a href="https://docs.raku.org/type/Mu"><code>Mu</code></a>, <a href="https://docs.raku.org/type/Any"><code>Any</code></a>, <a href="https://docs.raku.org/type/Bool"><code>Bool</code></a>, or those consuming <a href="https://docs.raku.org/type/Numeric"><code>Numeric</code></a>, <a href="https://docs.raku.org/type/Stringy"><code>Stringy</code></a>, <a href="https://docs.raku.org/type/Enumeration"><code>Enumeration</code></a> roles.</p>
+<p>A "complex" type is expected to have marshallable attributes.</p>
+<h2 id="Marshalling_And_JSONification"><a class="u" href="#___top" title="go to top of document">Marshalling And JSONification</a></h2>
+<p>JSON marshalling requires declaring corresponding entities as JSON-ones, or <em>JSONification</em>. Normally this is done by using trait <code>is json</code> with classes, roles, or attributes. This is declarative, or explicit, JSONification.</p>
+<p>It is also possible that implicit jsonification can be used when necessary or desirable. Normally <code>JSON::Class</code> attempts to implement it in a user-transparent way. For example:</p>
+<pre class="pod-block-code">class Record {...}
+class Archive is json {
+    has Record:D @.records;
+}
+
+my $arch = Archive.new;
+... add records to the archive ...
+$arch.to-json;
+</pre>
+<p>The class <code>Record</code> above would be implicitly JSONified to produce serialization of a single record. But the JSONified version would never pop on the surface. So, when the archive is deserialized <code>@.records</code> will contain instances of the original <code>Record</code>.</p>
+<h2 id="Trait"><a class="u" href="#___top" title="go to top of document">Trait</a></h2>
+<p>Trait <code>is json</code> is used for nearly every declaration of JSON elements. The only other trait we have is <code>json-wrap</code>, but it is too early to discuss it.</p>
+<p>How something is marshalled is mostly defined by the trait's arguments.</p>
+<h2 id="Declarant"><a class="u" href="#___top" title="go to top of document">Declarant</a></h2>
+<p>In a context of attribute-related discussion it is the object where the attribute was declared in.</p>
+<h2 id="Config"><a class="u" href="#___top" title="go to top of document">Config</a></h2>
+<p>Marshalling of deep structures often requires sharing of common options, modifying the process. This is implemented by using a <em>configuration</em> object. A configuration belongs to a dynamic context of marshalling.</p>
+<p>There is also a global configuration singleton used when no other configuration provided.</p>
+<h2 id="JSON_Class"><a class="u" href="#___top" title="go to top of document">JSON Class</a></h2>
+<p>A <em>JSON class</em> is one which has <code>is json</code> trait applied. Sometimes, depending on the context and especially when referring to an instance of the class, another term <em>JSON object</em> can be used.</p>
+<h2 id="JSON_Sequence"><a class="u" href="#___top" title="go to top of document">JSON Sequence</a></h2>
+<p><em>JSON sequence</em> is also a class with <code>is json</code> trait applied, but the trait is given <code>:sequence</code> argument.</p>
+<p>Term "sequence" is used here for something that is rather an array and, most definitely, not a sequence (<a href="https://docs.raku.org/type/Seq"><code>Seq</code></a>) in Raku view. The term was borrowed from <a href="https://raku.land/zef:vrurg/LibXML::Class"><code>LibXML::Class</code></a>, which implements the same concept, and where it was adopted from XML schema definitions.</p>
+<p>A sequence is primarily defined by its two properties:</p>
+<ul><li><p>its elements are lazily deserialized on demand</p>
+</li>
+<li><p>it does its best to serve as a container for multiple types, including user classes</p>
+</li>
+</ul>
+<h2 id="Laziness"><a class="u" href="#___top" title="go to top of document">Laziness</a></h2>
+<p>Deserialization of big deeply nested structures could be a long process, no matter if we need an element of the structure right away, or it is going to be requested later, or not used at all. <code>JSON::Class</code> attempts to bring some relieve by postponing deserialization for later time.</p>
+<h2 id="Explicit_Or_Implicit_Typeobjects"><a class="u" href="#___top" title="go to top of document">Explicit Or Implicit Typeobjects</a></h2>
+<p>It could be tedious to marshal a class with many attributes. Most use cases assume that entire object would end up mapped into a JSON structure. Therefore <code>JSON::Class</code> defaults to <em>implicit</em> declaration where all public or <code>is built</code> attributes are JSONified wihout needing explicit <code>is json</code> trait. This is the case demoed in the SYNOPSIS.</p>
+<p>In explicit mode one has to manually apply the trait to marshallable attributes.</p>
+<h2 id="Declaration"><a class="u" href="#___top" title="go to top of document">Declaration</a></h2>
+<p>As it was stated earlier, <code>is json</code> is the primary and, basically, the only declarator used by the module. The trait accepts various arguments to modify the declaration according to one's needs. For example, an explicit class is to be declared as:</p>
+<pre class="pod-block-code">class ComplexOne is json(:!implicit) {...}
+</pre>
+<p>Within the class an attribute for marshalling is to be also marked with <code>is json</code>:</p>
+<pre class="pod-block-code">has SomeType $.st is required is json(:skip-null, :!lazy);
+</pre>
+<h2 id="Naming_Convention"><a class="u" href="#___top" title="go to top of document">Naming Convention</a></h2>
+<p>With only few exception, names of all attributes and methods introduced by <code>JSON::Class</code> distribution are starting with <code>json-</code> prefix. This rule may not be followed by some internal data structures, but is almost 100% true to what is injected into JSONified typeobject as part of their public or private API.</p>
+<p>There is a consequence to this rule: implicit JSONification of attributes skip those with <code>json-</code>-prefixed names:</p>
+<ul><li><p>From <a href="../../../examples/json-pfx-attr.raku">examples/json-pfx-attr.raku</a></p>
+<pre class="pod-block-code">class Foo is json(:implicit) {
+    has Int $.foo;
+    has Str $.json-invisible;
+}
+
+my $foo = Foo.new(:foo(42), :json-invisible("The Answer"));
+say "JSON      : ", $foo.to-json;
+say "Attribute : ", $foo.json-invisible;
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">JSON      : {"foo":42}
+Attribute : The Answer
+</pre>
+</li>
+</ul>
+<h2 id="Trait_Arguments"><a class="u" href="#___top" title="go to top of document">Trait Arguments</a></h2>
+<h3 id="Common_For_Classes_And_Roles"><a class="u" href="#___top" title="go to top of document">Common For Classes And Roles</a></h3>
+<ul><li><p><code>Bool</code> <strong><code>:implicit</code></strong></p>
+<p>Set typeobject explicit/implicit mode. Omitting this argument assumes that the typeoject is implicit unless at least one attribute marked explicitly in which case the entire typeobject becomes explicit. See <a href="../../../examples/decl-implicit.raku"><em>examples/decl-implicit.raku</em></a></p>
+</li>
+<li><p><code>Bool</code> <strong><code>:lazy</code></strong></p>
+<p>Set typeobject lazyness. When the argument is omitted attributes are set to <em>non-lazy</em> if they have a <em>basic type</em>, and set to <em>lazy</em> otherwise.</p>
+<p>When the argument is used all attributes of the typeobject use it as their default, unless their own mode is set manually. See <a href="../../../examples/decl-lazy.raku"><em>examples/decl-lazy.raku</em></a>.</p>
+</li>
+<li><p><code>Bool</code> <strong><code>:skip-null</code></strong></p>
+<p>If <em>True</em> then attributes of this typeobject are not serialized if their value is undefined. When omitted then value of this parameter is obtained from the configuration object. See <a href="../../../t/020-json-basics.rakutest"><em>t/020-json-basics.rakutest</em></a>, subtest "Undefineds".</p>
+</li>
+<li><p><code>Bool</code> <strong><code>:sequence(...)</code></strong></p>
+<p>This type object is a sequence. See <a href="#Sequences">Sequences</a> section.</p>
+</li>
+<li><p><strong><code>:is(...)</code></strong>, <strong><code>:does(...)</code></strong></p>
+<p>These arguments allow to incorporate additional non-JSON parent classes and/or roles. See <a href="#Incorporation">Incorporation</a> section.</p>
+</li>
+</ul>
+<h3 id="Class-only"><a class="u" href="#___top" title="go to top of document">Class-only</a></h3>
+<ul><li><p><code>Bool</code> <strong><code>:pretty</code></strong>, <code>Bool</code> <strong><code>:sorted-keys</code></strong></p>
+<p>This two arguments set default values for corresponding config parameters but only if the type object is the initiator of serialization. Normally it means that method <code>to-json</code> is called on an instance of this typeobject, and that the call is not made inside a dynamic context of another <code>to-json</code>-initiated serialization. More practically, it means that dynamic variable <code>$*JSON-CLASS-CONFIG</code> is not set.</p>
+</li>
+</ul>
+<h3 id="Attribute"><a class="u" href="#___top" title="go to top of document">Attribute</a></h3>
+<p>Parameters set via <code>is json</code> trait for attributes are normally overriding these set by its declarant.</p>
+<ul><li><p><code>Bool</code> <strong><code>:skip</code></strong></p>
+<p>Don't ever marshalize this attribute. Mostly useful for <code>:implicit</code> typeobjects when one or more attributes are to be ignored. Negation of this argument makes no sense.</p>
+</li>
+<li><p><code>Bool</code> <strong><code>:skip-null</code></strong></p>
+<p>Set <code>skip-null</code> parameter individually for this attribute, no matter what is set for the declarant.</p>
+</li>
+<li><p>Str <strong><code>:name</code></strong></p>
+<p>Normally key name of a JSON object to which an attribute serializes is given after attribute's name, omitting its sigil and twigil. With <code>:name</code> this value can be altered to something different.</p>
+</li>
+<li><p><code>Bool</code> <strong><code>:lazy</code></strong></p>
+<p>Force laziness mode of this attribute.</p>
+</li>
+<li><p><code>Bool</code> <strong><code>:serializer(...)</code></strong>, <code>Bool</code> <strong><code>:deserializer(...)</code></strong></p>
+<p>Allowed aliases are <code>:to-json</code> and <code>:from-json</code>, correspondingly.</p>
+<p>Specify custom marshallers for the attribute. Normally that'd be either a method name on attribute's type, or an explicit code object. For associative and positional attributes additional marshallers for keys and values are available via <code>:key</code> and <code>:value</code> named arguments. Apparently, only the latter works with positionals:</p>
+<pre class="pod-block-code">has %.assoc is json(
+    :serializer(
+        key =&gt; { "pfx-" ~ $^key },
+        value =&gt; { $^value.raku } ),
+    :deserializer(
+        key =&gt; { $^from.substr(4) },
+        value =&gt; { $^from.EVAL } ));
+</pre>
+<p>See 'Custom Marshallers' in <a href="Class/Details.html"><code>JSON::Class::Details</code></a>.</p>
+</li>
+</ul>
+<h2 id="Sequences"><a class="u" href="#___top" title="go to top of document">Sequences</a></h2>
+<p>A class is declared as a JSON sequence with <code>:sequence</code> argument of the <code>is json</code> trait. The argument can be one or few typeobject declarations and an optional <code>:default</code> adverb. A typeobject declaration can be either:</p>
+<ul><li><p>a plain typeobject</p>
+<p>Int:D:D</p>
+</li>
+<li><p>a typeobject with modifiers as a list</p>
+<pre class="pod-block-code">(Foo, :&amp;serializer, :&amp;deserializer)</pre>
+</li>
+<li><p>a <a href="https://docs.raku.org/type/Pair"><code>Pair</code></a> of a type object and a list of modifiers:</p>
+<pre class="pod-block-code">(Bar) =&gt; (:to-json(&amp;bar2json), :from-json(&amp;json2bar))</pre>
+</li>
+</ul>
+<p>Typeobject modifiers are:</p>
+<ul><li><p><strong><code>:$serializer</code></strong> AKA <strong><code>:$to-json</code></strong></p>
+</li>
+<li><p><strong><code>:$deserializer</code></strong> AKA <strong><code>:$from-json</code></strong></p>
+</li>
+<li><p><strong><code>:$matcher</code></strong></p>
+</li>
+</ul>
+<p>The last one's meaning is explained below in this section.</p>
+<p>The <code>:default</code> argument is similar in meaning to the <code>is default</code> trait: it sets the default value to be used when <code>Nil</code> is assigned into a sequence position, or when out of bounds position is queried:</p>
+<pre class="pod-block-code">class JSeq is json(:sequence(..., :default(42))) {}
+
+say JSeq.new.[0]; # 42
+</pre>
+<p>Default value is not obliged to be a concrete value.</p>
+<p>Whenever a sequence is declared with multiple types it is equivalent to declaring an array with a subset matching all the same types:</p>
+<pre class="pod-block-code">class JSeq is json(:sequece(Int:D, Str:D, Foo)) {}
+</pre>
+<p>be like:</p>
+<pre class="pod-block-code">my subset JSeqOf of Mu where Int:D | Str:D | Foo;
+my JSeqOF @jseq;
+</pre>
+<ul><li><p><em>Note</em></p>
+<p>There is a potential problem with this declaration: assigning a <code>Nil</code> will result in a type mismatch because the default value would me <a href="https://docs.raku.org/type/Mu"><code>Mu</code></a>, but it doesn't match the subset. Therefore safe way to do it would be something like:</p>
+<pre class="pod-block-code">class JSeq is json(:sequece(Int:D, Str:D, Foo, :default(Foo))) {}
+</pre>
+</li>
+</ul>
+<h3 id="The_Multitype_Matching_Problem"><a class="u" href="#___top" title="go to top of document">The Multitype Matching Problem</a></h3>
+<p>When a sequence is declared with two or more classes that are not basic types a problem of matching JSON object into a class arises. Apparently, JSON itself lacks any means of distinguishing one JSON object from another <em>(kids, let's say "Hello!" to JavaScript OO!)</em>. In other words, having something like:</p>
+<pre class="pod-block-code">[
+    {"key1": 1, "key2":"a string"},
+    {"keyA": 3.1415926, "keyB": "const"}
+]
+</pre>
+<p>One wouldn't be able to tell what classes each item represents. The only way for us to tell is to guess. When we see:</p>
+<pre class="pod-block-code">class Foo {
+    has Int $.key1;
+    has Str $.key2;
+}
+class Bar {
+    has Num $.keyA;
+    has Str $.keyB;
+}
+</pre>
+<p>It is rather clear that the first JSON object is for <code>Foo</code>, and the other one – for <code>Bar</code>.</p>
+<p>This is what <code>JSON::Class</code> sequence basically does: it compares sets of keys per each class-candidate to the key of a JSON object. This works well until a very rare case pops up where two classes has the same key names. Say:</p>
+<pre class="pod-block-code">class Book {
+    has Str:D $.id is required;
+    has Str:D $.name is requried;
+}
+class Article {
+    has Str:D $.id is required;
+    has Str:D $.name is required;
+}
+</pre>
+<p>The default matching algorithm would fail here with <code>JSON::Class::X::Deserialize::SeqItem</code> exception. One can work around the problem by introducing extra layers of data, for example. But what if we know that IDs of a book and an article are sufficiently different to tell exactly which is is which? For example, book ID could start with <em>ISBN:</em>, whereas article ID starts with a date-based <em>YYYY-MM-DD:</em> prefix? In this case one can use custom matchers to tell one JSON object from another:</p>
+<ul><li><p>From <a href="../../../examples/book-article-seq.raku">examples/book-article-seq.raku</a></p>
+<pre class="pod-block-code">class Book {
+    has Str:D $.id is required;
+    has Str:D $.name is required;
+}
+class Article {
+    has Str:D $.id is required;
+    has Str:D $.name is required;
+
+    method is-an-article(%from) {
+        ? (%from&lt;id&gt; ~~ /^ \d ** 4 '-' \d ** 2 '-' \d ** 2 ':'/)
+    }
+}
+
+sub is-a-book(%from) { %from&lt;id&gt;.starts-with("ISBN:") }
+
+class BoxOfPapers is json(:sequence( (Book, :matcher(&amp;is-a-book)), (Article, :matcher&lt;is-an-article&gt;) )) {}
+
+my $json = q:to/JSON/;
+[
+    {"id": "ISBN:1234", "name": "The Guide"},
+    {"id": "2006-04-01:the-pop-one", "name":"What's the programmer's most popular book out there?"}
+]
+JSON
+
+my $box = BoxOfPapers.from-json($json);
+say $box.map(*.gist).join("\n");
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">Book.new(id =&gt; "ISBN:1234", name =&gt; "The Guide")
+Article.new(id =&gt; "2006-04-01:the-pop-one", name =&gt; "What's the programmer's most popular book out there?")
+</pre>
+</li>
+</ul>
+<p>There are other ways of solving this task that involve custom marshalling where we can manipulate with serializable data or keys to inject clues as to what's the source type of JSON object was.</p>
+<h4 id="Alternative_Solutions_To_Matching"><a class="u" href="#___top" title="go to top of document">Alternative Solutions To Matching</a></h4>
+<p>A universal matcher for type can also be set using <a href="Class/Config.html"><code>JSON::Class::Config</code></a> <code>set-helpers</code> method.</p>
+<p>Another way is to try overriding <code>json-guess-descriptor</code> method of <a href="Class/Sequence.html"><code>JSON::Class::Sequence</code></a>. But to do so one is better be familiar with the internals of <code>JSON::Class</code>.</p>
+<h1 id="DYNAMIC_VARIABLES"><a class="u" href="#___top" title="go to top of document">DYNAMIC VARIABLES</a></h1>
+<ul><li><p><code>JSON::Class::Config</code> <strong><code>$*JSON-CLASS-CONFIG</code></strong></p>
+<p>Configuration object. When not available it means we're out of the context of <code>to-json</code> or <code>from-json</code> methods.</p>
+</li>
+<li><p><strong><code>$*JSON-CLASS-SELF</code></strong></p>
+<p>The invocant of <code>json-serialize</code> or <code>json-deserialize</code> methods.</p>
+</li>
+<li><p><a href="Class/Descriptor.html"><code>JSON::Class::Descriptor</code></a> <strong><code>$*JSON-CLASS-DESCRIPTOR</code></strong></p>
+<p>Descriptor of the currently being marshalled attribute or sequence item.</p>
+</li>
+</ul>
+<h1 id="QUICK_INTRO_BY_EXAMPLE"><a class="u" href="#___top" title="go to top of document">QUICK INTRO BY EXAMPLE</a></h1>
+<p>This section contains a series of working code examples demonstrating different features of this module. The samples are slightly stripped down to keep focus on their functionality and don't bother you with boilerplate. Their full code can be found under <em>examples/</em> subdirectory of the distribution.</p>
+<h2 id="Explicit/Implicit"><a class="u" href="#___top" title="go to top of document">Explicit/Implicit</a></h2>
+<ul><li><p>From <a href="../../../examples/decl-implicit.raku">examples/decl-implicit.raku</a></p>
+<pre class="pod-block-code">class Foo is json {
+    has $.foo;
+}
+
+say "Foo is explicit: ", Foo.^json-is-explicit, "\n",
+    " has 'foo' key : ", Foo.^json-has-key('foo');
+
+class Bar is json {
+    has $.bar1;
+    has $.bar2 is json;
+}
+
+say "Bar is explicit: ", Bar.^json-is-explicit, "\n",
+    " has 'bar1' key: ", Bar.^json-has-key('bar1'), "\n",
+    " has 'bar2' key: ", Bar.^json-has-key('bar2');
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">Foo is explicit: False
+ has 'foo' key : True
+Bar is explicit: True
+ has 'bar1' key: False
+ has 'bar2' key: True
+</pre>
+</li>
+</ul>
+<h2 id="Inheritance_And_Role"><a class="u" href="#___top" title="go to top of document">Inheritance And Role</a></h2>
+<ul><li><p>From <a href="../../../examples/simple-inherit.raku">examples/simple-inherit.raku</a></p>
+<pre class="pod-block-code">role R is json {
+    has Bool $.flag;
+}
+
+class C1 does R is json {
+    has Int $.count;
+}
+
+class C2 is json is C1 {
+    has Str $.what;
+}
+
+my $obj = C2.new(:count(3), :what("whatever you like"), :flag);
+say $obj.to-json(:pretty, :sorted-keys);
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">{
+  "count": 3,
+  "flag": true,
+  "what": "whatever you like"
+}
+</pre>
+</li>
+</ul>
+<h2 id="Incorporation"><a class="u" href="#___top" title="go to top of document">Incorporation</a></h2>
+<p>Notice that except for <code>C3</code>, all other classes and roles are not JSONified. Only attributes of <code>C1</code> and <code>R1</code> are serialized.</p>
+<ul><li><p>From <a href="../../../examples/incorporation.raku">examples/incorporation.raku</a></p>
+<pre class="pod-block-code">role R1 {
+    has Bool $.flag;
+}
+
+role R2 {
+    has Num $.cost;
+}
+
+class C1 {
+    has Int $.count;
+}
+
+class C2 {
+    has Num $.total;
+}
+
+class C3 is json(:is(C1), :does(R1)) does R2 is C2 {
+    has Str $.what;
+}
+
+my $obj = C3.new(:count(3), :what("whatever you like"), :flag, :cost(1.2e0), :total(1e3));
+say $obj.to-json(:pretty, :sorted-keys);
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">{
+  "count": 3,
+  "flag": true,
+  "what": "whatever you like"
+}
+</pre>
+</li>
+</ul>
+<h2 id="Laziness"><a class="u" href="#___top" title="go to top of document">Laziness</a></h2>
+<ul><li><p>From <a href="../../../examples/decl-lazy.raku">examples/decl-lazy.raku</a></p>
+<pre class="pod-block-code">class Item {
+    has $.something;
+}
+
+class Foo is json {
+    has Str $.foo;   # Basic types are eager by default
+    has Item $.item; # Non-basic types is lazy by default
+}
+
+say "--- Foo";
+say "    .foo lazy      : ", Foo.^json-get-key("foo").lazy;
+say "    .item lazy     : ", Foo.^json-get-key("item").lazy;
+
+class Bar is json(:lazy, :implicit) {
+    has Str $.bar;
+    has Item $.item;
+    has Item $.item2 is json(:!lazy);
+}
+
+say "--- Bar";
+say "    .bar is lazy   : ", Bar.^json-get-key('bar').lazy;
+say "    .item is lazy  : ", Bar.^json-get-key('item').lazy;
+say "    .item2 is lazy : ", Bar.^json-get-key('item2').lazy;
+
+class Baz is json(:!lazy, :implicit) {
+    has Str $.baz;
+    has Item $.item;
+    has Item $.item2 is json(:lazy);
+}
+
+say "--- Baz";
+say "    .baz lazy      : ", Baz.^json-get-key("baz").lazy;
+say "    .item lazy     : ", Baz.^json-get-key("item").lazy;
+say "    .item2 lazy    : ", Baz.^json-get-key("item2").lazy;
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">--- Foo
+    .foo lazy      : False
+    .item lazy     : True
+--- Bar
+    .bar is lazy   : True
+    .item is lazy  : True
+    .item2 is lazy : False
+--- Baz
+    .baz lazy      : False
+    .item lazy     : False
+    .item2 lazy    : True
+</pre>
+</li>
+</ul>
+<h2 id="Config_Defaults"><a class="u" href="#___top" title="go to top of document">Config Defaults</a></h2>
+<p><code>C1</code> specify config defaults but they affect the output only when the immediate instance of the class is serialized. Otherwise if a subclass instance is serialized then its defaults are used. This is to preserve the uniformity of serialization.</p>
+<ul><li><p>From <a href="../../../examples/config-defaults.raku">examples/config-defaults.raku</a></p>
+<pre class="pod-block-code">class C1 is json(:pretty, :sorted-keys) {
+    has Int $.count;
+    has Str $.what;
+}
+
+class C2 is C1 is json(:!skip-null) { }
+
+my $c1 = C1.new(:count(42), :what("The Answer"));
+say "--- C1 serialization:\n", $c1.to-json;
+my $c2 = C2.new(:count(42), :what("The Answer"));
+say "--- C2 serialization:\n", $c2.to-json;
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">--- C1 serialization:
+{
+  "count": 42,
+  "what": "The Answer"
+}
+--- C2 serialization:
+{"what":"The Answer","count":42}
+</pre>
+</li>
+</ul>
+<h2 id="Sequence"><a class="u" href="#___top" title="go to top of document">Sequence</a></h2>
+<p>This example is a bit verbose from both code and output perspective. It's point is to demonstrate the difference between an array and a JSON Sequence type. The following aspects a worth paying attention to:</p>
+<ul><li><p>Multi-type support. See <em>The Multitype Matching Problem</em> section above.</p>
+</li>
+<li><p>Lazy deserialization of individual elements of the sequence. This may come handy when dealing with big arrays of objects where only few of them are actually needed.</p>
+</li>
+</ul>
+<p>Apparently, this example doesn't cover all of <code>JSON::Class</code> sequence features.</p>
+<ul><li><p>From <a href="../../../examples/simple-sequence.raku">examples/simple-sequence.raku</a></p>
+<pre class="pod-block-code">class Item1 is json {
+    has Str $.id;
+    has Int $.quantity;
+}
+
+class Item2 is json {
+    has Str $.section;
+    has Str $.chapter;
+}
+
+class JSeq is json(:sequence(Str:D, Item1:D, Item2:D, :default&lt;removed&gt;)) {
+    method json-deserialize-item($idx, \json-value) is raw {
+        say "... deserializing [$idx] ...";
+        nextsame
+    }
+}
+
+my $jseq = JSeq.new("something", Item2.new(:section&lt;A&gt;, :chapter("22.1")));
+
+$jseq.push: Item1.new(:id&lt;EBCA-12F&gt;, :quantity(13));
+$jseq.push: "final";
+
+say "--- Initial    : ", $jseq.to-json;
+$jseq[1]:delete;
+say "--- 2nd deleted: ", $jseq.to-json;
+my $deserialized := JSeq.from-json: q&lt;["something",{"quantity":12,"id":"9123-BBB"},"different",{"section":"B","chapter":"2.9b"}]&gt;;
+for ^$deserialized.elems -&gt; $idx {
+    say "--- $idx ---";
+    say "Deserialized before accessing? ", $deserialized[$idx]:has;
+    say "Item: ", $deserialized[$idx].raku;
+    say "Deserialized after accessing? ", $deserialized[$idx]:has;
+}
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">--- Initial    : ["something",{"chapter":"22.1","section":"A"},{"quantity":13,"id":"EBCA-12F"},"final"]
+--- 2nd deleted: ["something","removed",{"id":"EBCA-12F","quantity":13},"final"]
+--- 0 ---
+Deserialized before accessing? False
+... deserializing [0] ...
+Item: "something"
+Deserialized after accessing? True
+--- 1 ---
+Deserialized before accessing? False
+... deserializing [1] ...
+Item: Item1.new(id =&gt; "9123-BBB", quantity =&gt; 12)
+Deserialized after accessing? True
+--- 2 ---
+Deserialized before accessing? False
+... deserializing [2] ...
+Item: "different"
+Deserialized after accessing? True
+--- 3 ---
+Deserialized before accessing? False
+... deserializing [3] ...
+Item: Item2.new(section =&gt; "B", chapter =&gt; "2.9b")
+Deserialized after accessing? True
+</pre>
+</li>
+</ul>
+<h2 id="Array_Attributes"><a class="u" href="#___top" title="go to top of document">Array Attributes</a></h2>
+<ul><li><p>From <a href="../../../examples/typed-array.raku">examples/typed-array.raku</a></p>
+<pre class="pod-block-code">class Rec {
+    has Str:D $.description is required;
+}
+
+class Struct is json(:implicit) {
+    has Array:D[Real:D] @.matrix;
+    has Rec:D %.rec is json(:name&lt;records&gt;);
+}
+
+my $struct =
+    Struct.new:
+        matrix =&gt; [
+            [1, 2],
+            [pi, e],
+            [42.12, 13.666, 4321],
+        ],
+        rec =&gt; {
+            R1 =&gt; Rec.new(:description("test description")),
+            R2 =&gt; Rec.new(:description("test description 2")),
+        };
+
+say "=== Serializing ===";
+say $struct.to-json(:pretty, :sorted-keys);
+
+say "=== Deserializing ===";
+my $deserialized =
+    Struct.from-json:
+        q&lt;{"matrix":[[3,4,5],[3.141592653589793e0,2.718281828459045e0],[42.0,32.16,99]],
+           "records":{"R1":{"description":"for the first"},"R2":{"description":"for the second"}}}&gt;;
+
+say "Has .matrix: ", $deserialized.json-has-matrix;
+say "Has .rec   : ", $deserialized.json-has-records; # JSON key name is used for method name
+say "Matrix     : ", $deserialized.matrix;
+say "Has .matrix: ", $deserialized.json-has-matrix;
+say "Has .rec   : ", $deserialized.json-has-records;
+say "Records    : ", $deserialized.rec;
+say "Has .matrix: ", $deserialized.json-has-matrix;
+say "Has .rec   : ", $deserialized.json-has-records;
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">=== Serializing ===
+{
+  "matrix": [
+    [
+      1,
+      2
+    ],
+    [
+      3.141592653589793e0,
+      2.718281828459045e0
+    ],
+    [
+      42.12,
+      13.666,
+      4321
+    ]
+  ],
+  "records": {
+    "R1": {
+      "description": "test description"
+    },
+    "R2": {
+      "description": "test description 2"
+    }
+  }
+}
+=== Deserializing ===
+Has .matrix: False
+Has .rec   : False
+Matrix     : [[3 4 5] [3.141592653589793 2.718281828459045] [42 32.16 99]]
+Has .matrix: True
+Has .rec   : False
+Records    : {R1 =&gt; Rec.new(description =&gt; "for the first"), R2 =&gt; Rec.new(description =&gt; "for the second")}
+Has .matrix: True
+Has .rec   : True
+</pre>
+</li>
+</ul>
+<h2 id="Using_Configuration_And_Type_Mapping"><a class="u" href="#___top" title="go to top of document">Using Configuration And Type Mapping</a></h2>
+<p>These two subjects are tightly bound to each other, hence single example for both subjects.</p>
+<ul><li><p>From <a href="../../../examples/config-and-type-map.raku">examples/config-and-type-map.raku</a></p>
+<pre class="pod-block-code"># To set global defaults .global to be invoked as early as possible or otherwise the global config can be vivified
+# somewhere else with standard defaults.
+JSON::Class::Config.global: :pretty, :sorted-keys, :!skip-null;
+
+class Record is json {
+    has Int $.count;
+    has Str $.what;
+}
+
+class Status {
+    has Str $.code;
+    has Bool $.verified;
+    has Str $.notes;
+}
+
+# Indicate that this class wants to replace Record whenever possible.
+class RecWrapper is json-wrap(Record) {
+    has Bool $.available is mooish(:lazy);
+
+    method build-available {
+        $.count &gt; 0;
+    }
+}
+
+class StatusTools is Status {
+    # Just a mockup of what could be used for accessing some API, for example.
+    method update-record {
+        "will-update" =&gt; $.code
+    }
+}
+
+JSON::Class::Config.map-types: RecWrapper, (Status) =&gt; StatusTools;
+
+class Foo is json {
+    has Record:D $.record is required is json(:name&lt;rec&gt;);
+    has Status:D $.status is required is json(:name&lt;st&gt;);
+}
+
+say "--- Using global config with type maps";
+my $foo =
+    Foo.from-json:
+        q&lt;{"rec":{"count":0,"what":"irrelevant"},"st":{"code":"1A-CD3","verified":false,"notes":"to be done"}}&gt;;
+
+say ".record attribute type: ", $foo.record.^name;
+say ".status attribute type: ", $foo.status.^name;
+
+$foo.status.update-record;
+
+say "Serialization of mapped types:\n", $foo.to-json.indent(2);
+
+say "--- Using custom config with no type maps";
+my $config = JSON::Class::Config.new;
+
+$foo = Foo.from-json:
+            q&lt;{"rec":{"count":0,"what":"irrelevant"},"st":{"code":"1A-CD3","verified":false,"notes":"to be done"}}&gt;,
+            :$config;
+
+say ".record attribute type: ", $foo.record.^name;
+say ".status attribute type: ", $foo.status.^name;
+
+try { $foo.status.update-record };
+say "We expect an exception here: ", $!.^name;
+say "Exception message: ", $!.message;
+
+say "Serialization with custom config using standard defaults:\n", $foo.to-json(:$config).indent(2);
+</pre>
+<p>Sample output. Notice how different configuration defaults affect serialization output without passing any arguments to the <code>to-json</code> method:</p>
+<pre class="pod-block-code">--- Using global config with type maps
+.record attribute type: RecWrapper
+.status attribute type: StatusTools
+Serialization of mapped types:
+  {
+    "rec": {
+      "count": 0,
+      "what": "irrelevant"
+    },
+    "st": {
+      "code": "1A-CD3",
+      "notes": "to be done",
+      "verified": false
+    }
+  }
+--- Using custom config with no type maps
+.record attribute type: Record
+.status attribute type: Status
+We expect an exception here: X::Method::NotFound
+Exception message: No such method 'update-record' for invocant of type 'Status'
+Serialization with custom config using standard defaults:
+  {"st":{"notes":"to be done","verified":false,"code":"1A-CD3"},"rec":{"what":"irrelevant","count":0}}
+</pre>
+</li>
+</ul>
+<h2 id="Custom_Serialziers_And_Deserializers"><a class="u" href="#___top" title="go to top of document">Custom Serialziers And Deserializers</a></h2>
+<p>There are more than we can fit into this example. We can have individual custom marshalling for hash and array values, and hash keys too. We can specify marshallers for sequence elements too.</p>
+<ul><li><p>From <a href="../../../examples/custom-serializers.raku">examples/custom-serializers.raku</a></p>
+<pre class="pod-block-code">class Record is json {
+    has Str $.description is json( :serializer({ "pfx:" ~ $_ }),    # :to-json alias can be used instead
+                                   :deserializer({ .substr(4) }) ); # :from-json can be used instead
+}
+
+class Article is json {
+    has Str $.title;
+
+    method serialize {
+        %{ "-ttl-" =&gt; $!title }
+    }
+    method deserialize(%p) {
+        die "bad profile" unless %p&lt;-ttl-&gt;;
+        self.new: title =&gt; %p&lt;-ttl-&gt;;
+    }
+}
+
+class Foo is json {
+    has Record:D $.rec is required;
+    has Article:D $.article is required;
+}
+
+my $config = JSON::Class::Config.new(:pretty, :sorted-keys);
+$config.set-helpers: Article, serializer =&gt; 'serialize', deserializer =&gt; 'deserialize';
+
+my $foo = Foo.new:
+            rec =&gt; Record.new(:description("means nothing")),
+            article =&gt; Article.new(:title("The Deep Thought: Complexity Of The Answer"));
+
+say "Custom serializers affect JSON:\n", $foo.to-json(:$config).indent(2);
+# "article" key is affected, but "rec" is using attribute's marshallizers.
+say "Serializing with default config:\n", $foo.to-json(:pretty, :sorted-keys).indent(2);
+
+$foo = Foo.from-json:
+        q&lt;{"rec":{"description":"pfx:stuff"},"article":{"-ttl-":"The Deep Thought: Gimme A Bit More Time"}}&gt;,
+        :$config;
+
+say "Custom deserializers handle 'weird' JSON:\n", $foo.raku.indent(2);
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">Custom serializers affect JSON:
+  {
+    "article": {
+      "-ttl-": "The Deep Thought: Complexity Of The Answer"
+    },
+    "rec": {
+      "description": "pfx:means nothing"
+    }
+  }
+Serializing with default config:
+  {
+    "article": {
+      "title": "The Deep Thought: Complexity Of The Answer"
+    },
+    "rec": {
+      "description": "pfx:means nothing"
+    }
+  }
+Custom deserializers handle 'weird' JSON:
+  Foo.new(rec =&gt; Record.new(description =&gt; "stuff"), article =&gt; Article.new(title =&gt; "The Deep Thought: Gimme A Bit More Time"))
+</pre>
+</li>
+</ul>
+<h2 id="Skipping_Custom_Marshalling"><a class="u" href="#___top" title="go to top of document">Skipping Custom Marshalling</a></h2>
+<p>Here we use custom marshallers too, this time for array values. But there is a trick: serializer and deserializer do not modify every third value. To do so they call <code>json-I-cant</code> routine giving up the task to <code>JSON::Class</code></p>
+<ul><li><p>From <a href="../../../examples/skipping-marshalling.raku">examples/skipping-marshalling.raku</a></p>
+<pre class="pod-block-code">my $skiped-serializations = 0;
+my $skipped-deserializations = 0;
+
+class Foo is json {
+    has Int:D @.counts is json(
+        :serializer(
+            value =&gt; -&gt; $v {
+                if $v % 3 == 0 {
+                    ++$skiped-serializations;
+                    json-I-cant
+                }
+                $v * 1000
+            } ),
+        :deserializer(
+            value =&gt; -&gt; $v {
+                if $v &lt; 1000 {
+                    ++$skipped-deserializations;
+                    json-I-cant
+                }
+                $v div 1000
+            } ));
+}
+
+my $foo = Foo.new(counts =&gt; ^22);
+
+my $json = $foo.to-json;
+
+say $json;
+say Foo.from-json($json);
+say "I skipped ", $skiped-serializations, " serializations and ", $skipped-deserializations, " deserializations";
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">{"counts":[0,1000,2000,3,4000,5000,6,7000,8000,9,10000,11000,12,13000,14000,15,16000,17000,18,19000,20000,21]}
+Foo.new(counts =&gt; Array[Int:D].new(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21))
+I skipped 8 serializations and 8 deserializations
+</pre>
+</li>
+</ul>
+<h1 id="METHODS"><a class="u" href="#___top" title="go to top of document">METHODS</a></h1>
+<h2 id="JSONified_Class"><a class="u" href="#___top" title="go to top of document">JSONified Class</a></h2>
+<ul><li><p><strong><code>method to-json(:$config, Bool :$raw, Bool :$pretty, Bool :$sorted-keys, Bool :$enums-as-value, UInt :$spacing)</code></strong></p>
+<p>Serialize an instance of JSON class. Arguments:</p>
+<ul><li><p><a href="Class/Config.html"><code>JSON::Class::Config:D</code></a> <strong><code>:$config</code></strong>, <strong><code>:%config</code></strong></p>
+<p>Either a configuration object or a profile hash which will be used to create one.</p>
+</li>
+<li><p><code>Bool</code> <strong><code>:$raw</code></strong></p>
+<p>If <em>True</em> then the method will return raw serialization of the object, i.e. a <a href="https://docs.raku.org/type/Hash"><code>Hash</code></a>.</p>
+</li>
+<li><p><code>Bool</code> <strong><code>:$pretty</code></strong>, <code>Bool</code> <strong><code>:$sorted-keys</code></strong>, <code>Bool</code> <strong><code>:$enums-as-value</code></strong>, <code>UInt</code> <strong><code>:$spacing</code></strong></p>
+<p>Same as <a href="https://raku.land/cpan:TIMOTIMO/JSON::Fast"><code>JSON::Fast</code></a> <code>to-json</code> arguments.</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>proto method from-json(|)</code></strong></p>
+<ul><li><p><strong><code>method from-json(Str:D $json, :$config, Bool :$allow-jsonc, Bool :$enums-as-value)</code></strong></p>
+</li>
+<li><p><strong><code>method from-json(%json, :$config, Bool :$allow-jsonc, Bool :$enums-as-value)</code></strong></p>
+</li>
+<li><p><strong><code>method from-json(@json, :$config, Bool :$allow-jsonc, Bool :$enums-as-value)</code></strong></p>
+</li>
+</ul>
+<p>Deserialize JSON class from either a JSON string, or raw hash or array.</p>
+<ul><li><p><code>Str:d</code> <strong><code>$json</code></strong></p>
+<p>JSON source</p>
+</li>
+<li><p><strong><code>%json</code></strong>, <strong><code>@json</code></strong></p>
+<p>Deserialize from pre-parsed JSON data. A hash is only making sense for a JSON class. An array can be fed to both JSON class and JSON sequence; each will treat it differently.</p>
+</li>
+<li><p><code>JSON::Class::Config:D</code> <strong><code>:$config</code></strong>, <strong><code>:%config</code></strong></p>
+<p>Either a configuration object or a profile hash which will be used to create one.</p>
+</li>
+<li><p><code>Bool</code> <strong><code>:$allow-jsonc</code></strong>, <code>Bool</code> <strong><code>:$enums-as-value</code></strong></p>
+<p>Same as <a href="https://raku.land/cpan:TIMOTIMO/JSON::Fast"><code>JSON::Fast</code></a> <code>from-json</code> arguments.</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>method json-serialize(JSON::Class::Config :$config)</code></strong></p>
+<p>Implements the actual serialization task.</p>
+</li>
+<li><p><strong><code>method json-deserialize($from, JSON::Class::Config:D :$config)</code></strong></p>
+<p>Implements the actual deserialization task. <code>$from</code> can be a hash or an array. JSON sequences only accept arrays.</p>
+</li>
+<li><p><strong><code>method json-create(|)</code></strong></p>
+<p>This method acts almost like <code>new</code>, but the difference is in what class it eventually creates. If it belongs to a run-time JSONified class, i.e. to one created by <a href="Class/Config.html"><code>JSON::Class::Config</code></a> <code>jsonify</code> method, then <code>json-create</code> would return an instance of the original class, not its JSONification.</p>
+<p>Normally one doesn't need to use this method. But if it comes down to manually instantiating JSON classes then it would be preferred over the standard constructor.</p>
+</li>
+<li><p><strong><code>method clone-from(Mu $obj, *%twiddles)</code></strong></p>
+<p>This method allows to create an instance of its class using attribute values of <code>$obj</code>. The point is that it makes it possible to have a copy of type different from that of <code>$obj</code>. <code>JSON::Class</code> uses it to JSONify instances of non-JSON classes, for example.</p>
+<p><em>Note</em> that this is one of few methods whose names don't start with <code>json-</code> prefix.</p>
+</li>
+<li><p><strong><code>method json-all-set()</code></strong></p>
+<p>Returns <em>True</em> if all postponed JSON data have been lazily deserialized.</p>
+</li>
+<li><p><strong><code>method json-config-class()</code></strong></p>
+<p>Returns the default configuration class type object. Overridable.</p>
+</li>
+<li><p><strong><code>method json-config()</code></strong></p>
+<p>Get the currently active configuration object if invoked within an active configuration context. Otherwise creates a new configuration context using class' defaults and returns its config.</p>
+</li>
+<li><p><strong><code>method json-config-context(&amp;code, :$config, *%twiddles)</code></strong></p>
+<p>Creates a new configuration context by pulling in defaults for the config from various sources. Invokes user <code>&amp;code</code> with <code>$*JSON-CLASS-CONFIG</code> context variable set with a configuration object. <a href="Class/Details.html"><code>JSON::Class::Details</code></a> has some more information on how configuration context gets built.</p>
+</li>
+</ul>
+<h1 id="SEE_ALSO"><a class="u" href="#___top" title="go to top of document">SEE ALSO</a></h1>
+<ul><li><p><a href="Class/Config.html"><code>JSON::Class::Config</code></a></p>
+</li>
+<li><p><a href="Class/Descriptor.html"><code>JSON::Class::Descriptor</code></a></p>
+</li>
+<li><p><a href="Class/Object.html"><code>JSON::Class::Object</code></a></p>
+</li>
+<li><p><a href="Class/Sequence.html"><code>JSON::Class::Sequence</code></a></p>
+</li>
+<li><p><a href="Class/Types.html"><code>JSON::Class::Types</code></a></p>
+</li>
+<li><p><a href="../../../ChangeLog.html"><code>Changes</code></a></p>
+</li>
+<li><p><a href="../../../INDEX.html"><code>INDEX</code></a></p>
+</li>
+</ul>
+<h1 id="COPYRIGHT"><a class="u" href="#___top" title="go to top of document">COPYRIGHT</a></h1>
+<p>(c) 2023, Vadim Belman &lt;vrurg@cpan.org&gt;</p>
+<h1 id="LICENCE"><a class="u" href="#___top" title="go to top of document">LICENCE</a></h1>
+<p>Artistic License 2.0</p>
+<p>See the <a href="../../../LICENCE"><em>LICENCE</em></a> file in this distribution.</p>
+</section>
+
+    </div>
+
+    
+</body>
+</html>

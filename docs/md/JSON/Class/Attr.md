@@ -1,73 +1,65 @@
-rakudoc
-=======
+# rakudoc
 
-NAME
-====
+# NAME
 
 `JSON::Class::Attr` – base role for attribute descriptors
 
-ATTRIBUTES
-==========
+# ATTRIBUTES
 
-  * `Bool `**`$.skip`**
-
+  - `Bool `**`$.skip`**
+    
     Skip this attribute altogether:
-
-    ```raku
+    
+    ``` raku
     has $.attr is json(:skip);
     ```
 
-  * `Str:D `**`$.json-name`**
-
+  - `Str:D `**`$.json-name`**
+    
     Name of JSON object key. Unless manually altered by user, it is attribute base name.
 
-  * `Bool `**`$.lazy`**
-
+  - `Bool `**`$.lazy`**
+    
     *True* if attribute is lazily deserialized.
 
-METHODS
-=======
+# METHODS
 
-  * **`method set-serializer()`**, **`method set-deserializer()`**
-
+  - **`method set-serializer()`**, **`method set-deserializer()`**
+    
     These methods must be implemented by particular attribute descriptor class.
 
-  * **`method sigil()`**
-
+  - **`method sigil()`**
+    
     Gives attribute sigil.
 
-  * **`method skip-null()`**
-
+  - **`method skip-null()`**
+    
     *True* if this attribute only serializable with a defined value.
 
-  * **`method kind-type('attribute')`**
-
+  - **`method kind-type('attribute')`**
+    
     Returns attribute constraint type.
 
-SEE ALSO
-========
+# SEE ALSO
 
-  * [`JSON::Class`](../Class.md)
+  - [`JSON::Class`](../Class.md)
 
-  * [`JSON::Class::Details`](Details.md)
+  - [`JSON::Class::Details`](Details.md)
 
-  * [`JSON::Class::Descriptor`](Descriptor.md)
+  - [`JSON::Class::Descriptor`](Descriptor.md)
 
-  * [`JSON::Class::Attr::Associative`](Attr/Associative.md)
+  - [`JSON::Class::Attr::Associative`](Attr/Associative.md)
 
-  * [`JSON::Class::Attr::Positional`](Attr/Positional.md)
+  - [`JSON::Class::Attr::Positional`](Attr/Positional.md)
 
-  * [`JSON::Class::Attr::Scalar`](Attr/Scalar.md)
+  - [`JSON::Class::Attr::Scalar`](Attr/Scalar.md)
 
-COPYRIGHT
-=========
+# COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENCE
-=======
+# LICENCE
 
 Artistic License 2.0
 
-See the [*LICENCE*](../../../../LICENCE) file in this distribution.
-
+See the [*docs/md/LICENCE*](../../LICENCE) file in this distribution.

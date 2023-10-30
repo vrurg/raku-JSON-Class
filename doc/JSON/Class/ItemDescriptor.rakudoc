@@ -70,15 +70,15 @@ Returns C<$.type>.
 =begin item
 B<C<multi method kind-stage(JSDeserialize, 'match')>>
 
-Returns C<JSMatch> of C<JSONStages> (see L<C<JSON::Class::Types>|Types.md>).
+Returns C<JSMatch> of C<JSONStages> (see L<C<JSON::Class::Types>|rakudoc:JSON::Class::Types>).
 =end item
 
 =head1 SEE ALSO
 
-=item L<C<JSON::Class>|../Class.md>
-=item L<C<JSON::Class::Details>|Details.md>
-=item L<C<JSON::Class::Descriptor>|Descriptor.md>
-=item L<C<JSON::Class::Types>|Types.md>
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<JSON::Class::Descriptor>|rakudoc:JSON::Class::Descriptor>
+=item L<C<JSON::Class::Types>|rakudoc:JSON::Class::Types>
 
 =head1 COPYRIGHT
 
@@ -88,6 +88,6 @@ Returns C<JSMatch> of C<JSONStages> (see L<C<JSON::Class::Types>|Types.md>).
 
 Artistic License 2.0
 
-See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+See the L<I<docs/md/LICENCE>|file:docs/md/LICENCE> file in this distribution.
 =end rakudoc
 

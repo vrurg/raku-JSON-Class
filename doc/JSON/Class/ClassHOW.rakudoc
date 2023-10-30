@@ -9,18 +9,18 @@ C<JSON::Class::ClassHOW> – meta of JSONified classes
 B<C<method json-FROM(Mu \obj)>>
 
 Returns C<obj.WHAT>. But for implicitly JSONified classes using the C<jsonify> method of
-L<C<JSON::Class::Config>|Config.md> this method will return the original class.
+L<C<JSON::Class::Config>|rakudoc:JSON::Class::Config> this method will return the original class.
 =end item
 
 =head1 SEE ALSO
 
-=item L<C<JSON::Class>|../Class.md>
-=item L<C<JSON::Class::Details>|Details.md>
-=item L<C<JSON::Class::Representation>|Representation.md>
-=item L<C<JSON::Class::Object>|Object.md>
-=item L<C<JSON::Class::HOW::AttributeContainer>|HOW/AttributeContainer.md>
-=item L<C<JSON::Class::HOW::Configurable>|HOW/Configurable.md>
-=item L<C<JSON::Class::HOW::Explicit>|HOW/Explicit.md>
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<JSON::Class::Representation>|rakudoc:JSON::Class::Representation>
+=item L<C<JSON::Class::Object>|rakudoc:JSON::Class::Object>
+=item L<C<JSON::Class::HOW::AttributeContainer>|rakudoc:JSON::Class::HOW::AttributeContainer>
+=item L<C<JSON::Class::HOW::Configurable>|rakudoc:JSON::Class::HOW::Configurable>
+=item L<C<JSON::Class::HOW::Explicit>|rakudoc:JSON::Class::HOW::Explicit>
 
 =head1 COPYRIGHT
 
@@ -30,6 +30,6 @@ L<C<JSON::Class::Config>|Config.md> this method will return the original class.
 
 Artistic License 2.0
 
-See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+See the L<I<docs/md/LICENCE>|file:docs/md/LICENCE> file in this distribution.
 =end rakudoc
 

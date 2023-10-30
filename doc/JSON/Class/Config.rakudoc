@@ -91,35 +91,35 @@ Note that with regard to configuration properties C<JSON::Class::Config> is immu
 B<C<method allow-jsonc()>>
 
 Allow JSONC standard.
-See L<C<JSON::Fast> from-json argument|https://raku.land/cpan:TIMOTIMO/JSON::Fast#allow-jsonc>.
+See L«C<JSON::Fast> from-json argument|rakudoc:JSON::Fast:auth<cpan:TIMOTIMO>».
 =end item
 
 =begin item
 B<C<method pretty()>>
 
 Turn on JSON formatting.
-See L<C<JSON::Fast> to-json argument|https://raku.land/cpan:TIMOTIMO/JSON::Fast#pretty>.
+See L«C<JSON::Fast> to-json argument|rakudoc:JSON::Fast:auth<cpan:TIMOTIMO>».
 =end item
 
 =begin item
 B<C<method spacing()>>
 
 Level of indentation when is C<$config.pretty>.
-See L<C<JSON::Fast> to-json argument|https://raku.land/cpan:TIMOTIMO/JSON::Fast#pretty>.
+See L«C<JSON::Fast> to-json argument|rakudoc:JSON::Fast:auth<cpan:TIMOTIMO>».
 =end item
 
 =begin item
 B<C<method sorted-keys()>>
 
 Sort JSON key in the output.
-See L<C<JSON::Fast> to-json argument|https://raku.land/cpan:TIMOTIMO/JSON::Fast#sorted-keys>.
+See L«C<JSON::Fast> to-json argument|rakudoc:JSON::Fast:auth<cpan:TIMOTIMO>».
 =end item
 
 =begin item
 B<C<method enums-as-value()>>
 
 Treat enums by their underlying values.
-See L<C<JSON::Fast> to-json argument|https://raku.land/cpan:TIMOTIMO/JSON::Fast#enum-as-value>
+See L«C<JSON::Fast> to-json argument|rakudoc:JSON::Fast:auth<cpan:TIMOTIMO>»
 =end item
 
 =begin item
@@ -169,7 +169,7 @@ B<C<method set-helpers(Mu $type, :to-json(:$serializer), :from-json(:$deserializ
 Set universal helper for a typeobject C<$type>. This is helpful when class is used by a few JSONified structures.
 
 The meaning of helpers should be clear. As a little reminder, C<:$matcher> is described in the I<Sequences> section
-of L<C<JSON::Class>|../Class.md> documentation.
+of L<C<JSON::Class>|rakudoc:JSON::Class> documentation.
 
 Helpers can be either code objects, or method names on C<$type>.
 
@@ -178,7 +178,7 @@ L<C<DateTime>|https://docs.raku.org/type/DateTime>, installed when C<:$defaults>
 is I<True>, are set like this:
 
 =begin code :lang<raku>
-self.set-helpers(DateTime, :to-json<Str>, :from-json<new>, matcher => -> Str:D:D:D:D:D $from {
+self.set-helpers(DateTime, :to-json<Str>, :from-json<new>, matcher => -> Str:D:D:D:D:D:D:D $from {
     ?try {
         DateTime.new($from)
     }
@@ -224,7 +224,7 @@ Get matcher for object C<$what>. Similar to C<$config.helper($what, 'match')>
 =begin item
 B<C<proto method map-type(|)>>
 
-This method installs type mapping. See I<Type Mapping> section in L<C<JSON::Class::Details>|Details.md>.
+This method installs type mapping. See I<Type Mapping> section in L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>.
 
 =begin item
 B<C<multi method map-type(Mu:U \from-type, Mu:U \to-type)>>
@@ -236,7 +236,7 @@ Simply install a mapping.
 B<C<multi method map-type(Mu:U \wrapper)>>
 
 This is a simplified version of the previous candidate which can be used for classes with C<is json-wrap> applied.
-See I<Type Mapping> section in L<C<JSON::Class::Details>|Details.md>.
+See I<Type Mapping> section in L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>.
 =end item
 
 =begin item
@@ -325,28 +325,30 @@ the severity is C<easy>, of course.
 B<C<method to-json-profile(--> Map:D)>>
 
 This method returns a L<C<Map>|https://docs.raku.org/type/Map> with named arguments for
-L<C<JSON::Fast>|https://raku.land/cpan:TIMOTIMO/JSON::Fast> C<to-json> routine:
+L«C<JSON::Fast>|rakudoc:JSON::Fast:auth<cpan:TIMOTIMO>» C<to-json> routine:
 
 =begin code :lang<raku>
 to-json($data, |$config.to-json-profile);
 =end code
+
 =end item
 
 =begin item
 B<C<method from-json-profile()>>
 
 Returns a L<C<Map>|https://docs.raku.org/type/Map> with named arguments for
-L<C<JSON::Fast>|https://raku.land/cpan:TIMOTIMO/JSON::Fast> C<from-json> routine:
+L«C<JSON::Fast>|rakudoc:JSON::Fast:auth<cpan:TIMOTIMO>» C<from-json> routine:
 
 =begin code :lang<raku>
 from-json($json, |$config.from-json-profile);
 =end code
+
 =end item
 
 =head1 SEE ALSO
 
-=item L<C<JSON::Class>|../Class.md>
-=item L<C<JSON::Class::Details>|Details.md>
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
 
 =head1 COPYRIGHT
 
@@ -356,6 +358,6 @@ from-json($json, |$config.from-json-profile);
 
 Artistic License 2.0
 
-See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+See the L<I<docs/md/LICENCE>|file:docs/md/LICENCE> file in this distribution.
 =end rakudoc
 

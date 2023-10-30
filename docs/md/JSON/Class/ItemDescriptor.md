@@ -1,81 +1,73 @@
-rakudoc
-=======
+# rakudoc
 
-NAME
-====
+# NAME
 
 `JSON::Class::ItemDescriptor` - descriptor for sequence item
 
-ATTRIBUTES
-==========
+# ATTRIBUTES
 
-  * `Mu `**`$.type`**
-
+  - `Mu `**`$.type`**
+    
     Item constraint type. I.e. when `class JSeq is json(:sequence(Str:D))` it will be `Str:D`.
 
-  * `Mu `**`$.nominal-type`**
-
+  - `Mu `**`$.nominal-type`**
+    
     Nominalization of `$.type`.
 
-  * `Str `**`$.name`**
-
+  - `Str `**`$.name`**
+    
     Name to report this descriptor in messages.
 
-METHODS
-=======
+# METHODS
 
-  * **`method set-serializer($item?)`**
-
+  - **`method set-serializer($item?)`**
+    
     Set custom item serializer.
 
-  * **`method set-deserializer($item?)`**
-
+  - **`method set-deserializer($item?)`**
+    
     Set custom item deserializer.
 
-  * **`method has-matcher()`**
-
+  - **`method has-matcher()`**
+    
     Returns *True* if custom matcher is set for this item.
 
-  * **`method set-matcher($matcher?)`**
-
+  - **`method set-matcher($matcher?)`**
+    
     Set custom matcher for this item.
 
-  * **`method matcher()`**
-
+  - **`method matcher()`**
+    
     Return custom matcher for this item
 
-  * **`multi method kind-type('match')`**
-
+  - **`multi method kind-type('match')`**
+    
     Returns `$.type`.
 
-  * **`multi method kind-type('item')`**
-
+  - **`multi method kind-type('item')`**
+    
     Returns `$.type`.
 
-  * **`multi method kind-stage(JSDeserialize, 'match')`**
-
+  - **`multi method kind-stage(JSDeserialize, 'match')`**
+    
     Returns `JSMatch` of `JSONStages` (see [`JSON::Class::Types`](Types.md)).
 
-SEE ALSO
-========
+# SEE ALSO
 
-  * [`JSON::Class`](../Class.md)
+  - [`JSON::Class`](../Class.md)
 
-  * [`JSON::Class::Details`](Details.md)
+  - [`JSON::Class::Details`](Details.md)
 
-  * [`JSON::Class::Descriptor`](Descriptor.md)
+  - [`JSON::Class::Descriptor`](Descriptor.md)
 
-  * [`JSON::Class::Types`](Types.md)
+  - [`JSON::Class::Types`](Types.md)
 
-COPYRIGHT
-=========
+# COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENCE
-=======
+# LICENCE
 
 Artistic License 2.0
 
-See the [*LICENCE*](../../../../LICENCE) file in this distribution.
-
+See the [*docs/md/LICENCE*](../../LICENCE) file in this distribution.

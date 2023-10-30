@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>JSON::Class::Config</title>
+    <meta charset="UTF-8">
+    <style>hr,
+img {
+    box-sizing: content-box
+}
+body::after,
+body::before,
+hr::after,
+hr::before {
+    display: table;
+    content: ""
+}
+a,
+a:not([href]) {
+    text-decoration: none
+}
+
+hr,
+svg:not(:root) {
+    overflow: hidden
+}
+
+img,
+table tr {
+    background-color: #fff
+}
+
+pre,
+table {
+    overflow: auto
+}
+
+dl,
+dl dt,
+hr,
+pre code,
+pre>code,
+td,
+th {
+    padding: 0
+}
+
+input,
+pre code {
+    overflow: visible
+}
+
+pre,
+pre code {
+    word-wrap: normal
+}
+
+body {
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    color: #333;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 16px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    width: 820px;
+    margin: 2em auto;
+}
+
+a {
+    background-color: transparent;
+    -webkit-text-decoration-skip: objects;
+    color: #4078c0
+}
+
+a:active,
+a:hover {
+    outline-width: 0;
+    text-decoration: underline
+}
+
+h1 {
+    margin: .67em 0
+}
+
+img {
+    border-style: none;
+    max-width: 100%
+}
+
+h1,
+h2 {
+    padding-bottom: .3em;
+    border-bottom: 1px solid #eee
+}
+
+input {
+    font: inherit;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit
+}
+
+* {
+    box-sizing: border-box
+}
+
+strong {
+    font-weight: 600
+}
+
+body::after,
+hr::after {
+    clear: both
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    display: block;
+    width: 100%
+}
+
+blockquote {
+    margin: 0;
+    padding: 0 1em;
+    color: #777;
+    border-left: .25em solid #ddd
+}
+
+ol ol,
+ul ol {
+    list-style-type: lower-roman
+}
+
+ol ol ol,
+ol ul ol,
+ul ol ol,
+ul ul ol {
+    list-style-type: lower-alpha
+}
+
+dd {
+    margin-left: 0
+}
+
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace
+}
+
+pre {
+    font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace
+}
+
+input {
+    -webkit-font-feature-settings: "liga" 0;
+    font-feature-settings: "liga" 0
+}
+
+body>:first-child {
+    margin-top: 0!important
+}
+
+body>:last-child {
+    margin-bottom: 0!important
+}
+
+a:not([href]) {
+    color: inherit
+}
+
+blockquote,
+dl,
+ol,
+p,
+pre,
+table,
+ul {
+    margin-top: 0;
+    margin-bottom: 16px
+}
+
+hr {
+    background: #e7e7e7;
+    height: .25em;
+    margin: 24px 0;
+    border: 0
+}
+
+blockquote>:first-child {
+    margin-top: 0
+}
+
+blockquote>:last-child {
+    margin-bottom: 0
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25
+}
+
+dl dt,
+table th {
+    font-weight: 700
+}
+
+h1 code,
+h1 tt,
+h2 code,
+h2 tt,
+h3 code,
+h3 tt,
+h4 code,
+h4 tt,
+h5 code,
+h5 tt,
+h6 code,
+h6 tt {
+    font-size: inherit
+}
+
+h1 {
+    font-size: 2em
+}
+
+h2 {
+    font-size: 1.5em
+}
+
+h3 {
+    font-size: 1.25em
+}
+
+h4 {
+    font-size: 1em
+}
+
+h5 {
+    font-size: .875em
+}
+
+h6 {
+    font-size: .85em;
+    color: #777
+}
+
+ol,
+ul {
+    padding-left: 2em
+}
+
+ol ol,
+ol ul,
+ul ol,
+ul ul {
+    margin-top: 0;
+    margin-bottom: 0
+}
+
+li>p {
+    margin-top: 16px
+}
+
+li+li {
+    margin-top: .25em
+}
+
+dl dt {
+    margin-top: 16px;
+    font-size: 1em;
+    font-style: italic
+}
+
+dl dd {
+    padding: 0 16px;
+    margin-bottom: 16px
+}
+
+table td,
+table th {
+    padding: 6px 13px;
+    border: 1px solid #ddd
+}
+
+table tr {
+    border-top: 1px solid #ccc
+}
+
+table tr:nth-child(2n) {
+    background-color: #f8f8f8
+}
+
+code {
+    padding: .2em 0;
+    margin: 0;
+    font-size: 85%;
+    background-color: rgba(0, 0, 0, .04);
+    border-radius: 3px
+}
+
+code::after,
+code::before {
+    letter-spacing: -.2em;
+    content: "\00a0"
+}
+
+pre>code {
+    margin: 0;
+    font-size: 100%;
+    word-break: normal;
+    white-space: pre;
+    background: 0 0;
+    border: 0
+}
+
+pre {
+    padding: 16px;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border-radius: 3px
+}
+
+pre code {
+    display: inline;
+    max-width: auto;
+    margin: 0;
+    line-height: inherit;
+    background-color: transparent;
+    border: 0
+}
+
+pre code::after,
+pre code::before {
+    content: normal
+}
+
+kbd {
+    display: inline-block;
+    padding: 3px 5px;
+    font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    line-height: 10px;
+    color: #555;
+    vertical-align: middle;
+    background-color: #fcfcfc;
+    border: 1px solid #ccc;
+    border-bottom-color: #bbb;
+    border-radius: 3px;
+    box-shadow: inset 0 -1px 0 #bbb
+}
+
+hr {
+    border-bottom-color: #eee
+}
+</style>
+
+    
+</head>
+
+<body class="pod">
+    <div id="___top"></div>
+    <nav class="indexgroup">
+<table id="TOC">
+<caption><h2 id="TOC_Title">Table of Contents</h2></caption>
+<tr class="toc-level-1"><td class="toc-number">1</td><td class="toc-text"><a href="#NAME">NAME</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">2</td><td class="toc-text"><a href="#METHODS">METHODS</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">2.1</td><td class="toc-text"><a href="#General_Purpose">General Purpose</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">2.2</td><td class="toc-text"><a href="#Properties">Properties</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">2.3</td><td class="toc-text"><a href="#Utility">Utility</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">3</td><td class="toc-text"><a href="#SEE_ALSO">SEE ALSO</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">4</td><td class="toc-text"><a href="#COPYRIGHT">COPYRIGHT</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">5</td><td class="toc-text"><a href="#LICENCE">LICENCE</a></td></tr>
+
+</table>
+</nav>
+
+
+    <div class="pod-body">
+    <section>
+<h1 id="NAME"><a class="u" href="#___top" title="go to top of document">NAME</a></h1>
+<p><code>JSON::Class::Config</code> - <code>JSON::Class</code> configuration</p>
+<h1 id="METHODS"><a class="u" href="#___top" title="go to top of document">METHODS</a></h1>
+<h2 id="General_Purpose"><a class="u" href="#___top" title="go to top of document">General Purpose</a></h2>
+<ul><li><p><strong><code>method new(...)</code></strong></p>
+<p>The following attributes can be set with the constructor:</p>
+<ul><li><p><code>Str</code> <strong><code>:$severity</code></strong></p>
+<p>Can be one of "easy", "warn", "strict". See methods <code>severity</code>, <code>alert</code>, <code>notify</code> for more details.</p>
+</li>
+<li><p>Severity flags:</p>
+<ul><li><p><code>Bool</code> <strong><code>:$easy</code></strong></p>
+</li>
+<li><p><code>Bool</code> <strong><code>:$warn</code></strong></p>
+</li>
+<li><p><code>Bool</code> <strong><code>:$strict</code></strong></p>
+</li>
+</ul>
+<p>Alternate way to set the severity. Only one at a time can be used.</p>
+</li>
+<li><p><code>Bool</code> <strong><code>:$defaults</code></strong></p>
+<p>Set default helpers for standard types. Currently it is <a href="https://docs.raku.org/type/DateTime"><code>DateTime</code></a> supported which is serialized to a string by default.</p>
+</li>
+<li><p>Configuration parameters:</p>
+<ul><li><p><code>Bool</code> <strong><code>:$allow-jsonc</code></strong><code>= False</code></p>
+</li>
+<li><p><code>Bool</code> <strong><code>:$eager</code></strong><code>= False</code></p>
+</li>
+<li><p><code>Bool</code> <strong><code>:$enums-as-value</code></strong><code>= False</code></p>
+</li>
+<li><p><code>Bool</code> <strong><code>:$pretty</code></strong><code>= False</code></p>
+</li>
+<li><p><code>Bool</code> <strong><code>:$skip-null</code></strong><code>= True</code></p>
+</li>
+<li><p><code>Bool</code> <strong><code>:$sorted-keys</code></strong><code>= False</code></p>
+</li>
+<li><p><code>UInt</code> <strong><code>:$spacing</code></strong><code>= 2</code></p>
+</li>
+</ul>
+<p>See corresponding methods for the meaning of each parameter.</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>method global(*%)</code></strong></p>
+<p>Returns the global configuration object instance. For the first time it possible to set global defaults by passing to the method the same arguments as for the <code>new</code> method. This is because the global doesn't exists until requested for the first time.</p>
+<p><em>Remember</em> that invoking most methods on <code>JSON::Class::Config</code> typeobject directly redirects to the global meaning that any such call can be the first to vivify the object.</p>
+</li>
+<li><p><strong><code>method profile()</code></strong></p>
+<p>Creates a profile hash which can be used as named arguments to create a new config instance. For example:</p>
+<pre class="pod-block-code">my $config = JSON::Class::Config().new(|JSON::Class::Config().profile(), :!eager)
+</pre>
+</li>
+<li><p><strong><code>method dup(*%twiddles)</code></strong></p>
+<p>This method duplicates it's invocator, similarly to <code>clone</code>, but using method <code>new</code> to create a completely new object. Basically, the <code>profile</code> method example can be changed as:</p>
+<pre class="pod-block-code">my $config = JSON::Class::Config().dup(:!eager)
+</pre>
+</li>
+</ul>
+<h2 id="Properties"><a class="u" href="#___top" title="go to top of document">Properties</a></h2>
+<p>Note that with regard to configuration properties <code>JSON::Class::Config</code> is immutable.</p>
+<ul><li><p><strong><code>method allow-jsonc()</code></strong></p>
+<p>Allow JSONC standard. See <a href="https://raku.land/cpan:TIMOTIMO/JSON::Fast"><code>JSON::Fast</code> from-json argument</a>.</p>
+</li>
+<li><p><strong><code>method pretty()</code></strong></p>
+<p>Turn on JSON formatting. See <a href="https://raku.land/cpan:TIMOTIMO/JSON::Fast"><code>JSON::Fast</code> to-json argument</a>.</p>
+</li>
+<li><p><strong><code>method spacing()</code></strong></p>
+<p>Level of indentation when is <code>$config.pretty</code>. See <a href="https://raku.land/cpan:TIMOTIMO/JSON::Fast"><code>JSON::Fast</code> to-json argument</a>.</p>
+</li>
+<li><p><strong><code>method sorted-keys()</code></strong></p>
+<p>Sort JSON key in the output. See <a href="https://raku.land/cpan:TIMOTIMO/JSON::Fast"><code>JSON::Fast</code> to-json argument</a>.</p>
+</li>
+<li><p><strong><code>method enums-as-value()</code></strong></p>
+<p>Treat enums by their underlying values. See <a href="https://raku.land/cpan:TIMOTIMO/JSON::Fast"><code>JSON::Fast</code> to-json argument</a></p>
+</li>
+<li><p><strong><code>method skip-null()</code></strong></p>
+<p>Skip undefined values by default. JSON classes, roles, and individual attributes can override this default.</p>
+</li>
+<li><p><strong><code>method eager()</code></strong></p>
+<p>If <em>True</em> lazy deserialization is disabled.</p>
+</li>
+</ul>
+<h2 id="Utility"><a class="u" href="#___top" title="go to top of document">Utility</a></h2>
+<ul><li><p><strong><code>proto method jsonify(|)</code></strong></p>
+<p>This method JSONifies it only positional argument. Works with both type objects and instances.</p>
+<ul><li><p><strong><code>multi method jsonify(Mu:U $what, |)</code></strong></p>
+<p>This method nominalizes <code>$what</code> and JSONifies it.</p>
+</li>
+<li><p><strong><code>multi method jsonify(Mu:U :$nominal-what, Bool :$local)</code></strong></p>
+<p>This candidate is for cases where one knows exactly that the typeobject is nominal. Otherwise is identical to the previous candidate. In fact, it is the previous using this one.</p>
+</li>
+<li><p><strong><code>multi method jsonify(Mu:D $obj, |)</code></strong></p>
+<p>This method creates a JSONified copy of <code>$obj</code> by first JSONifying its <code>.WHAT</code> class then using its <code>clone-from</code> method to transfer attribute values from $obj to the JSONified copy.</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>method set-helpers(Mu $type, :to-json(:$serializer), :from-json(:$deserializer), :$matcher, *%helpers)</code></strong></p>
+<p>Set universal helper for a typeobject <code>$type</code>. This is helpful when class is used by a few JSONified structures.</p>
+<p>The meaning of helpers should be clear. As a little reminder, <code>:$matcher</code> is described in the <em>Sequences</em> section of <a href="../Class.html"><code>JSON::Class</code></a> documentation.</p>
+<p>Helpers can be either code objects, or method names on <code>$type</code>.</p>
+<p><code>$type</code> can be any class, not necessarily a JSON one. For example, the default helpers for <a href="https://docs.raku.org/type/DateTime"><code>DateTime</code></a>, installed when <code>:$defaults</code> of <code>JSON::Class::Config</code> constructor is <em>True</em>, are set like this:</p>
+<pre class="pod-block-code">self.set-helpers(DateTime, :to-json&lt;Str&gt;, :from-json&lt;new&gt;, matcher =&gt; -&gt; Str:D:D:D:D:D:D:D $from {
+    ?try {
+        DateTime.new($from)
+    }
+})
+</pre>
+<p>With them a <code>DateTime</code> instance would always be represented as a string.</p>
+<p>Setting custom helpers is allowed as keys of <code>%helpers</code> slurpy:</p>
+<pre class="pod-block-code">$config.set-helpers: Foo, validator =&gt; &amp;make-sure-foo-is-well-formed;
+</pre>
+<p>Apparently, these won't be used by the <code>JSON::Class</code> itself and would only serve for one's code purposes.</p>
+</li>
+<li><p><strong><code>method helper(Mu $type, Str:D $stage)</code></strong></p>
+<p>Get a helper for <code>$stage</code> where stage is <em>'to-json'</em>, <em>'from-json'</em>, <em>'match'</em>, or a key from <code>%helpers</code> slurpy of <code>set-helper</code> method..</p>
+</li>
+<li><p><strong><code>method serializer(Mu $what)</code></strong></p>
+<p>Get serialzier for object <code>$what</code>. Similar to <code>$config.helper($what, 'to-json')</code>.</p>
+</li>
+<li><p><strong><code>method deserializer(Mu $what)</code></strong></p>
+<p>Get deserialzier for object <code>$what</code>. Similar to <code>$config.helper($what, 'from-json')</code></p>
+</li>
+<li><p><strong><code>method matcher(Mu $what)</code></strong></p>
+<p>Get matcher for object <code>$what</code>. Similar to <code>$config.helper($what, 'match')</code></p>
+</li>
+<li><p><strong><code>proto method map-type(|)</code></strong></p>
+<p>This method installs type mapping. See <em>Type Mapping</em> section in <a href="Details.html"><code>JSON::Class::Details</code></a>.</p>
+<ul><li><p><strong><code>multi method map-type(Mu:U \from-type, Mu:U \to-type)</code></strong></p>
+<p>Simply install a mapping.</p>
+</li>
+<li><p><strong><code>multi method map-type(Mu:U \wrapper)</code></strong></p>
+<p>This is a simplified version of the previous candidate which can be used for classes with <code>is json-wrap</code> applied. See <em>Type Mapping</em> section in <a href="Details.html"><code>JSON::Class::Details</code></a>.</p>
+</li>
+<li><p><strong><code>method map-type(Pair:D $map)</code></strong></p>
+<p><code>$config.map-type((FromType) =</code> ToType))&gt; is just an alternative way to do <code>$config.map-type(FromType, ToType)</code>. Mostly useful to provide support for the <code>map-types</code> method.</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>method map-types(*@maps)</code></strong></p>
+<p>To install multiple mappings at once. Each item of maps can be either a list of two elements <code>(FromType, ToType)</code>, or a JSON wrapper class, or a <a href="https://docs.raku.org/type/Pair"><code>Pair</code></a> – see the <code>map-type</code> method candidates:</p>
+<pre class="pod-block-code">class AWrapperClass is json-wrap(OriginalClass) {...}
+
+$config.map-types:
+    (Foo, Bar),
+    AWrapperClass,
+    (Baz) =&gt; Fubar;
+</pre>
+<p>Simply choose which one works better for you.</p>
+</li>
+<li><p><strong><code>method type-from(Mu:U \from-type)</code></strong></p>
+<p>Returns <code>to-type</code>, installed with a <code>map-type</code> class for <code>from-type</code>.</p>
+</li>
+<li><p><strong><code>method set-severity(Bool :$easy, Bool :$warn, Bool :$strict)</code></strong></p>
+<p>Set the severity of <code>JSON::Class</code> reaction to errors or warnings. See methods <code>alert</code> and <code>notify</code>.</p>
+</li>
+<li><p><strong><code>method severity(--</code> Str:D)</strong>&gt;</p>
+<p>Returns current severity.</p>
+</li>
+<li><p><strong><code>method with-severity(&amp;code, Bool :$easy, Bool :$warn, Bool :$strict)</code></strong></p>
+<p>Executes <code>&amp;code</code> with temporarily set severity level. Say, one wants to hide errors for a task; or vice versa, make sure no error gets lost.</p>
+</li>
+<li><p><strong><code>proto method alert(|)</code></strong></p>
+<p>Depending on the current severity level, would do nothing, or issue a warning with <code>warn</code> routine, or throw an exception.</p>
+<p>Candidates are:</p>
+<ul><li><p><strong><code>multi method alert(Exception:D $ex)</code></strong></p>
+<p>This is the primary which does all the job.</p>
+</li>
+<li><p><strong><code>multi method alert(*@msg)</code></strong></p>
+<p>Same as calling with <code>JSON::Class::X::AdHoc</code> exception instance. Message is formed by joining <code>gist</code>s of <code>@msg</code> elements.</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>method notify(*@msg)</code></strong></p>
+<p>This method is similar to <code>alert</code> except that it only warns with a message formed of <code>gist</code>s of <code>@msg</code>. Unless the severity is <code>easy</code>, of course.</p>
+</li>
+<li><p><strong><code>method to-json-profile(--</code> Map:D)</strong>&gt;</p>
+<p>This method returns a <a href="https://docs.raku.org/type/Map"><code>Map</code></a> with named arguments for <a href="https://raku.land/cpan:TIMOTIMO/JSON::Fast"><code>JSON::Fast</code></a> <code>to-json</code> routine:</p>
+<pre class="pod-block-code">to-json($data, |$config.to-json-profile);
+</pre>
+</li>
+<li><p><strong><code>method from-json-profile()</code></strong></p>
+<p>Returns a <a href="https://docs.raku.org/type/Map"><code>Map</code></a> with named arguments for <a href="https://raku.land/cpan:TIMOTIMO/JSON::Fast"><code>JSON::Fast</code></a> <code>from-json</code> routine:</p>
+<pre class="pod-block-code">from-json($json, |$config.from-json-profile);
+</pre>
+</li>
+</ul>
+<h1 id="SEE_ALSO"><a class="u" href="#___top" title="go to top of document">SEE ALSO</a></h1>
+<ul><li><p><a href="../Class.html"><code>JSON::Class</code></a></p>
+</li>
+<li><p><a href="Details.html"><code>JSON::Class::Details</code></a></p>
+</li>
+</ul>
+<h1 id="COPYRIGHT"><a class="u" href="#___top" title="go to top of document">COPYRIGHT</a></h1>
+<p>(c) 2023, Vadim Belman &lt;vrurg@cpan.org&gt;</p>
+<h1 id="LICENCE"><a class="u" href="#___top" title="go to top of document">LICENCE</a></h1>
+<p>Artistic License 2.0</p>
+<p>See the <a href="../../../md/LICENCE"><em>docs/md/LICENCE</em></a> file in this distribution.</p>
+</section>
+
+    </div>
+
+    
+</body>
+</html>

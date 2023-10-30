@@ -1,13 +1,11 @@
-rakudoc
-=======
+# CHANGELOG
 
-CHANGELOG
-=========
+# v0.0.1
 
-head
-====
+  - First release
 
-v0.0.1
+# SEE ALSO
 
-  * First release
+  - [`README`](README.md)
 
+  - [`INDEX`](INDEX.md)

@@ -9,11 +9,11 @@ Contains no serviceable parts excepts those coming from consumed helper roles. R
 
 =head1 SEE ALSO
 
-=item L<C<JSON::Class>|../Class.md>
-=item L<C<JSON::Class::Details>|Details.md>
-=item L<C<JSON::Class::HOW::AttributeContainer>|HOW/AttributeContainer.md>
-=item L<C<JSON::Class::HOW::Configurable>|HOW/Configurable.md>
-=item L<C<JSON::Class::HOW::Explicit>|HOW/Explicit.md>
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<JSON::Class::HOW::AttributeContainer>|rakudoc:JSON::Class::HOW::AttributeContainer>
+=item L<C<JSON::Class::HOW::Configurable>|rakudoc:JSON::Class::HOW::Configurable>
+=item L<C<JSON::Class::HOW::Explicit>|rakudoc:JSON::Class::HOW::Explicit>
 
 =head1 COPYRIGHT
 
@@ -23,5 +23,6 @@ Contains no serviceable parts excepts those coming from consumed helper roles. R
 
 Artistic License 2.0
 
-See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+See the L<I<docs/md/LICENCE>|file:docs/md/LICENCE> file in this distribution.
 =end rakudoc
+

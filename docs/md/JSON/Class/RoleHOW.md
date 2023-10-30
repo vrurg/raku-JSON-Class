@@ -1,38 +1,31 @@
-rakudoc
-=======
+# rakudoc
 
-NAME
-====
+# NAME
 
 `JSON::Class::RoleHOW` – base role of JSONified role meta-object
 
-DESCRIPTION
-===========
+# DESCRIPTION
 
 Contains no serviceable parts excepts those coming from consumed helper roles. Refer to the *SEE ALSO* section below.
 
-SEE ALSO
-========
+# SEE ALSO
 
-  * [`JSON::Class`](../Class.md)
+  - [`JSON::Class`](../Class.md)
 
-  * [`JSON::Class::Details`](Details.md)
+  - [`JSON::Class::Details`](Details.md)
 
-  * [`JSON::Class::HOW::AttributeContainer`](HOW/AttributeContainer.md)
+  - [`JSON::Class::HOW::AttributeContainer`](HOW/AttributeContainer.md)
 
-  * [`JSON::Class::HOW::Configurable`](HOW/Configurable.md)
+  - [`JSON::Class::HOW::Configurable`](HOW/Configurable.md)
 
-  * [`JSON::Class::HOW::Explicit`](HOW/Explicit.md)
+  - [`JSON::Class::HOW::Explicit`](HOW/Explicit.md)
 
-COPYRIGHT
-=========
+# COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENCE
-=======
+# LICENCE
 
 Artistic License 2.0
 
-See the [*LICENCE*](../../../../LICENCE) file in this distribution.
-
+See the [*docs/md/LICENCE*](../../LICENCE) file in this distribution.

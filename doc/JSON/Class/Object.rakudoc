@@ -6,11 +6,11 @@ C<JSON::Class::Object> – parent of JSONified classes
 =head1 DESCRIPTION
 
 This class is injected into the list of parent of any JSONified class. It implements the essential functionality of
-class serialization. See more in L<C<JSON::Class::Details>|Details.md>.
+class serialization. See more in L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>.
 
 =head1 METHODS
 
-Some methods of this class are already covered by L<C<JSON::Class>|../Class.md> page.
+Some methods of this class are already covered by L<C<JSON::Class>|rakudoc:JSON::Class> page.
 
 =begin item
 B<C<method json-unused()>>
@@ -27,16 +27,16 @@ Returns a hash of keys not yet consumed by lazy deserialization
 =begin item
 B<C<proto method json-serialize-attr(JSON::Class::Attr:D $attribute-descriptor, Mu \value)>>
 
-Multi-candidates of this proto take care of L<C<JSON::Class::Attr::Scalar>|Attr/Scalar.md>,
-L<C<JSON::Class::Attr::Postional>|Attr/Postional.md>, and L<C<JSON::Class::Attr::Associative>|Attr/Associative.md>
+Multi-candidates of this proto take care of L<C<JSON::Class::Attr::Scalar>|rakudoc:JSON::Class::Attr::Scalar>,
+L<C<JSON::Class::Attr::Postional>|rakudoc:JSON::Class::Attr::Postional>, and L<C<JSON::Class::Attr::Associative>|rakudoc:JSON::Class::Attr::Associative>
 descriptors each.
 =end item
 
 =begin item
 B<C<method json-build-attr(Str:D :$attribute)>>
 
-This method is invoked by L<C<AttrX::Mooish> to lazily build a JSON attribute.
-|https://raku.land/zef:vrurg/AttrX::Mooish>
+This method is invoked by L«C<AttrX::Mooish> to lazily build a JSON attribute.
+|rakudoc:AttrX::Mooish:auth<zef:vrurg>»
 =end item
 
 =begin item
@@ -48,10 +48,10 @@ attribute descriptor.
 
 =head1 SEE ALSO
 
-=item L<C<JSON::Class>|../Class.md>
-=item L<C<JSON::Class::Details>|Details.md>
-=item L<C<JSON::Class::Representation>|Representation.md>
-=item L<C<JSON::Class::ClassHOW>|ClassHOW.md>
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<JSON::Class::Representation>|rakudoc:JSON::Class::Representation>
+=item L<C<JSON::Class::ClassHOW>|rakudoc:JSON::Class::ClassHOW>
 
 =head1 COPYRIGHT
 
@@ -61,6 +61,6 @@ attribute descriptor.
 
 Artistic License 2.0
 
-See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+See the L<I<docs/md/LICENCE>|file:docs/md/LICENCE> file in this distribution.
 =end rakudoc
 

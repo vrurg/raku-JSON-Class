@@ -1,9 +1,15 @@
-=begin rakudoc
+=begin pod
+=config :title<Changes>
 =head1 CHANGELOG
 
-=head v0.0.1
+=head1 v0.0.1
 
 =item First release
 
-=end rakudoc
+=head1 SEE ALSO
+
+=item L<C<README>|rakudoc:..::README>
+=item L<C<INDEX>|rakudoc:..::INDEX>
+
+=end pod
 

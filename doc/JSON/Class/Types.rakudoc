@@ -17,7 +17,7 @@ and C<%twiddles> to the constructor C<new>: C<self.new(|%profile, |%twiddles)>.
 
 =head2 C<subset JSONBasicType>
 
-This subset matches what L<C<JSON::Class>|../Class.md> considers a "basic type". For now it would be one of the
+This subset matches what L<C<JSON::Class>|rakudoc:JSON::Class> considers a "basic type". For now it would be one of the
 following:
 
 =item C<Numeric>
@@ -43,8 +43,8 @@ Enumerate marshalling stages. Elements are:
 
 =head1 SEE ALSO
 
-=item L<C<JSON::Class>|../Class.md>
-=item L<C<JSON::Class::Details>|Details.md>
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
 
 =head1 COPYRIGHT
 
@@ -54,6 +54,6 @@ Enumerate marshalling stages. Elements are:
 
 Artistic License 2.0
 
-See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+See the L<I<docs/md/LICENCE>|file:docs/md/LICENCE> file in this distribution.
 =end rakudoc
 

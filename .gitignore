@@ -5,3 +5,4 @@
 *.iml
 .vscode/*
 .layout
+.gen-doc-index.json

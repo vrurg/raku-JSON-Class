@@ -14,15 +14,15 @@ Returns the base class C<is json> trait was applied to.
 =begin item
 B<C<method json-config-defaults()>>
 
-Returns a hash of configuration properties to be used as defaults for a new L<C<JSON::Class::Config>|Config.md> instance. See also
-L<C<JSON::Class>|../Class.md> and L<C<JSON::Class::Details>|Details.md>.
+Returns a hash of configuration properties to be used as defaults for a new L<C<JSON::Class::Config>|rakudoc:JSON::Class::Config> instance. See also
+L<C<JSON::Class>|rakudoc:JSON::Class> and L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>.
 =end item
 
 =head1 SEE ALSO
 
-=item L<C<JSON::Class>|../Class.md>
-=item L<C<JSON::Class::Object>|Object.md>
-=item L<C<JSON::Class::ClassHOW>|ClassHOW.md>
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Object>|rakudoc:JSON::Class::Object>
+=item L<C<JSON::Class::ClassHOW>|rakudoc:JSON::Class::ClassHOW>
 
 =head1 COPYRIGHT
 
@@ -32,6 +32,6 @@ L<C<JSON::Class>|../Class.md> and L<C<JSON::Class::Details>|Details.md>.
 
 Artistic License 2.0
 
-See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+See the L<I<docs/md/LICENCE>|file:docs/md/LICENCE> file in this distribution.
 =end rakudoc
 

@@ -1,68 +1,61 @@
-rakudoc
-=======
+# rakudoc
 
-NAME
-====
+# NAME
 
 `JSON::Class::HOW::AttributeContainer` – role for meta-objects that serve as JSON attribute containers
 
-METHODS
-=======
+# METHODS
 
-  * **`method json-attrs(Mu, Bool:D :$local, Bool :$p, Bool :$k, Bool :$kv, Bool :$v)`**
-
+  - **`method json-attrs(Mu, Bool:D :$local, Bool :$p, Bool :$k, Bool :$kv, Bool :$v)`**
+    
     Returns a registry of JSON attribute descriptors.
-
-      * `Bool:D` **`:$local`**`= True`
-
+    
+      - `Bool:D` **`:$local`**`= True`
+        
         Only attributes of the class itself and directly consumed roles. With `:!local` attributes of parent or incorporated JSON classes are included too.
-
-      * `Bool` **`:$p, :$k, :$v, :$kv`**
-
+    
+      - `Bool` **`:$p, :$k, :$v, :$kv`**
+        
         Similarly to many standard Raku routines, these adverbs request for list of pairs, keys, values, and keys and values to be returned. By *values* we mean attribute descriptor objects.
 
-  * **`method json-attrs-by-key(Bool :$local = True, Bool :$p, Bool :$k, Bool :$v, Bool :$kv)`**
-
+  - **`method json-attrs-by-key(Bool :$local = True, Bool :$p, Bool :$k, Bool :$v, Bool :$kv)`**
+    
     Similar to `json-attrs`, but the registry returned is keyed with JSON keys, not Raku attribute names.
 
-  * **`method json-get-attr(Mu, $attr, Bool:D :$local = True)`**
-
+  - **`method json-get-attr(Mu, $attr, Bool:D :$local = True)`**
+    
     Get attribute descriptor for an attribute. The attribute can be specified either by its name, or by [`Attribute`](https://docs.raku.org/type/Attribute) object.
 
-  * **`method json-has-attr(Mu, $attr, Bool :$local = True)`**
-
+  - **`method json-has-attr(Mu, $attr, Bool :$local = True)`**
+    
     Tell if attribute has a descriptor. Can be given a name or an [`Attribute`](https://docs.raku.org/type/Attribute) object.
 
-  * **`method json-get-key(Mu, Str:D $json-key, Bool :$local = True)`**
-
+  - **`method json-get-key(Mu, Str:D $json-key, Bool :$local = True)`**
+    
     Get attribute descriptor for a JSON key name.
 
-  * **`method json-has-key(Mu, Str:D $json-key, Bool :$local = True)`**
-
+  - **`method json-has-key(Mu, Str:D $json-key, Bool :$local = True)`**
+    
     Tell if we have a descriptor for the give JSON key.
 
-SEE ALSO
-========
+# SEE ALSO
 
-  * [`JSON::Class`](../Class.md)
+  - [`JSON::Class`](../../Class.md)
 
-  * [`JSON::Class::Details`](Details.md)
+  - [`JSON::Class::Details`](../Details.md)
 
-  * [`JSON::Class::ClassHOW`](../ClassHOW.md)
+  - [`JSON::Class::ClassHOW`](../ClassHOW.md)
 
-  * [`JSON::Class::RoleHOW`](../RoleHOW.md)
+  - [`JSON::Class::RoleHOW`](../RoleHOW.md)
 
-  * [`JSON::Class::HOW::Laziness`](Laziness.md)
+  - [`JSON::Class::HOW::Laziness`](Laziness.md)
 
-COPYRIGHT
-=========
+# COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENCE
-=======
+# LICENCE
 
 Artistic License 2.0
 
-See the [*LICENCE*](../../../../../LICENCE) file in this distribution.
-
+See the [*docs/LICENCE*](../../../../LICENCE) file in this distribution.

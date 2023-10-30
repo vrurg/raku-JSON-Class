@@ -6,7 +6,7 @@ C<JSON::Class::Descriptor> - base role for attribute and sequence item descripto
 =head1 DESCRIPTION
 
 C<JSON::Class> doesn't modify attribute objects of a class meta-object. Instead, it manipulates with their
-I<descriptors>, as described in I<Descriptors> section of L<C<JSON::Class::Details>|Details.md>.
+I<descriptors>, as described in I<Descriptors> section of L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>.
 
 =head1 METHODS
 
@@ -56,7 +56,7 @@ Set deserializer for this element. Particular implementation of the method depen
 B<C<method register-helper(Str:D $stage, Str:D $kind, $helper)>>
 
 Registers a helper in form of a code object or a method name string. Values of C<$stage> and C<$kind> are not
-constrained, but normally these would be one of C<JSONStages> from L<C<JSON::Class::Types>|Types.md> and I<'attribute'>, or
+constrained, but normally these would be one of C<JSONStages> from L<C<JSON::Class::Types>|rakudoc:JSON::Class::Types> and I<'attribute'>, or
 I<'item'>, or I<'value'>, or I<'key'>.
 
 Thread safe.
@@ -126,7 +126,7 @@ descriptor may require adding candidates to this C<proto>.
 =begin item
 B<C<proto method kind-stage(Str:D $stage, Str:D $kind)>>
 
-This method is necessary to map stage+kind pair into L<C<JSON::Class::Config>|Config.md> helper stage. In other words, if
+This method is necessary to map stage+kind pair into L<C<JSON::Class::Config>|rakudoc:JSON::Class::Config> helper stage. In other words, if
 a marshaller wants to find out if there is a custom helper registered for a type then it would do something like:
 
 =begin code :lang<raku>
@@ -139,10 +139,10 @@ C<$stage>.
 
 =head1 SEE ALSO
 
-=item L<C<JSON::Class>|../Class.md>
-=item L<C<JSON::Class::Details>|Details.md>
-=item L<C<JSON::Class::Attr>|Attr.md>
-=item L<C<JSON::Class::ItemDescriptor>|ItemDescriptor.md>
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<JSON::Class::Attr>|rakudoc:JSON::Class::Attr>
+=item L<C<JSON::Class::ItemDescriptor>|rakudoc:JSON::Class::ItemDescriptor>
 
 =head1 COPYRIGHT
 
@@ -152,6 +152,6 @@ C<$stage>.
 
 Artistic License 2.0
 
-See the L<I<LICENCE>|../../../../LICENCE> file in this distribution.
+See the L<I<docs/md/LICENCE>|file:docs/md/LICENCE> file in this distribution.
 =end rakudoc
 

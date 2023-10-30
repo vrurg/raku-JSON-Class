@@ -1,44 +1,37 @@
-rakudoc
-=======
+# rakudoc
 
-NAME
-====
+# NAME
 
 `JSON::Class::HOW::Configurable` – role for meta-objects capable of keeping configuration defaults
 
-METHODS
-=======
+# METHODS
 
-  * **`method json-has-config-defaults(Mu)`**
-
+  - **`method json-has-config-defaults(Mu)`**
+    
     Tell if any defaults were set.
 
-  * **`method json-config-defaults(Mu)`**
-
+  - **`method json-config-defaults(Mu)`**
+    
     Returns a hash of configuration parameters with their values.
 
-SEE ALSO
-========
+# SEE ALSO
 
-  * [`JSON::Class`](../Class.md)
+  - [`JSON::Class`](../../Class.md)
 
-  * [`JSON::Class::Details`](Details.md)
+  - [`JSON::Class::Details`](../Details.md)
 
-  * [`JSON::Class::ClassHOW`](../ClassHOW.md)
+  - [`JSON::Class::ClassHOW`](../ClassHOW.md)
 
-  * [`JSON::Class::RoleHOW`](../RoleHOW.md)
+  - [`JSON::Class::RoleHOW`](../RoleHOW.md)
 
-  * [`JSON::Class::RoleHOW`](../SequenceHOW.md)
+  - [`JSON::Class::RoleHOW`](../RoleHOW.md)
 
-COPYRIGHT
-=========
+# COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENCE
-=======
+# LICENCE
 
 Artistic License 2.0
 
-See the [*LICENCE*](../../../../../LICENCE) file in this distribution.
-
+See the [*docs/LICENCE*](../../../../LICENCE) file in this distribution.

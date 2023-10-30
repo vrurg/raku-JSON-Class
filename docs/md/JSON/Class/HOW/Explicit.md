@@ -1,44 +1,37 @@
-rakudoc
-=======
+# rakudoc
 
-NAME
-====
+# NAME
 
 `JSON::Class::HOW::Explicit`
 
-METHODS
-=======
+# METHODS
 
-  * **`method json-is-explicit(Mu)`**
-
+  - **`method json-is-explicit(Mu)`**
+    
     Tell if a class or a role is explicit.
 
-  * **`method json-has-explicit(Mu)`**
-
+  - **`method json-has-explicit(Mu)`**
+    
     *False* if the flag was not explicitly set for the class.
 
-SEE ALSO
-========
+# SEE ALSO
 
-  * [`JSON::Class`](../Class.md)
+  - [`JSON::Class`](../../Class.md)
 
-  * [`JSON::Class::Details`](Details.md)
+  - [`JSON::Class::Details`](../Details.md)
 
-  * [`JSON::Class::ClassHOW`](../ClassHOW.md)
+  - [`JSON::Class::ClassHOW`](../ClassHOW.md)
 
-  * [`JSON::Class::RoleHOW`](../RoleHOW.md)
+  - [`JSON::Class::RoleHOW`](../RoleHOW.md)
 
-  * [`JSON::Class::RoleHOW`](../SequenceHOW.md)
+  - [`JSON::Class::RoleHOW`](../RoleHOW.md)
 
-COPYRIGHT
-=========
+# COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENCE
-=======
+# LICENCE
 
 Artistic License 2.0
 
-See the [*LICENCE*](../../../../../LICENCE) file in this distribution.
-
+See the [*docs/LICENCE*](../../../../LICENCE) file in this distribution.

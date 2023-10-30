@@ -1,42 +1,35 @@
-rakudoc
-=======
+# rakudoc
 
-NAME
-====
+# NAME
 
 `JSON::Class::Attr::Scalar` - descriptor of `$`-sigilled attributes
 
-METHODS
-=======
+# METHODS
 
-  * **`method set-serializer($attribute?)`**
-
+  - **`method set-serializer($attribute?)`**
+    
     Set custom serializers for the attribute.
 
-  * **`method set-deserializer($attribute?)`**
-
+  - **`method set-deserializer($attribute?)`**
+    
     Set custom deserializers for the attribute.
 
-SEE ALSO
-========
+# SEE ALSO
 
-  * [`JSON::Class`](../Class.md)
+  - [`JSON::Class`](../../Class.md)
 
-  * [`JSON::Class::Details`](Details.md)
+  - [`JSON::Class::Details`](../Details.md)
 
-  * [`JSON::Class::Descriptor`](../Descriptor.md)
+  - [`JSON::Class::Descriptor`](../Descriptor.md)
 
-  * [`JSON::Class::Attr`](../Attr.md)
+  - [`JSON::Class::Attr`](../Attr.md)
 
-COPYRIGHT
-=========
+# COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENCE
-=======
+# LICENCE
 
 Artistic License 2.0
 
-See the [*LICENCE*](../../../../../LICENCE) file in this distribution.
-
+See the [*docs/LICENCE*](../../../../LICENCE) file in this distribution.

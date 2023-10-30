@@ -1,0 +1,599 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>JSON::Class::Details</title>
+    <meta charset="UTF-8">
+    <style>hr,
+img {
+    box-sizing: content-box
+}
+body::after,
+body::before,
+hr::after,
+hr::before {
+    display: table;
+    content: ""
+}
+a,
+a:not([href]) {
+    text-decoration: none
+}
+
+hr,
+svg:not(:root) {
+    overflow: hidden
+}
+
+img,
+table tr {
+    background-color: #fff
+}
+
+pre,
+table {
+    overflow: auto
+}
+
+dl,
+dl dt,
+hr,
+pre code,
+pre>code,
+td,
+th {
+    padding: 0
+}
+
+input,
+pre code {
+    overflow: visible
+}
+
+pre,
+pre code {
+    word-wrap: normal
+}
+
+body {
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    color: #333;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 16px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    width: 820px;
+    margin: 2em auto;
+}
+
+a {
+    background-color: transparent;
+    -webkit-text-decoration-skip: objects;
+    color: #4078c0
+}
+
+a:active,
+a:hover {
+    outline-width: 0;
+    text-decoration: underline
+}
+
+h1 {
+    margin: .67em 0
+}
+
+img {
+    border-style: none;
+    max-width: 100%
+}
+
+h1,
+h2 {
+    padding-bottom: .3em;
+    border-bottom: 1px solid #eee
+}
+
+input {
+    font: inherit;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit
+}
+
+* {
+    box-sizing: border-box
+}
+
+strong {
+    font-weight: 600
+}
+
+body::after,
+hr::after {
+    clear: both
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    display: block;
+    width: 100%
+}
+
+blockquote {
+    margin: 0;
+    padding: 0 1em;
+    color: #777;
+    border-left: .25em solid #ddd
+}
+
+ol ol,
+ul ol {
+    list-style-type: lower-roman
+}
+
+ol ol ol,
+ol ul ol,
+ul ol ol,
+ul ul ol {
+    list-style-type: lower-alpha
+}
+
+dd {
+    margin-left: 0
+}
+
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace
+}
+
+pre {
+    font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace
+}
+
+input {
+    -webkit-font-feature-settings: "liga" 0;
+    font-feature-settings: "liga" 0
+}
+
+body>:first-child {
+    margin-top: 0!important
+}
+
+body>:last-child {
+    margin-bottom: 0!important
+}
+
+a:not([href]) {
+    color: inherit
+}
+
+blockquote,
+dl,
+ol,
+p,
+pre,
+table,
+ul {
+    margin-top: 0;
+    margin-bottom: 16px
+}
+
+hr {
+    background: #e7e7e7;
+    height: .25em;
+    margin: 24px 0;
+    border: 0
+}
+
+blockquote>:first-child {
+    margin-top: 0
+}
+
+blockquote>:last-child {
+    margin-bottom: 0
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25
+}
+
+dl dt,
+table th {
+    font-weight: 700
+}
+
+h1 code,
+h1 tt,
+h2 code,
+h2 tt,
+h3 code,
+h3 tt,
+h4 code,
+h4 tt,
+h5 code,
+h5 tt,
+h6 code,
+h6 tt {
+    font-size: inherit
+}
+
+h1 {
+    font-size: 2em
+}
+
+h2 {
+    font-size: 1.5em
+}
+
+h3 {
+    font-size: 1.25em
+}
+
+h4 {
+    font-size: 1em
+}
+
+h5 {
+    font-size: .875em
+}
+
+h6 {
+    font-size: .85em;
+    color: #777
+}
+
+ol,
+ul {
+    padding-left: 2em
+}
+
+ol ol,
+ol ul,
+ul ol,
+ul ul {
+    margin-top: 0;
+    margin-bottom: 0
+}
+
+li>p {
+    margin-top: 16px
+}
+
+li+li {
+    margin-top: .25em
+}
+
+dl dt {
+    margin-top: 16px;
+    font-size: 1em;
+    font-style: italic
+}
+
+dl dd {
+    padding: 0 16px;
+    margin-bottom: 16px
+}
+
+table td,
+table th {
+    padding: 6px 13px;
+    border: 1px solid #ddd
+}
+
+table tr {
+    border-top: 1px solid #ccc
+}
+
+table tr:nth-child(2n) {
+    background-color: #f8f8f8
+}
+
+code {
+    padding: .2em 0;
+    margin: 0;
+    font-size: 85%;
+    background-color: rgba(0, 0, 0, .04);
+    border-radius: 3px
+}
+
+code::after,
+code::before {
+    letter-spacing: -.2em;
+    content: "\00a0"
+}
+
+pre>code {
+    margin: 0;
+    font-size: 100%;
+    word-break: normal;
+    white-space: pre;
+    background: 0 0;
+    border: 0
+}
+
+pre {
+    padding: 16px;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border-radius: 3px
+}
+
+pre code {
+    display: inline;
+    max-width: auto;
+    margin: 0;
+    line-height: inherit;
+    background-color: transparent;
+    border: 0
+}
+
+pre code::after,
+pre code::before {
+    content: normal
+}
+
+kbd {
+    display: inline-block;
+    padding: 3px 5px;
+    font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    line-height: 10px;
+    color: #555;
+    vertical-align: middle;
+    background-color: #fcfcfc;
+    border: 1px solid #ccc;
+    border-bottom-color: #bbb;
+    border-radius: 3px;
+    box-shadow: inset 0 -1px 0 #bbb
+}
+
+hr {
+    border-bottom-color: #eee
+}
+</style>
+
+    
+</head>
+
+<body class="pod">
+    <div id="___top"></div>
+    <nav class="indexgroup">
+<table id="TOC">
+<caption><h2 id="TOC_Title">Table of Contents</h2></caption>
+<tr class="toc-level-1"><td class="toc-number">1</td><td class="toc-text"><a href="#DETAILS">DETAILS</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">1.1</td><td class="toc-text"><a href="#Marshalling_Protocols">Marshalling Protocols</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">1.2</td><td class="toc-text"><a href="#Object_Architechture">Object Architechture</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">1.3</td><td class="toc-text"><a href="#Configuration_Context">Configuration Context</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">1.4</td><td class="toc-text"><a href="#What_We_Operate_With">What We Operate With</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">1.5</td><td class="toc-text"><a href="#Custom_Marshallers">Custom Marshallers</a></td></tr>
+<tr class="toc-level-3"><td class="toc-number">1.5.1</td><td class="toc-text"><a href="#Marshalling_By_Method_Name">Marshalling By Method Name</a></td></tr>
+<tr class="toc-level-3"><td class="toc-number">1.5.2</td><td class="toc-text"><a href="#Marshalling_With_JSON_Class_Methods">Marshalling With JSON Class Methods</a></td></tr>
+<tr class="toc-level-3"><td class="toc-number">1.5.3</td><td class="toc-text"><a href="#Marshaller_Signature_Match">Marshaller Signature Match</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">1.6</td><td class="toc-text"><a href="#Type_Mapping">Type Mapping</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">1.7</td><td class="toc-text"><a href="#Descriptors">Descriptors</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">2</td><td class="toc-text"><a href="#SEE_ALSO">SEE ALSO</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">3</td><td class="toc-text"><a href="#COPYRIGHT">COPYRIGHT</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">4</td><td class="toc-text"><a href="#LICENCE">LICENCE</a></td></tr>
+
+</table>
+</nav>
+
+
+    <div class="pod-body">
+    <section>
+<h1 id="DETAILS"><a class="u" href="#___top" title="go to top of document">DETAILS</a></h1>
+<p>This document tries to explain some in-depth implementation details for better understanding the internal kitchen of the module. How much information is provided here depends on how much spare time and free energy the author has for this paper.</p>
+<h2 id="Marshalling_Protocols"><a class="u" href="#___top" title="go to top of document">Marshalling Protocols</a></h2>
+<p><code>JSON::Class</code> doesn't actually create or read JSON itself. This task is offloaded to a 3rd-party module. For now it is <a href="https://modules.raku.org/dist/JSON::Fast"><code>JSON::Fast</code></a>, but theoretically it could be any other module.</p>
+<p><code>JSON::Class</code> task is to either deal with whatever is returned by a JSON parser, or supply JSON generator with a serializable data structure like <a href="https://docs.raku.org/type/Hash"><code>Hash</code></a>, or <a href="https://docs.raku.org/type/Array"><code>Array</code></a>. The structure must represent the entire object we're about to marshall.</p>
+<p>There are four key method in the core of the process:</p>
+<ul><li><p><strong><code>from-json</code></strong></p>
+<p>Takes either a JSON string, or a deserialized array, or a hash. If all passes good then either an instance of its class (or a subclass) would be returned, or an array of instances. Arrays could even be nested, depending on the original JSON structure.</p>
+</li>
+<li><p><strong><code>to-json</code></strong></p>
+<p>Can only be invoked on an instance of its class. If no errors happen during serialization, a JSON string is returned. Though is given <code>:raw</code> named argument the method would return just a <a href="https://docs.raku.org/type/Hash"><code>Hash</code></a>.</p>
+</li>
+<li><p><strong><code>json-serialize</code></strong>, <strong><code>json-deserialize</code></strong></p>
+<p>These two methods are the immediate marshalling executors. They only deal with de-/serialized data structures.</p>
+</li>
+</ul>
+<p>The difference in functionality between these methods is that <code>from-json</code> and <code>to-json</code> are "administrators": their primary task is to prepare configuration context (see the next section). Then, depending on arguments, they either parse JSON source, or produce a JSON string. Otherwise they delegate to <code>json-serizlie</code> or <code>json-deserialize</code> methods.</p>
+<h2 id="Object_Architechture"><a class="u" href="#___top" title="go to top of document">Object Architechture</a></h2>
+<p>A JSONified class or sequence are built by <code>is json</code> trait injecting corresponding roles into the classes themselves and into their meta-classes.</p>
+<p>JSON classes get <a href="Representation.html"><code>JSON::Class::Representation</code></a> role, and their meta gets <a href="ClassHOW.html"><code>JSON::Class::ClassHOW</code></a>.</p>
+<p>JSON sequences get <a href="Sequential.html"><code>JSON::Class::Sequential</code></a>, and their meta gets <a href="SequenceHOW.html"><code>JSON::Class::SequenceHOW</code></a>.</p>
+<p>JSON roles doesn't actually implement any functionality by themselves, therefore only their meta objects are modified. If a role declared as sequence the meta received <a href="HOW/Sequential.html"><code>JSON::Class::HOW::Sequential</code></a>; otherwise it is <a href="RoleHOW.html"><code>JSON::Class::RoleHOW</code></a>.</p>
+<p>Declarations of <a href="Representation.html"><code>JSON::Class::Representation</code></a> and <a href="Sequential.html"><code>JSON::Class::Sequential</code></a> roles include classes <a href="Object.html"><code>JSON::Class::Object</code></a> and <a href="Sequence.html"><code>JSON::Class::Sequence</code></a> as their parents. Though such structure could look like an overkill at first, it allows a JSONified type to be subclasses with no extra hassle because access to the most used metaobject interfaces is proxied by the roles where <code>::?CLASS</code> symbol points at the JSONified type, no matter what the MRO of an object is. For example:</p>
+<pre class="pod-block-code">class Foo is json {...}
+class Bar is Foo {...}
+say Bar.json-class; # (Foo) – the method is implemented by JSON::Class::Representation
+</pre>
+<h2 id="Configuration_Context"><a class="u" href="#___top" title="go to top of document">Configuration Context</a></h2>
+<p>Serialization and deserialization protocols use a configuration object to find out about various paramters, affecting the process. More detailed description of the parameters can be found in <a href="Config.html"><code>JSON::Class::Config</code></a> documentation. Here we only focus on how configuration object is handled by <code>JSON::Class</code>.</p>
+<p>When <code>to-json</code> or <code>from-json</code> methods are invoked for an instance of JSONified class they create a configuration context by setting a <code>$*JSON-CLASS-CONFIG</code> dynamic variable to an instance of <code>JSON::Class::Config</code>. In most simple cases the instance would be unmodified global, or <code>$*JSON-CLASS-CONFIG</code>, or user-supplied config object as in the following example:</p>
+<pre class="pod-block-code">my $config = JSON::Class::Config.new;
+$obj.to-json(:$config);
+</pre>
+<p>The <code>:config</code> named argument can be a hash of configuration paramters too:</p>
+<pre class="pod-block-code">$obj.to-json(config =&gt; { :pretty, :sorted-keys, :enums-as-value });
+</pre>
+<p>This this case this is equivalient to:</p>
+<pre class="pod-block-code">my $config = JSON::Class::Config.new: :pretty, :sorted-keys, :enums-as-value;
+$obj.to-json(:$config);
+</pre>
+<p>Yet, the context configuration parameters can be modified with:</p>
+<ul><li><p>Method named arguments <code>:pretty</code>, <code>:sorted-keys</code>, <code>:enums-as-value</code>, <code>:spacing</code> - these have the highest priority</p>
+</li>
+<li><p>Class default config paramters (see an example above), but these are only have any effect if there is no active configuration context; i.e. <code>$*JSON-CLASS-CONFIG</code> doesn't exists</p>
+</li>
+</ul>
+<h2 id="What_We_Operate_With"><a class="u" href="#___top" title="go to top of document">What We Operate With</a></h2>
+<p>The module internally never deals with JSON sources except when submitting them to a parser (<a href="https://raku.land/cpan:TIMOTIMO/JSON::Fast"><code>JSON::Fast</code></a>) or returning the result of <code>to-json</code> routine of the module. <code>JSON::Class</code> manipulates with hashes, arrays, or <a href="https://docs.raku.org/type/Cool"><code>Cool</code></a> values. This is important to remember when reading the following sections.</p>
+<h2 id="Custom_Marshallers"><a class="u" href="#___top" title="go to top of document">Custom Marshallers</a></h2>
+<p>The following example is, perhaps, the best demonstration of how marshalling works</p>
+<ul><li><p>From <a href="../../../../examples/custom-hash-marshaller.raku">examples/custom-hash-marshaller.raku</a></p>
+<pre class="pod-block-code">class Foo is json {
+    has %.idx is json(
+        :to-json(
+            -&gt; %v { say "Attribute-level serializes: ", %v; json-I-cant },
+            key =&gt; { say "Key-level serializes  : ", $^key; "Foo." ~ $key },
+            value =&gt; "raku",
+            # value =&gt; { say "Value-level serializes: ", $^value.raku; $value.raku }
+        ),
+        :from-json(
+            -&gt; %from { say "Attribute-level deserializes: ", %from; json-I-cant },
+            key =&gt; { say "Key-level deserializes  : '", $^from-key, "'"; $from-key.substr(1) },
+            value =&gt; { say "Value-level deserializes: '", $^from-value, "'"; $from-value.EVAL }
+        )
+    );
+}
+
+my $foo =
+    Foo.new:
+        idx =&gt; %(
+            "k1" =&gt; Date.new("2023-10-23"),
+            "k2" =&gt; pi,
+            "k3" =&gt; v3.4,
+        );
+
+say "### Serializing ###";
+my $json = $foo.to-json(:sorted-keys);
+say $json;
+
+say "\n### Deserializing ###";
+say Foo.from-json($json);
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">### Serializing ###
+Attribute-level serializes: {k1 =&gt; 2023-10-23, k2 =&gt; 3.141592653589793, k3 =&gt; v3.4}
+Key-level serializes  : k2
+Key-level serializes  : k3
+Key-level serializes  : k1
+{"idx":{"Foo.k1":"Date.new(2023,10,23)","Foo.k2":"3.141592653589793e0","Foo.k3":"v3.4"}}
+
+### Deserializing ###
+Attribute-level deserializes: {Foo.k1 =&gt; Date.new(2023,10,23), Foo.k2 =&gt; 3.141592653589793e0, Foo.k3 =&gt; v3.4}
+Key-level deserializes  : 'Foo.k1'
+Value-level deserializes: 'Date.new(2023,10,23)'
+Key-level deserializes  : 'Foo.k3'
+Value-level deserializes: 'v3.4'
+Key-level deserializes  : 'Foo.k2'
+Value-level deserializes: '3.141592653589793e0'
+Foo.new(idx =&gt; ${"oo.k1" =&gt; Date.new(2023,10,23), "oo.k2" =&gt; 3.141592653589793e0, "oo.k3" =&gt; v3.4})
+</pre>
+</li>
+</ul>
+<p>We see here default marshallers for the attribute itself and marshallers for keys and values. The default marshallers are using <code>json-I-cant</code> to fallback to key/value ones because otherwise these wouldn't be invoked.</p>
+<h3 id="Marshalling_By_Method_Name"><a class="u" href="#___top" title="go to top of document">Marshalling By Method Name</a></h3>
+<p>In the above example <code>value</code> serializer is set to <em>"raku"</em> string which is treated as a method name. There are different expectation as to where the method name is looked up for. The right one would be: on the value being serialized. This is because attribute's <code>is json</code> trait all about the attribute itself or its value.</p>
+<p>Another possibly confusing at first details is about deserializing with a method name. If you pay attention to the value deserializer in the above example, it doesn't use <code>EVAL</code> as method name but invokes it directly instead. This is because the deserializer method is lookup upon target value type. In the above case it is <a href="https://docs.raku.org/type/Mu"><code>Mu</code></a> as the default constraint type of hash values and it doesn't implement <code>EVAL</code>. But even if we declare <code>%.idx</code> as <code>has Str %.idx</code>, <code>EVAL</code> as method name won't work for us because deserializing method is expected to receive the source JSON value is its only positional argument.</p>
+<h3 id="Marshalling_With_JSON_Class_Methods"><a class="u" href="#___top" title="go to top of document">Marshalling With JSON Class Methods</a></h3>
+<p>Ok, but what if we want to marshall using JSON class owns methods? It can be done using <code>$*JSON-CLASS-SELF</code> variable.</p>
+<ul><li><p>From <a href="../../../../examples/marshall-via-json-class.raku">examples/marshall-via-json-class.raku</a></p>
+<pre class="pod-block-code">class Foo is json(:skip-null) {
+    has Real $.n
+        is json(
+            :serializer({ $*JSON-CLASS-SELF.n2s($_) }),
+            :deserializer({ $*JSON-CLASS-SELF.s2n($_) }) );
+
+    multi method new(Real $n) { self.bless: :$n }
+
+    proto method n2s(|) {*}
+    multi method n2s(Real:U \t) { t.^name }
+    multi method n2s(Real:D \n) { n.^name ~ ":" ~ n }
+
+    method s2n(Str:D $from) {
+        if $from.contains(":") {
+            my ($type, $val) = $from.split(":");
+            return $val."$type"()
+        }
+        ::($from)
+    }
+}
+
+say "Serializing π  : ", Foo.new(pi).to-json;
+say "Serializing Num: ", Foo.new(Num).to-json;
+say "";
+say "Deserializing a Rat: ", Foo.from-json(q&lt;{"n":"Rat:-12.42"}&gt;).n.WHICH;
+say "Deserializing a type: ", Foo.from-json(q&lt;{"n":"Int"}&gt;).n.WHICH;
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">Serializing π  : {"n":"Num:3.141592653589793"}
+Serializing Num: {"n":"Num"}
+
+Deserializing a Rat: Rat|-621/50
+Deserializing a type: Int|U3324726349136
+</pre>
+</li>
+</ul>
+<h3 id="Marshaller_Signature_Match"><a class="u" href="#___top" title="go to top of document">Marshaller Signature Match</a></h3>
+<p>When <code>JSON::Class</code> verifies if a marshaller can be used it tries to match its signature against the value it has, where <em>value</em> can be attribute value for serialization, and JSON value for deserialization. It does so by using <code>cando</code> method of <a href="https://docs.raku.org/type/Routine"><code>Routine</code></a>. Apparently, when there is match the code gets invoked. Otherwise the situation is treated as if the marshaller invoked <code>json-I-cant</code> and gave up on processing the value:</p>
+<ul><li><p>From <a href="../../../../examples/marshaller-signature-match.raku">examples/marshaller-signature-match.raku</a></p>
+<pre class="pod-block-code">class Foo is json {
+    has Real:D $.foo is json(:serializer(-&gt; Int:D \v { say "serializing ", v.WHICH; v.Rat })) is required;
+}
+
+say Foo.new(foo =&gt; 12).to-json;
+say Foo.new(foo =&gt; 1.2).to-json;
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">serializing Int|12
+{"foo":12.0}
+{"foo":1.2}
+</pre>
+</li>
+</ul>
+<h2 id="Type_Mapping"><a class="u" href="#___top" title="go to top of document">Type Mapping</a></h2>
+<p><code>JSON::Class</code> supports deserialization type mapping which allows user code to override 3rd-party standard types with their own classes.</p>
+<p>For example, let's say there is an API module for a web-service which de-JSONifies a REST response into an instance of <code>Web::Service::Response</code>. The raw response object is barely useful for us and we decide to subclass it with <code>MyProject::Response</code> which extends the original class functionality for our needs. Now it all winds down to rather simple code if the <code>Web::Service</code> module is using <code>JSON::Class</code>:</p>
+<pre class="pod-block-code">JSON::Class::Config().map-type(Web::Service::Response(), MyProject::Response());
+my $web-service = Web::Service().new();
+await($web-service.request().andthen({
+    say(.response().^name())
+}))
+</pre>
+<p>That's all folks! Committing away the first line of the example will result in <em>Web::Service::Response</em> output again.</p>
+<p>A well-behaving <code>Web::Service</code> module would allow to submit a custom <a href="Config.html"><code>JSON::Class::Config</code></a> object, but the global one will do too...</p>
+<p>... unless the <code>Web::Service</code> creates and uses its own config, but that's an ethical problem beyond this documentation area of responsibility!</p>
+<p>For the sake of declarative syntax, there is <code>is json-wrap</code> trait which allows to declare a sub-class as a replacement:</p>
+<pre class="pod-block-code">class MyProject::Response is json-wrap(Web::Service::Response) {
+    ...
+}
+</pre>
+<p>The trait doesn't install the mapping automatically though. This might be undesirable. One would still need a call like this to activate it:</p>
+<pre class="pod-block-code">$config.map-type(MyProject::Response())
+</pre>
+<h2 id="Descriptors"><a class="u" href="#___top" title="go to top of document">Descriptors</a></h2>
+<p><code>JSON::Class</code> avoids modifying attribute objects of meta-object of a class. Instead, it creates a registry of them where the information about the ways of JSONifying their values is kept. The details of registry implementation are irrelevant, all we need to know is that it holds instances of <em>descriptors</em>. There are two kinds of descriptors:</p>
+<ul><li><p><em>attribute descriptors</em> for attributes of a JSON class</p>
+</li>
+<li><p><em>item descriptors</em> for items of a JSON sequence</p>
+</li>
+</ul>
+<p>Each JSONified type obejct has its own registry. When a new JSON class or sequence is built registries from parent classes or JSON roles consumed are merged to form the full picture of what's to be marshalled.</p>
+<h1 id="SEE_ALSO"><a class="u" href="#___top" title="go to top of document">SEE ALSO</a></h1>
+<ul><li><p><a href="../Class.html"><code>JSON::Class</code></a></p>
+</li>
+</ul>
+<h1 id="COPYRIGHT"><a class="u" href="#___top" title="go to top of document">COPYRIGHT</a></h1>
+<p>(c) 2023, Vadim Belman &lt;vrurg@cpan.org&gt;</p>
+<h1 id="LICENCE"><a class="u" href="#___top" title="go to top of document">LICENCE</a></h1>
+<p>Artistic License 2.0</p>
+<p>See the <a href="../../../md/LICENCE"><em>docs/md/LICENCE</em></a> file in this distribution.</p>
+</section>
+
+    </div>
+
+    
+</body>
+</html>

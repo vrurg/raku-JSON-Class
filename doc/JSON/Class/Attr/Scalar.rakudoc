@@ -19,10 +19,10 @@ Set custom deserializers for the attribute.
 
 =head1 SEE ALSO
 
-=item L<C<JSON::Class>|../Class.md>
-=item L<C<JSON::Class::Details>|Details.md>
-=item L<C<JSON::Class::Descriptor>|../Descriptor.md>
-=item L<C<JSON::Class::Attr>|../Attr.md>
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<JSON::Class::Descriptor>|rakudoc:JSON::Class::Descriptor>
+=item L<C<JSON::Class::Attr>|rakudoc:JSON::Class::Attr>
 
 =head1 COPYRIGHT
 
@@ -32,7 +32,7 @@ Set custom deserializers for the attribute.
 
 Artistic License 2.0
 
-See the L<I<LICENCE>|../../../../../LICENCE> file in this distribution.
+See the L<I<docs/LICENCE>|file:docs/LICENCE> file in this distribution.
 
 =end rakudoc
 

@@ -1,44 +1,37 @@
-rakudoc
-=======
+# rakudoc
 
-NAME
-====
+# NAME
 
 `JSON::Class::HOW::Laziness`
 
-METHODS
-=======
+# METHODS
 
-  * **`method json-has-lazy(Mu)`**
-
+  - **`method json-has-lazy(Mu)`**
+    
     Tell if laziness mode of this typeobject was explicitly specified (*True*) or guessed (*False*).
 
-  * **`method json-is-lazy(Mu)`**
-
+  - **`method json-is-lazy(Mu)`**
+    
     Returns *True* if default mode of deserialization is lazy.
 
-SEE ALSO
-========
+# SEE ALSO
 
-  * [`JSON::Class`](../Class.md)
+  - [`JSON::Class`](../../Class.md)
 
-  * [`JSON::Class::Details`](Details.md)
+  - [`JSON::Class::Details`](../Details.md)
 
-  * [`JSON::Class::ClassHOW`](../ClassHOW.md)
+  - [`JSON::Class::ClassHOW`](../ClassHOW.md)
 
-  * [`JSON::Class::RoleHOW`](../RoleHOW.md)
+  - [`JSON::Class::RoleHOW`](../RoleHOW.md)
 
-  * [`JSON::Class::SequenceHOW`](../SequenceHOW.md)
+  - [`JSON::Class::SequenceHOW`](../SequenceHOW.md)
 
-COPYRIGHT
-=========
+# COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-LICENCE
-=======
+# LICENCE
 
 Artistic License 2.0
 
-See the [*LICENCE*](../../../../../LICENCE) file in this distribution.
-
+See the [*docs/LICENCE*](../../../../LICENCE) file in this distribution.
