@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::HOW::AttributeContainer` – role for meta-objects that serve as JSON attribute containers

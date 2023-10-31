@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::Attr` – base role for attribute descriptors

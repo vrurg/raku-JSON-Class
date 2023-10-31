@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::SequenceHOW` – meta for JSON sequences

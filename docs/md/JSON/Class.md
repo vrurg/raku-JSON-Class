@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class` - general purpose JSON de-/serialization for Raku

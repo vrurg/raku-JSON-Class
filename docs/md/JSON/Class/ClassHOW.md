@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::ClassHOW` – meta of JSONified classes

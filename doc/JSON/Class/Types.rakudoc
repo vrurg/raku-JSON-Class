@@ -1,4 +1,4 @@
-=begin rakudoc
+=begin pod
 =head1 NAME
 
 C<JSON::Class::Types> - standard types of C<JSON::Class>
@@ -55,5 +55,5 @@ Enumerate marshalling stages. Elements are:
 Artistic License 2.0
 
 See the L<I<LICENCE>|file:LICENCE> file in this distribution.
-=end rakudoc
+=end pod
 

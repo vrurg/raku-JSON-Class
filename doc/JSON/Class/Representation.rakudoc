@@ -1,4 +1,4 @@
-=begin rakudoc
+=begin pod
 =head1 NAME
 
 C<JSON::Class::Representation> – base role of JSONified classes (not sequences)
@@ -33,5 +33,5 @@ L<C<JSON::Class>|rakudoc:JSON::Class> and L<C<JSON::Class::Details>|rakudoc:JSON
 Artistic License 2.0
 
 See the L<I<LICENCE>|file:LICENCE> file in this distribution.
-=end rakudoc
+=end pod
 

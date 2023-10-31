@@ -1,4 +1,4 @@
-=begin rakudoc
+=begin pod
 =head1 NAME
 
 C<JSON::Class::HOW::Explicit>
@@ -33,5 +33,5 @@ I<False> if the flag was not explicitly set for the class.
 Artistic License 2.0
 
 See the L<I<LICENCE>|file:LICENCE> file in this distribution.
-=end rakudoc
+=end pod
 

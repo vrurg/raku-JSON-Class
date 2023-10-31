@@ -1,5 +1,3 @@
-# rakudoc
-
 # JSON::Class Document Pages
 
   - [`Changes`](../../ChangeLog.md)

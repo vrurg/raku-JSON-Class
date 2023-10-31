@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::Attr::Scalar` - descriptor of `$`-sigilled attributes

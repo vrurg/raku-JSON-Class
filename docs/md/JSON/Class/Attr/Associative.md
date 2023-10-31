@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::Attr::Associative` – descriptor of `%`-sigilled attributes

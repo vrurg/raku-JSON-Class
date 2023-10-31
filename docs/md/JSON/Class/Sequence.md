@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::Sequence` - parent of JSON sequence classes

@@ -1,4 +1,4 @@
-=begin rakudoc
+=begin pod
 =head1 NAME
 
 C<JSON::Class::Attr> – base role for attribute descriptors
@@ -73,5 +73,5 @@ Artistic License 2.0
 
 See the L<I<LICENCE>|file:LICENCE> file in this distribution.
 
-=end rakudoc
+=end pod
 

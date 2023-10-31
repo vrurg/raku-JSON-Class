@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::Sequential` – base role for JSON sequences

@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::Descriptor` - base role for attribute and sequence item descriptors

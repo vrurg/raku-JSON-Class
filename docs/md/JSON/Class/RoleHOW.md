@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::RoleHOW` – base role of JSONified role meta-object

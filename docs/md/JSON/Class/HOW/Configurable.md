@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::HOW::Configurable` – role for meta-objects capable of keeping configuration defaults

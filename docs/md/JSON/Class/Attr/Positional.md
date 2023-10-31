@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::Attr::Positional` - descriptor of `@`-sigilled attributes

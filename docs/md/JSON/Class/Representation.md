@@ -1,5 +1,3 @@
-# rakudoc
-
 # NAME
 
 `JSON::Class::Representation` – base role of JSONified classes (not sequences)

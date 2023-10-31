@@ -1,5 +1,3 @@
-# rakudoc
-
 # DETAILS
 
 This document tries to explain some in-depth implementation details for better understanding the internal kitchen of the module. How much information is provided here depends on how much spare time and free energy the author has for this paper.
