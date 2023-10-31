@@ -286,7 +286,7 @@ multi method alert(::?CLASS:D: Exception:D $ex --> Nil) {
         warn $ex.message;
     }
     else {
-        $ex.throw
+        $ex.rethrow
     }
 }
 
