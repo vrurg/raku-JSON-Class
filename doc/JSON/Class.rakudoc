@@ -38,7 +38,8 @@ In order to use this module it is mandatory to use C<:auth<zef:vrurg>> in your C
 use JSON::Class:auth<zef:vrurg>;
 =end code
 
-Otherwise you likely to accidentally pull in L«C<JSON::Class:auth<zef:jonathanstowe>>|rakudoc:JSON::Class:auth<zef:jonathanstowe>».
+Otherwise you are likely to accidentally pull in
+L«C<JSON::Class:auth<zef:jonathanstowe>>|rakudoc:JSON::Class:auth<zef:jonathanstowe>».
 
 =end item
 

@@ -33,7 +33,7 @@ This module is an alternative to the family of [`JSON::Marshal`](https://raku.la
     use JSON::Class:auth<zef:vrurg>;
     ```
     
-    Otherwise you likely to accidentally pull in [`JSON::Class:auth<zef:jonathanstowe>`](https://raku.land/zef:jonathanstowe/JSON::Class).
+    Otherwise you are likely to accidentally pull in [`JSON::Class:auth<zef:jonathanstowe>`](https://raku.land/zef:jonathanstowe/JSON::Class).
 
 Also, this module tries to follow the standards of [`LibXML::Class`](https://raku.land/zef:vrurg/LibXML::Class) module by adapting them for differing domain of JSON. First of all, they share the same view on the locus of responsibility. Second, they try to implement declarative semantics in first place.
 

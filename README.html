@@ -438,7 +438,7 @@ say Record.new(:count(42), :description("The Answer"), :size(1.2e0)).to-json;
 <p>In order to use this module it is mandatory to use <code>:auth&lt;zef:vrurg&gt;</code> in your <code>use</code> statement:</p>
 <pre class="pod-block-code">use JSON::Class:auth&lt;zef:vrurg&gt;;
 </pre>
-<p>Otherwise you likely to accidentally pull in <a href="https://raku.land/zef:jonathanstowe/JSON::Class"><code>JSON::Class:auth&lt;zef:jonathanstowe&gt;</code></a>.</p>
+<p>Otherwise you are likely to accidentally pull in <a href="https://raku.land/zef:jonathanstowe/JSON::Class"><code>JSON::Class:auth&lt;zef:jonathanstowe&gt;</code></a>.</p>
 </li>
 </ul>
 <p>Also, this module tries to follow the standards of <a href="https://raku.land/zef:vrurg/LibXML::Class"><code>LibXML::Class</code></a> module by adapting them for differing domain of JSON. First of all, they share the same view on the locus of responsibility. Second, they try to implement declarative semantics in first place.</p>
