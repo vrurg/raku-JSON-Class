@@ -36,4 +36,4 @@
 
 Artistic License 2.0
 
-See the [*docs/LICENCE*](../../../../LICENCE) file in this distribution.
+See the [*LICENCE*](../../../../../LICENCE) file in this distribution.

@@ -24,8 +24,6 @@
 
   - [`JSON::Class::RoleHOW`](../RoleHOW.md)
 
-  - [`JSON::Class::RoleHOW`](../RoleHOW.md)
-
 # COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
@@ -34,4 +32,4 @@
 
 Artistic License 2.0
 
-See the [*docs/LICENCE*](../../../../LICENCE) file in this distribution.
+See the [*LICENCE*](../../../../../LICENCE) file in this distribution.

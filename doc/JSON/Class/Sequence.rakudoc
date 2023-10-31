@@ -25,14 +25,14 @@ B<C<proto method json-guess-descriptor(|)>>
 =begin item
 B<C<multi method json-guess-descriptor(::?CLASS:D: Mu :$item-value!)>>
 
-Must return an L<C<JSON::Class::ItemDescriptor:D>> for a given item value for serialization; or throw if no descriptor matches the
+Must return an L<C<JSON::Class::ItemDescriptor:D>|rakudoc:JSON::Class::ItemDescriptor:D> for a given item value for serialization; or throw if no descriptor matches the
 C<$item-value>.
 =end item
 
 =begin item
 B<C<multi method json-guess-descriptor(:$json-value, Int:D $idx)>>
 
-Must return a L<C<JSON::Class::ItemDescriptor:D>> for a given JSON value for deserialization; or throw if no descriptor matches the C<$json-value>.
+Must return a L<C<JSON::Class::ItemDescriptor:D>|rakudoc:JSON::Class::ItemDescriptor:D> for a given JSON value for deserialization; or throw if no descriptor matches the C<$json-value>.
 C<$idx> is the position of the value in the original JSON array.
 =end item
 
@@ -73,6 +73,7 @@ B<C<multi method HAS-POS(::?CLASS:D: Iterable:D \positions, Bool:D :$has = True)
 Returns a sequence of boolean values for each position from C<positions> as if C<HAS-POS(position, :$hash)> has been
 invoked for each.
 =end item
+
 =end item
 
 =head1 SEE ALSO
@@ -93,3 +94,4 @@ Artistic License 2.0
 See the L<I<LICENCE>|file:LICENCE> file in this distribution.
 
 =end rakudoc
+

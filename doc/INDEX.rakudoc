@@ -4,7 +4,6 @@
 =head1 JSON::Class Document Pages
 
 =item L«C«Changes»|rakudoc:..::ChangeLog»
-=item L«C«JSON::Class»|rakudoc:JSON::Class»
 =item L«C«JSON::Class::Attr»|rakudoc:JSON::Class::Attr»
 =item L«C«JSON::Class::Attr::Associative»|rakudoc:JSON::Class::Attr::Associative»
 =item L«C«JSON::Class::Attr::Positional»|rakudoc:JSON::Class::Attr::Positional»
@@ -17,10 +16,12 @@
 =item L«C«JSON::Class::HOW::Configurable»|rakudoc:JSON::Class::HOW::Configurable»
 =item L«C«JSON::Class::HOW::Explicit»|rakudoc:JSON::Class::HOW::Explicit»
 =item L«C«JSON::Class::HOW::Laziness»|rakudoc:JSON::Class::HOW::Laziness»
+=item L«C«JSON::Class::HOW::Sequential»|rakudoc:JSON::Class::HOW::Sequential»
 =item L«C«JSON::Class::ItemDescriptor»|rakudoc:JSON::Class::ItemDescriptor»
 =item L«C«JSON::Class::Object»|rakudoc:JSON::Class::Object»
 =item L«C«JSON::Class::Representation»|rakudoc:JSON::Class::Representation»
 =item L«C«JSON::Class::RoleHOW»|rakudoc:JSON::Class::RoleHOW»
+=item L«C«JSON::Class::Sequence»|rakudoc:JSON::Class::Sequence»
 =item L«C«JSON::Class::SequenceHOW»|rakudoc:JSON::Class::SequenceHOW»
 =item L«C«JSON::Class::Sequential»|rakudoc:JSON::Class::Sequential»
 =item L«C«JSON::Class::Types»|rakudoc:JSON::Class::Types»

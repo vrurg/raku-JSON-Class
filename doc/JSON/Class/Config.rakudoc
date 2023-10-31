@@ -358,6 +358,6 @@ from-json($json, |$config.from-json-profile);
 
 Artistic License 2.0
 
-See the L<I<docs/md/LICENCE>|file:docs/md/LICENCE> file in this distribution.
+See the L<I<LICENCE>|file:LICENCE> file in this distribution.
 =end rakudoc
 

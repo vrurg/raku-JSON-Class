@@ -5,7 +5,7 @@ C<JSON::Class::Object> – parent of JSONified classes
 
 =head1 DESCRIPTION
 
-This class is injected into the list of parent of any JSONified class. It implements the essential functionality of
+This class is injected into the list of parents of any JSONified class. It implements the essential functionality of
 class serialization. See more in L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>.
 
 =head1 METHODS
@@ -28,7 +28,7 @@ Returns a hash of keys not yet consumed by lazy deserialization
 B<C<proto method json-serialize-attr(JSON::Class::Attr:D $attribute-descriptor, Mu \value)>>
 
 Multi-candidates of this proto take care of L<C<JSON::Class::Attr::Scalar>|rakudoc:JSON::Class::Attr::Scalar>,
-L<C<JSON::Class::Attr::Postional>|rakudoc:JSON::Class::Attr::Postional>, and L<C<JSON::Class::Attr::Associative>|rakudoc:JSON::Class::Attr::Associative>
+L<C<JSON::Class::Attr::Positional>|rakudoc:JSON::Class::Attr::Positional>, and L<C<JSON::Class::Attr::Associative>|rakudoc:JSON::Class::Attr::Associative>
 descriptors each.
 =end item
 
@@ -61,6 +61,6 @@ attribute descriptor.
 
 Artistic License 2.0
 
-See the L<I<docs/md/LICENCE>|file:docs/md/LICENCE> file in this distribution.
+See the L<I<LICENCE>|file:LICENCE> file in this distribution.
 =end rakudoc
 

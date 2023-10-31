@@ -28,7 +28,7 @@ Return a list of type-local item descriptors.
 =item L<C<JSON::Class>|rakudoc:JSON::Class>
 =item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
 =item L<C<JSON::Class::ClassHOW>|rakudoc:JSON::Class::SequenceHOW>
-=item L<C<JSON::Class::Sequence>>
+=item L<C<JSON::Class::Sequence>|rakudoc:JSON::Class::Sequence>
 
 =head1 COPYRIGHT
 
@@ -40,3 +40,4 @@ Artistic License 2.0
 
 See the L<I<LICENCE>|file:LICENCE> file in this distribution.
 =end rakudoc
+

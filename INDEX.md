@@ -4,8 +4,6 @@
 
   - [`Changes`](ChangeLog.md)
 
-  - [`JSON::Class`](docs/md/JSON/Class.md)
-
   - [`JSON::Class::Attr`](docs/md/JSON/Class/Attr.md)
 
   - [`JSON::Class::Attr::Associative`](docs/md/JSON/Class/Attr/Associative.md)
@@ -30,6 +28,8 @@
 
   - [`JSON::Class::HOW::Laziness`](docs/md/JSON/Class/HOW/Laziness.md)
 
+  - [`JSON::Class::HOW::Sequential`](docs/md/JSON/Class/HOW/Sequential.md)
+
   - [`JSON::Class::ItemDescriptor`](docs/md/JSON/Class/ItemDescriptor.md)
 
   - [`JSON::Class::Object`](docs/md/JSON/Class/Object.md)
@@ -37,6 +37,8 @@
   - [`JSON::Class::Representation`](docs/md/JSON/Class/Representation.md)
 
   - [`JSON::Class::RoleHOW`](docs/md/JSON/Class/RoleHOW.md)
+
+  - [`JSON::Class::Sequence`](docs/md/JSON/Class/Sequence.md)
 
   - [`JSON::Class::SequenceHOW`](docs/md/JSON/Class/SequenceHOW.md)
 

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
-    <title>JSON::Class::Descriptor</title>
+    <title>JSON::Class::HOW::Sequential</title>
     <meta charset="UTF-8">
     <style>hr,
 img {
@@ -371,11 +371,10 @@ hr {
 <table id="TOC">
 <caption><h2 id="TOC_Title">Table of Contents</h2></caption>
 <tr class="toc-level-1"><td class="toc-number">1</td><td class="toc-text"><a href="#NAME">NAME</a></td></tr>
-<tr class="toc-level-1"><td class="toc-number">2</td><td class="toc-text"><a href="#DESCRIPTION">DESCRIPTION</a></td></tr>
-<tr class="toc-level-1"><td class="toc-number">3</td><td class="toc-text"><a href="#METHODS">METHODS</a></td></tr>
-<tr class="toc-level-1"><td class="toc-number">4</td><td class="toc-text"><a href="#SEE_ALSO">SEE ALSO</a></td></tr>
-<tr class="toc-level-1"><td class="toc-number">5</td><td class="toc-text"><a href="#COPYRIGHT">COPYRIGHT</a></td></tr>
-<tr class="toc-level-1"><td class="toc-number">6</td><td class="toc-text"><a href="#LICENCE">LICENCE</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">2</td><td class="toc-text"><a href="#METHODS">METHODS</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">3</td><td class="toc-text"><a href="#SEE_ALSO">SEE ALSO</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">4</td><td class="toc-text"><a href="#COPYRIGHT">COPYRIGHT</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">5</td><td class="toc-text"><a href="#LICENCE">LICENCE</a></td></tr>
 
 </table>
 </nav>
@@ -384,87 +383,33 @@ hr {
     <div class="pod-body">
     <section>
 <h1 id="NAME"><a class="u" href="#___top" title="go to top of document">NAME</a></h1>
-<p><code>JSON::Class::Descriptor</code> - base role for attribute and sequence item descriptors</p>
-<h1 id="DESCRIPTION"><a class="u" href="#___top" title="go to top of document">DESCRIPTION</a></h1>
-<p><code>JSON::Class</code> doesn't modify attribute objects of a class meta-object. Instead, it manipulates with their <em>descriptors</em>, as described in <em>Descriptors</em> section of <a href="Details.html"><code>JSON::Class::Details</code></a>.</p>
+<p><code>JSON::Class::HOW::Sequential</code></p>
 <h1 id="METHODS"><a class="u" href="#___top" title="go to top of document">METHODS</a></h1>
-<ul><li><p><strong><code>method name()</code></strong></p>
-<p>Descriptor name. Informational for using in various messages.</p>
+<ul><li><p><strong><code>method json-set-item-default(Mu \item-default)</code></strong></p>
+<p>Set default value for the sequence.</p>
 </li>
-<li><p><strong><code>method type()</code></strong></p>
-<p>Constraint type.</p>
+<li><p><strong><code>method json-item-default(Mu \obj)</code></strong></p>
+<p>Give the default value of the sequence.</p>
 </li>
-<li><p><strong><code>method value-type()</code></strong></p>
-<p>For <a href="https://docs.raku.org/type/Positional"><code>Positional</code></a> and <a href="https://docs.raku.org/type/Associative"><code>Associative</code></a> types this must be constraint type of their values. For example, for the following declaration this would be <code>Str:D</code>:</p>
-<pre class="pod-block-code">has Str:D @.keys is json;
-</pre>
-</li>
-<li><p><strong><code>method nominal-type()</code></strong></p>
-<p>Nominalization of the <code>value-type</code>. I.e. for <code>Str:D()</code> it would be just nominal <code>Str</code>.</p>
-</li>
-<li><p><strong><code>method set-serializer(|)</code></strong></p>
-<p>Set serializer for this element. Particular implementation of the method depends on role consumer.</p>
-</li>
-<li><p><strong><code>method set-deserializer(|)</code></strong></p>
-<p>Set deserializer for this element. Particular implementation of the method depends on role consumer.</p>
-</li>
-<li><p><strong><code>method register-helper(Str:D $stage, Str:D $kind, $helper)</code></strong></p>
-<p>Registers a helper in form of a code object or a method name string. Values of <code>$stage</code> and <code>$kind</code> are not constrained, but normally these would be one of <code>JSONStages</code> from <a href="Types.html"><code>JSON::Class::Types</code></a> and <em>'attribute'</em>, or <em>'item'</em>, or <em>'value'</em>, or <em>'key'</em>.</p>
-<p>Thread safe.</p>
-</li>
-<li><p><strong><code>method helper(Str:D $stage, Str:D $kind)</code></strong></p>
-<p>Returns a helper for a <code>$stage</code>+<code>$kind</code> pair or <code>Nil</code> if no such one.</p>
-<p>Thread safe.</p>
-</li>
-<li><p><strong><code>method has-helper(Str:D $stage, Str:D $kind)</code></strong></p>
-<p>Tell if we have a helper for the stage and the kind.</p>
-<p>Thread safe.</p>
-</li>
-<li><p><strong><code>method serializer(Str:D $kind)</code></strong></p>
-<p>A shortcut for <em>'to-json'</em> stage.</p>
-<p>Thread safe.</p>
-</li>
-<li><p><strong><code>method deserializer(Str:D $kind)</code></strong></p>
-<p>A shortcut for <em>'from-json'</em> stage.</p>
-<p>Thread safe.</p>
-</li>
-<li><p><strong><code>method declarant()</code></strong></p>
-<p>Returns the type object for which this descriptor was created. It can be a role or a class. For example:</p>
-<pre class="pod-block-code">role Key is json {
-    has Str $.key;
-}
-</pre>
-<p>Descriptor for <code>$!key</code> attribute would return <code>Key</code> as its declarant.</p>
-</li>
-<li><p><strong><code>proto method kind-type(Str:D $kind)</code></strong></p>
-<p>Return the type object for which marshaller of the <code>$kind</code> would apply. For example:</p>
-<pre class="pod-block-code">has Str:D %.shortname{Int:D} is json;
-</pre>
-<p><em>'value'</em> type is <code>Str:D</code>, <em>'key'</em> type is <code>Int:D</code>.</p>
-<p>Normally one wouldn't care about these as they're used internally for marshalling purposes. But implementing own descriptor may require adding candidates to this <code>proto</code>.</p>
-</li>
-<li><p><strong><code>proto method kind-stage(Str:D $stage, Str:D $kind)</code></strong></p>
-<p>This method is necessary to map stage+kind pair into <a href="Config.html"><code>JSON::Class::Config</code></a> helper stage. In other words, if a marshaller wants to find out if there is a custom helper registered for a type then it would do something like:</p>
-<pre class="pod-block-code">$config.helper($value-type, $descriptor.kind-stage('from-json', 'match'))
-</pre>
-<p>We use <em>'match'</em> as the kind because it is currently the only case where this method returns something different from <code>$stage</code>.</p>
+<li><p><strong><code>method json-item-descriptors(Mu \obj)</code></strong></p>
+<p>Return a list of type-local item descriptors.</p>
 </li>
 </ul>
 <h1 id="SEE_ALSO"><a class="u" href="#___top" title="go to top of document">SEE ALSO</a></h1>
-<ul><li><p><a href="../Class.html"><code>JSON::Class</code></a></p>
+<ul><li><p><a href="../../Class.html"><code>JSON::Class</code></a></p>
 </li>
-<li><p><a href="Details.html"><code>JSON::Class::Details</code></a></p>
+<li><p><a href="../Details.html"><code>JSON::Class::Details</code></a></p>
 </li>
-<li><p><a href="Attr.html"><code>JSON::Class::Attr</code></a></p>
+<li><p><a href="../SequenceHOW.html"><code>JSON::Class::ClassHOW</code></a></p>
 </li>
-<li><p><a href="ItemDescriptor.html"><code>JSON::Class::ItemDescriptor</code></a></p>
+<li><p><a href="../Sequence.html"><code>JSON::Class::Sequence</code></a></p>
 </li>
 </ul>
 <h1 id="COPYRIGHT"><a class="u" href="#___top" title="go to top of document">COPYRIGHT</a></h1>
 <p>(c) 2023, Vadim Belman &lt;vrurg@cpan.org&gt;</p>
 <h1 id="LICENCE"><a class="u" href="#___top" title="go to top of document">LICENCE</a></h1>
 <p>Artistic License 2.0</p>
-<p>See the <a href="../../../../LICENCE"><em>LICENCE</em></a> file in this distribution.</p>
+<p>See the <a href="../../../../../LICENCE"><em>LICENCE</em></a> file in this distribution.</p>
 </section>
 
     </div>

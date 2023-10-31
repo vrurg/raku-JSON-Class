@@ -829,7 +829,7 @@ These two subjects are tightly bound to each other, hence single example for bot
 
 There are more than we can fit into this example. We can have individual custom marshalling for hash and array values, and hash keys too. We can specify marshallers for sequence elements too.
 
-  - From [examples/custom-serializers.raku](../../../examples/custom-serializers.raku)
+  - From [examples/custom-marshallers.raku](../../../examples/custom-marshallers.raku)
     
     ``` raku
     class Record is json {

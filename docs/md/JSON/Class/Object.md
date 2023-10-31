@@ -6,7 +6,7 @@
 
 # DESCRIPTION
 
-This class is injected into the list of parent of any JSONified class. It implements the essential functionality of class serialization. See more in [`JSON::Class::Details`](Details.md).
+This class is injected into the list of parents of any JSONified class. It implements the essential functionality of class serialization. See more in [`JSON::Class::Details`](Details.md).
 
 # METHODS
 
@@ -22,7 +22,7 @@ Some methods of this class are already covered by [`JSON::Class`](../Class.md) p
 
   - **`proto method json-serialize-attr(JSON::Class::Attr:D $attribute-descriptor, Mu \value)`**
     
-    Multi-candidates of this proto take care of [`JSON::Class::Attr::Scalar`](Attr/Scalar.md), [`JSON::Class::Attr::Postional`](Attr/Postional.md), and [`JSON::Class::Attr::Associative`](Attr/Associative.md) descriptors each.
+    Multi-candidates of this proto take care of [`JSON::Class::Attr::Scalar`](Attr/Scalar.md), [`JSON::Class::Attr::Positional`](Attr/Positional.md), and [`JSON::Class::Attr::Associative`](Attr/Associative.md) descriptors each.
 
   - **`method json-build-attr(Str:D :$attribute)`**
     
@@ -50,4 +50,4 @@ Some methods of this class are already covered by [`JSON::Class`](../Class.md) p
 
 Artistic License 2.0
 
-See the [*docs/md/LICENCE*](../../LICENCE) file in this distribution.
+See the [*LICENCE*](../../../../LICENCE) file in this distribution.

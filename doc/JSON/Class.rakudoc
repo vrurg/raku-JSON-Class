@@ -960,7 +960,7 @@ There are more than we can fit into this example. We can have individual custom 
 and hash keys too. We can specify marshallers for sequence elements too.
 
 =begin item :example("examples/custom-marshallers.raku") :mtime(1698417912)
-From L<examples/custom-serializers.raku|../../../examples/custom-serializers.raku>
+From L<examples/custom-marshallers.raku|file:examples/custom-marshallers.raku>
 
 =begin code :example :lang("raku")
 class Record is json {
