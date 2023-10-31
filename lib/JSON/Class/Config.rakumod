@@ -275,9 +275,6 @@ multi method severity(::?CLASS:U:) { self.global.severity }
 multi method severity(::?CLASS:D:) { $!severity.key.lc }
 
 proto method alert(|) {*}
-multi method alert(*@msg) is hidden-from-backtrace {
-    self.alert: JSON::Class::X::AdHoc.new(message => @msg.map(*.gist).join)
-}
 multi method alert(::?CLASS:U: |c) is hidden-from-backtrace { self.global.alert(|c) }
 multi method alert(::?CLASS:D: Exception:D $ex --> Nil) {
     my $severity = $*JSON-CLASS-SEVERITY // $!severity;
@@ -288,6 +285,9 @@ multi method alert(::?CLASS:D: Exception:D $ex --> Nil) {
     else {
         $ex.rethrow
     }
+}
+multi method alert(::?CLASS:D: *@msg) is hidden-from-backtrace {
+    self.alert: JSON::Class::X::AdHoc.new(message => @msg.map(*.gist).join)
 }
 
 proto method notify(|) {*}
