@@ -1,0 +1,42 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::HOW::Sequential>
+
+=head1 METHODS
+
+=begin item
+B<C<method json-set-item-default(Mu \item-default)>>
+
+Set default value for the sequence.
+=end item
+
+=begin item
+B<C<method json-item-default(Mu \obj)>>
+
+Give the default value of the sequence.
+=end item
+
+=begin item
+B<C<method json-item-descriptors(Mu \obj)>>
+
+Return a list of type-local item descriptors.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<JSON::Class::ClassHOW>|rakudoc:JSON::Class::SequenceHOW>
+=item L<C<JSON::Class::Sequence>>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENCE
+
+Artistic License 2.0
+
+See the L<I<LICENCE>|file:LICENCE> file in this distribution.
+=end rakudoc

@@ -1,0 +1,95 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::Sequence> - parent of JSON sequence classes
+
+=head1 DESCRIPTION
+
+This class is injected into the list of parents of any JSON sequence class. It implements the essential functionality of
+sequence marshalling. See more in L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>.
+
+=head1 METHODS
+
+The class implements standard positional methods like C<AT-POS>, C<EXISTS-POS>, C<DELETE-POS>, C<ASSIGN-POS>, C<push>,
+C<append>, C<of>, C<elems>, C<end>, C<iterator>.
+
+=begin item
+B<C<method json-all-set()>>
+
+Returns I<True> if all sequence values are deserialized.
+=end item
+
+=begin item
+B<C<proto method json-guess-descriptor(|)>>
+
+=begin item
+B<C<multi method json-guess-descriptor(::?CLASS:D: Mu :$item-value!)>>
+
+Must return an L<C<JSON::Class::ItemDescriptor:D>> for a given item value for serialization; or throw if no descriptor matches the
+C<$item-value>.
+=end item
+
+=begin item
+B<C<multi method json-guess-descriptor(:$json-value, Int:D $idx)>>
+
+Must return a L<C<JSON::Class::ItemDescriptor:D>> for a given JSON value for deserialization; or throw if no descriptor matches the C<$json-value>.
+C<$idx> is the position of the value in the original JSON array.
+=end item
+
+=end item
+
+=begin item
+B<C<method json-serialize-item(::?CLASS:D: JSON::Class::ItemDescriptor:D $descr, Mu $value)>>
+
+Serialize given C<$value> using item descriptor C<$descr>.
+=end item
+
+=begin item
+B<C<method json-deserialize-item(::?CLASS:D: Int:D $idx, Mu $json-value)>>
+
+Default deserializer for C<$json-value> at position C<$idx> in the JSON array.
+=end item
+
+=begin item
+B<C<multi method json-deserialize(@from, JSON::Class::Config :$config)>>
+
+Deserialize given JSON array C<@from>. The standard method maps C<self> into a final type, if a type map is defined
+in L<the configuation|rakudoc:JSON::Class::Config>. Then a new instance of the resulting is created and returned.
+=end item
+
+=begin item
+B<C<proto method HAS-POS(|)>>
+
+=begin item
+B<C<multi method HAS-POS(Int:D $pos, Bool:D :$has = True)>>
+
+Reports if a value at the given position C<$pos> has been deserialized already. If C<$has> is I<False> then it reports
+quite opposite: if it hasn't been deserialized.
+=end item
+
+=begin item
+B<C<multi method HAS-POS(::?CLASS:D: Iterable:D \positions, Bool:D :$has = True)>>
+
+Returns a sequence of boolean values for each position from C<positions> as if C<HAS-POS(position, :$hash)> has been
+invoked for each.
+=end item
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<JSON::Class::Sequential>|rakudoc:JSON::Class::Sequential>
+=item L<C<JSON::Class::SequenceHOW>|rakudoc:JSON::Class::SequenceHOW>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENCE
+
+Artistic License 2.0
+
+See the L<I<LICENCE>|file:LICENCE> file in this distribution.
+
+=end rakudoc
