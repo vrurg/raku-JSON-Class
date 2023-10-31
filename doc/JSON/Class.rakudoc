@@ -1,5 +1,5 @@
 =begin rakudoc
-=config :title<JSON::Class>
+=config  :title<JSON::Class>
 =head1 NAME
 
 C<JSON::Class> - general purpose JSON de-/serialization for Raku
@@ -7,6 +7,8 @@ C<JSON::Class> - general purpose JSON de-/serialization for Raku
 =head1 SYNOPSIS
 
 =begin code
+use JSON::Class:auth<zef:vrurg>;
+
 role Base is json(:!skip-null) {
     has Num:D $.size is required is json(:name<volume>);
 }
@@ -26,6 +28,19 @@ L«C<JSON::Unmarshal>|rakudoc:JSON::Unmarshal:auth<zef:raku-community-modules>»
 L«C<JSON::Class>|rakudoc:JSON::Class:auth<zef:jonathanstowe>» modules.  It tries to get rid of their weak points and
 shifts the locus of control from class' outers to its inners. In other words, the class itself is responsible for its
 de-/serialization in first place. Though it's perhaps, the primary difference, it's far from being the only one.
+
+=begin item
+B<IMPORTANT!>
+
+In order to use this module it is mandatory to use C<:auth<zef:vrurg>> in your C<use> statement:
+
+=begin code :lang<raku>
+use JSON::Class:auth<zef:vrurg>;
+=end code
+
+Otherwise you likely to accidentally pull in L«C<JSON::Class:auth<zef:jonathanstowe>>|rakudoc:JSON::Class:auth<zef:jonathanstowe>».
+
+=end item
 
 Also, this module tries to follow the standards of L«C<LibXML::Class>|rakudoc:LibXML::Class:auth<zef:vrurg>» module
 by adapting them for differing domain of JSON. First of all, they share the same view on the locus of responsibility.

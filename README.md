@@ -7,6 +7,8 @@
 # SYNOPSIS
 
 ``` 
+use JSON::Class:auth<zef:vrurg>;
+
 role Base is json(:!skip-null) {
     has Num:D $.size is required is json(:name<volume>);
 }
@@ -22,6 +24,16 @@ say Record.new(:count(42), :description("The Answer"), :size(1.2e0)).to-json;
 # DESCRIPTION
 
 This module is an alternative to the family of [`JSON::Marshal`](https://raku.land/zef:jonathanstowe/JSON::Marshal), [`JSON::Unmarshal`](https://raku.land/zef:raku-community-modules/JSON::Unmarshal), [`JSON::Class`](https://raku.land/zef:jonathanstowe/JSON::Class) modules. It tries to get rid of their weak points and shifts the locus of control from class' outers to its inners. In other words, the class itself is responsible for its de-/serialization in first place. Though it's perhaps, the primary difference, it's far from being the only one.
+
+  - **IMPORTANT\!**
+    
+    In order to use this module it is mandatory to use `:auth<zef:vrurg>` in your `use` statement:
+    
+    ``` raku
+    use JSON::Class:auth<zef:vrurg>;
+    ```
+    
+    Otherwise you likely to accidentally pull in [`JSON::Class:auth<zef:jonathanstowe>`](https://raku.land/zef:jonathanstowe/JSON::Class).
 
 Also, this module tries to follow the standards of [`LibXML::Class`](https://raku.land/zef:vrurg/LibXML::Class) module by adapting them for differing domain of JSON. First of all, they share the same view on the locus of responsibility. Second, they try to implement declarative semantics in first place.
 

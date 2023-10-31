@@ -419,7 +419,9 @@ hr {
 <h1 id="NAME"><a class="u" href="#___top" title="go to top of document">NAME</a></h1>
 <p><code>JSON::Class</code> - general purpose JSON de-/serialization for Raku</p>
 <h1 id="SYNOPSIS"><a class="u" href="#___top" title="go to top of document">SYNOPSIS</a></h1>
-<pre class="pod-block-code">role Base is json(:!skip-null) {
+<pre class="pod-block-code">use JSON::Class:auth&lt;zef:vrurg&gt;;
+
+role Base is json(:!skip-null) {
     has Num:D $.size is required is json(:name&lt;volume&gt;);
 }
 
@@ -432,6 +434,13 @@ say Record.new(:count(42), :description("The Answer"), :size(1.2e0)).to-json;
 </pre>
 <h1 id="DESCRIPTION"><a class="u" href="#___top" title="go to top of document">DESCRIPTION</a></h1>
 <p>This module is an alternative to the family of <a href="https://raku.land/zef:jonathanstowe/JSON::Marshal"><code>JSON::Marshal</code></a>, <a href="https://raku.land/zef:raku-community-modules/JSON::Unmarshal"><code>JSON::Unmarshal</code></a>, <a href="https://raku.land/zef:jonathanstowe/JSON::Class"><code>JSON::Class</code></a> modules. It tries to get rid of their weak points and shifts the locus of control from class' outers to its inners. In other words, the class itself is responsible for its de-/serialization in first place. Though it's perhaps, the primary difference, it's far from being the only one.</p>
+<ul><li><p><strong>IMPORTANT!</strong></p>
+<p>In order to use this module it is mandatory to use <code>:auth&lt;zef:vrurg&gt;</code> in your <code>use</code> statement:</p>
+<pre class="pod-block-code">use JSON::Class:auth&lt;zef:vrurg&gt;;
+</pre>
+<p>Otherwise you likely to accidentally pull in <a href="https://raku.land/zef:jonathanstowe/JSON::Class"><code>JSON::Class:auth&lt;zef:jonathanstowe&gt;</code></a>.</p>
+</li>
+</ul>
 <p>Also, this module tries to follow the standards of <a href="https://raku.land/zef:vrurg/LibXML::Class"><code>LibXML::Class</code></a> module by adapting them for differing domain of JSON. First of all, they share the same view on the locus of responsibility. Second, they try to implement declarative semantics in first place.</p>
 <p>From here on whenever <code>JSON::Class</code> name is used it refers to this module unless otherwise stated or implied by the context.</p>
 <h1 id="BASICS"><a class="u" href="#___top" title="go to top of document">BASICS</a></h1>
