@@ -60,8 +60,8 @@ The class implements standard positional methods like `AT-POS`, `EXISTS-POS`, `D
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-# LICENCE
+# LICENSE
 
 Artistic License 2.0
 
-See the [*LICENCE*](../../../../LICENCE) file in this distribution.
+See the [*LICENSE*](../../../../LICENSE) file in this distribution.

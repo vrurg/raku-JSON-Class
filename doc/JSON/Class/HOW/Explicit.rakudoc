@@ -28,10 +28,10 @@ I<False> if the flag was not explicitly set for the class.
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
 
-=head1 LICENCE
+=head1 LICENSE
 
 Artistic License 2.0
 
-See the L<I<LICENCE>|file:LICENCE> file in this distribution.
+See the L<I<LICENSE>|file:LICENSE> file in this distribution.
 =end pod
 
