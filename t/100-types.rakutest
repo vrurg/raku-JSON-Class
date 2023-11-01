@@ -1,0 +1,46 @@
+use v6.e.PREVIEW;
+use Test::Async;
+use JSON::Class:auth<zef:vrurg>;
+use JSON::Class::X:auth<zef:vrurg>;
+use JSON::Class::Config;
+
+plan 2;
+
+subtest "Version" => -> \subtest {
+    plan 3;
+    my class VFoo is json {
+        has Version:D $.ver is required;
+    }
+
+    my $vfoo = VFoo.new(ver => v42.13.2);
+
+    is $vfoo.to-json, q<{"ver":"42.13.2"}>, "Version serializes as a string";
+
+    cmp-deeply VFoo.from-json(q«{"ver":"1.23.45"}»), VFoo.new(:ver(v1.23.45)), "version deserializes from a string";
+
+    {
+        CONTROL {
+            when CX::Warn {
+                subtest.like: .message, /Version .* implicit .* JSONification/, "we're warned about Version JSONification";
+            }
+        }
+        JSON::Class::Config.jsonify(Version).new("12.13.14").to-json;
+    }
+}
+
+subtest "Prohibited JSONifications" => {
+    my $config = JSON::Class::Config.new(:strict);
+    my Mu @types = Promise, Supply, Channel, Lock, IO::Handle, IO::Socket::INET, IO::Pipe;
+    plan +@types;
+
+    for @types -> \typeobj {
+        throws-like
+            { $config.jsonify(typeobj) },
+            JSON::Class::X::UnsupportedType,
+            :type(typeobj),
+            :message(*.contains: "cannot be implicitly JSONified"),
+            typeobj.^name ~ " cannot be implicitly JSONified";
+    }
+}
+
+done-testing;
