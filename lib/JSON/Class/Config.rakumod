@@ -310,4 +310,9 @@ method !PRESET-HELPERS {
                       :to-json<Str>,
                       :from-json<new>,
                       matcher => -> Str:D $from { ? try { DateTime.new($from) } };
+
+    self.set-helpers: Version,
+                      :to-json<Str>,
+                      :from-json<new>,
+                      matcher => -> Str:D $from { ? try { Version.new($from) } };
 }
