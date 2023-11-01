@@ -118,6 +118,28 @@ multi method eager(::?CLASS:D:) { $!eager }
 
 proto method jsonify(|) {*}
 
+proto method non-jsonifiable(Mu:U) {*}
+
+multi method non-jsonifiable(::?CLASS:U: Mu:U \typeobj) {
+    self.global.non-jsonifiable(typeobj)
+}
+
+multi method non-jsonifiable(::?CLASS:D: Version --> True) {
+    self.notify: "Version class cannot have an implicit JSONification. ",
+                    ($.using-defaults
+                    ?? "But default marshallers will take care of Version objects."
+                    !! "Default marshallers are disabled, consider using your own.");
+}
+
+multi method non-jsonifiable( ::?CLASS:D:
+                              Mu:U \typeobj where Promise | Supply | Channel | Lock | IO::Handle | IO::Socket
+                              --> True )
+{
+    self.alert: JSON::Class::X::UnsupportedType.new(:type(typeobj), :why("cannot be implicitly JSONified"));
+}
+
+multi method non-jsonifiable(::?CLASS:D: Mu:U --> False) {}
+
 multi method jsonify( Mu:U :$nominal-what is raw, Bool :$local --> Mu ) is raw {
     unless $nominal-what.HOW ~~ Metamodel::ClassHOW {
         JSON::Class::X::NonClass.new(:type($nominal-what), :what('produce an implicit JSON representation')).throw
@@ -127,6 +149,12 @@ multi method jsonify( Mu:U :$nominal-what is raw, Bool :$local --> Mu ) is raw {
         return $nominal-what if $nominal-what ~~ $json-representation;
 
         return %jsonifications{$nominal-what} if %jsonifications{$nominal-what}:exists;
+
+        if self.non-jsonifiable($nominal-what) {
+            # If a type is not supported then let it be reported by the checker method. If the problem is not considered
+            # as severe the reported code wouldn't throw and then we just return un-JSONified original type object.
+            return $nominal-what
+        }
 
         my \jsonified = $nominal-what.^mixin($json-representation);
         %jsonifications{$nominal-what} := jsonified;
