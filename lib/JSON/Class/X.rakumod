@@ -18,8 +18,9 @@ class AdHoc does Base {
 }
 
 class UnsupportedType does Base does Typed {
+    has Str $.why;
     method message {
-        "Unsupported type object '" ~ $.type.^name ~ "'"
+        "Unsupported type object '" ~ $.type.^name ~ "'" ~ ($.why andthen ": " ~ $_ orelse "")
     }
 }
 
