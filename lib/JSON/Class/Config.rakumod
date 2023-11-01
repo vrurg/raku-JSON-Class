@@ -43,6 +43,8 @@ my Mu:U $json-representation;
 my Mu:U $json-object-class;
 my $std-types-lock = Lock.new;
 
+has Bool $.using-defaults;
+
 our sub set-std-typeobjects( Mu :$class-how is raw,
                              Mu :$object is raw,
                              Mu :$representation is raw --> Nil )
@@ -58,8 +60,8 @@ method json-class-how is raw { $json-class-how }
 method json-representation is raw { $json-representation }
 method json-object-class is raw { $json-object-class }
 
-submethod TWEAK(Bool :$defaults = True, Bool :$easy, Bool :$warn, Bool :$strict) {
-    if $defaults {
+submethod TWEAK(Bool :defaults($!using-defaults) = True, Bool :$easy, Bool :$warn, Bool :$strict) {
+    if $!using-defaults {
         self!PRESET-HELPERS;
     }
     self.set-severity(:$easy, :$warn, :$strict);
