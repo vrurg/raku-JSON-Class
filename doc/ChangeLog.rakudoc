@@ -2,9 +2,18 @@
 =config :title<Changes>
 =head1 CHANGELOG
 
-=head2 v0.0.1
+=begin item
+B<v0.0.2>
+
+=item Added default marshalling for L<C<Version>|https://docs.raku.org/type/Version>, and L<C<QuantHash>|https://docs.raku.org/type/QuantHash>es
+=item Implicit JSONification now reports a problem for some problematic types
+=end item
+
+=begin item
+B<v0.0.1>
 
 =item First release
+=end item
 
 =head1 SEE ALSO
 
