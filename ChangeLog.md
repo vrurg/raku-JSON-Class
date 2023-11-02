@@ -1,6 +1,6 @@
 # CHANGELOG
 
-  - **v0.0.2**
+  - **v0.0.3**
     
       - Added default marshalling for [`Version`](https://docs.raku.org/type/Version), and [`QuantHash`](https://docs.raku.org/type/QuantHash)es
     
