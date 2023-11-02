@@ -2,9 +2,10 @@ use v6.e.PREVIEW;
 use Test::Async;
 use JSON::Class:auth<zef:vrurg>;
 use JSON::Class::X:auth<zef:vrurg>;
-use JSON::Class::Config;
+use JSON::Class::Config:auth<zef:vrurg>;
+use JSON::Fast;
 
-plan 2;
+plan 4;
 
 subtest "Version" => -> \subtest {
     plan 3;
@@ -25,6 +26,52 @@ subtest "Version" => -> \subtest {
             }
         }
         JSON::Class::Config.jsonify(Version).new("12.13.14").to-json;
+    }
+}
+
+subtest "Setty" => {
+    plan 2;
+    for Set, SetHash -> \type {
+        my $tname = type.^name;
+        my \cclass = "my class C$tname is json \{ has $tname \$.s; }".EVAL;
+        my @sets = (), ("a",), (<foo bar baz>);
+        subtest $tname => {
+            plan +@sets;
+            for @sets -> @set {
+                subtest "Set of " ~ +@set ~ " elements" => {
+                    plan 3;
+                    my $c = cclass.new(s => type.new(@set));
+                    my $json = $c.to-json;
+                    my %data = from-json($json);
+                    ok %data<s>:exists, "attribute was serialized";
+                    cmp-deeply %data<s>.sort, @set.sort, "keys are serialized";
+                    cmp-deeply cclass.from-json($c.to-json), $c, "deserialized";
+                }
+            }
+        }
+    }
+}
+
+subtest "Baggy/Mixy" => {
+    plan 4;
+    for Bag, BagHash, Mix, MixHash -> \type {
+        my $tname = type.^name;
+        my \cclass = "my class C$tname is json \{ has $tname \$.qh; }".EVAL;
+        my @sets = %(), %( a => 1.23 ), %(:foo(2.2), :bar(42), :baz(pi));
+        subtest $tname => {
+            plan +@sets;
+            for @sets -> %set {
+                subtest "Set of " ~ %set.elems ~ " elements" => {
+                    plan 2;
+                    my $c = cclass.new(qh => type.new-from-pairs(%set));
+                    my $json = $c.to-json;
+                    my %data = from-json($json);
+                    my %expected = qh => type.new-from-pairs(%set).Hash;
+                    cmp-deeply %data, %expected, "serialized";
+                    cmp-deeply cclass.from-json($json).qh.Hash, $c.qh.Hash, "deserialized";
+                }
+            }
+        }
     }
 }
 

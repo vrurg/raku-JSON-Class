@@ -345,4 +345,16 @@ method !PRESET-HELPERS {
                       :to-json<Str>,
                       :from-json<new>,
                       matcher => -> Str:D $from { ? try { Version.new($from) } };
+
+    for Set, SetHash -> \type {
+        self.set-helpers: type, :to-json({ .keys }), :from-json({ type.new(@^from) });
+    }
+
+    self.set-helpers: SetHash,
+                      :to-json({ .keys }),
+                      :from-json({ .SetHash });
+
+    for Bag, BagHash, Mix, MixHash -> \type {
+        self.set-helpers: type, :from-json({ type.new-from-pairs(%^from) });
+    }
 }
