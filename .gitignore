@@ -5,5 +5,5 @@
 *.iml
 .vscode/*
 .layout
-.gen-doc-index.json
+.gen-doc-*.json
 JSON-Class-v*.tar.gz
