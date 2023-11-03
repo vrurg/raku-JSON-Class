@@ -4,7 +4,7 @@ use JSON::Class:auth<zef:vrurg>;
 use JSON::Class::Config:auth<zef:vrurg>;
 use JSON::Fast;
 
-plan 8;
+plan 9;
 
 subtest "Plain Types" => {
     plan 6;
@@ -306,6 +306,15 @@ subtest "From An Array" => {
         [ Foo.new(a => "str"), Foo.new(a => 12.34), Foo.new(a => Bool::True), Foo.new(a => -13),
             [Foo.new(a => "nested"), Foo.new(a => 2) ]],
         "deserialized";
+}
+
+subtest "Attribute Aliasing" => {
+    plan 1;
+    my class Foo is json {
+        has $.attr is json(:aliases<Attr foo-attr>);
+    }
+
+    cmp-deeply Foo.new(foo-attr => "OK!"), Foo.new(:attr("OK!")), "attribute name aliasing is supported";
 }
 
 done-testing;

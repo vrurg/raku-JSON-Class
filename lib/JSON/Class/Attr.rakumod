@@ -63,10 +63,18 @@ method skip-null is raw {
     $!skip-null // self.declarant.^json-skip-null
 }
 
-method lazify(::?CLASS:D: Mu \obj) {
+method mooify(::?CLASS:D: Mu \obj, :$aliases) {
     JSON::Class::X::ReMooify.new(:$!attr, :type(obj)).throw if $.attr ~~ AttrX::Mooish::Attribute;
     my $*PACKAGE := obj;
-    &trait_mod:<is>($!attr, :mooish(:lazy<json-build-attr>, :predicate('json-has-' ~ $.json-name)));
+    my @profile;
+    if $.lazy {
+        @profile.append: "lazy" => 'json-build-attr', "predicate" => 'json-has-' ~ $.json-name;
+    }
+    if $aliases {
+        @profile.append: (:$aliases);
+    }
+    return unless @profile;
+    &trait_mod:<is>($!attr, :mooish(@profile));
 }
 
 multi method kind-type('attribute') is pure { $!attr.type }

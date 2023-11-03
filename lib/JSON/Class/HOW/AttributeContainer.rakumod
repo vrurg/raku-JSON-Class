@@ -118,6 +118,7 @@ method jsonify-attribute( Mu \pkg,
                                   Bool :skip-null($),
                                   Str :name($),
                                   Bool :lazy($),
+                                  :alias(:$aliases),
                                   :to-json(:$serializer), # (SerializerKind $?, *% where *.values.all ~~ SerializerKind),
                                   :from-json(:$deserializer), # (SerializerKind $?, *% where *.values.all ~~ SerializerKind),
                                   *%extra ))
@@ -162,5 +163,5 @@ method jsonify-attribute( Mu \pkg,
 
     my $json-attr = ATTR-TYPES.{$sigil}.new(:$attr, :declarant(pkg), |%adv);
     self.json-attr-register: pkg, $json-attr;
-    $json-attr.lazify(pkg) if $json-attr.lazy;
+    $json-attr.mooify(pkg, :$aliases);
 }
