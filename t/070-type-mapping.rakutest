@@ -6,7 +6,7 @@ use JSON::Class::X:auth<zef:vrurg>;
 
 use AttrX::Mooish;
 
-plan 6;
+plan 7;
 
 class Record is json {
     has Int $.count;
@@ -140,6 +140,25 @@ subtest "Map in a sequence" => {
 
     my $mapped = JSeq.from-json($jseq.to-json, :$config);
     cmp-deeply $mapped.map({ .WHAT }).List, (Item2, Item2, Item3), "mapped deserialization contains target types";
+}
+
+subtest "Chained Wrapping" => {
+    plan 2;
+
+    my class RecWrap2 is json-wrap(RecWrapper) {
+        has $.adjusted-count is mooish(:lazy);
+        method build-adjusted-count { $.count + 10 }
+    }
+
+    my $config = JSON::Class::Config.new;
+
+    $config.map-type: RecWrap2;
+
+    my $deserialized = Record.from-json(q«{"count":12,"what":"що-небудь!"}», :$config);
+
+    isa-ok $deserialized, RecWrap2, "deserialization considers chains of wraps";
+    my $expected = RecWrap2.new(:count(12), :what("що-небудь!"));
+    cmp-deeply $deserialized, $expected, "deserialization structure";
 }
 
 subtest "Errors" => {

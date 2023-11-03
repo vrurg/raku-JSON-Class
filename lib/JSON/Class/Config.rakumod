@@ -250,7 +250,23 @@ multi method map-type(::?CLASS:D: Mu:U \wrapper --> Nil) {
         JSON::Class::X::Config::NonWrapperType.new(:type(wrapper)).throw
     }
 
-    %!type-map{wrapper.^json-wrappee} := wrapper<>;
+    my Mu $dest-type :=
+    my Mu $wrapper := nominalize-type(wrapper);
+    my Mu $wrappee;
+
+    WRAPEE:
+    loop {
+        $wrappee := $wrapper.^json-wrappee;
+
+        %!type-map{$wrappee<>} := $dest-type;
+
+        if $wrappee.HOW ~~ JSON::Class::HOW::TypeWrapper {
+            $wrapper := $wrappee;
+        }
+        else {
+            last WRAPEE;
+        }
+    }
 }
 multi method map-type(::?CLASS:D: Pair:D $map --> Nil) {
     self.map-type($map.key, $map.value)
