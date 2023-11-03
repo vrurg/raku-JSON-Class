@@ -78,7 +78,7 @@ multi method json-guess-descriptor(:$json-value! is raw, Int:D :$idx --> JSON::C
         }
     }
 
-    # Since we truct user-provided matchers the most if any descriptor has claimed the JSON object then there is no
+    # Since we trust user-provided matchers the most if any descriptor has claimed the JSON object then there is no
     # need in guessing.
     unless @cands {
         given $json-value {
