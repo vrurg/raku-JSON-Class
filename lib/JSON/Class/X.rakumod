@@ -131,6 +131,17 @@ my class Deserialize::SeqItem does Deserialize {
     }
 }
 
+my class Deserialize::DictItem does Deserialize {
+    has Mu $.what is required;
+    has Mu $.key is required;
+    has Str:D $.why is required;
+    method message {
+        "Cannot deserialize " ~ type-or-instance($.what)
+        ~ " at key '" ~ $.key.gist ~ "'"
+        ~ " of dictionary type " ~ $.type.^name ~ ": " ~ $.why
+    }
+}
+
 my class Deserialize::NoAttribute does Deserialize {
     has Str:D $.json-key is required;
     method message {

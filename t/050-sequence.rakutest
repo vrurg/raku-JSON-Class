@@ -2,7 +2,7 @@ use v6.e.PREVIEW;
 use Test::Async;
 use JSON::Class:auth<zef:vrurg>;
 
-plan 6;
+plan 8;
 
 subtest "Basics" => {
     plan 21;
@@ -213,6 +213,33 @@ subtest "Ambiguous Multi-class" => {
         JSON::Class::X::Deserialize::SeqItem,
         :message(*.contains("item definitions for types Car:D, Truck:D are matching, but only one is expected")),
         "when more than one sequence type is matching a JSON object deserialization throws";
+}
+
+subtest "Assignment May Finalize" => {
+    plan 4;
+
+    my class SSeq is json(:sequence(Str:D)) { }
+    my $sseq = SSeq.from-json: q<["a1"]>;
+
+    nok $sseq.json-all-set, "sequence has items awaiting deserialization";
+    is ($sseq[0] = "b2"), "b2", "an assignment into undeserialized position";
+    ok $sseq.json-all-set, "assigning into undeserialized position in sequence marks it completed";
+    cmp-deeply $sseq.List, ("b2",), "final content check";
+}
+
+subtest "Holes" => {
+    plan 7;
+
+    my class SSeq is json(:sequence(Str:D)) { }
+    my $sseq = SSeq.from-json: q<["foo", "bar", "baz", "fubar"]>;
+
+    cmp-deeply $sseq[0,3], <foo fubar>, "partial vivify";
+    cmp-deeply $sseq[^4]:has, (True, False, False, True), ":has reflects vivification";
+    cmp-deeply $sseq[^4]:exists, (True, True, True, True), "all :exists yet";
+    cmp-deeply $sseq[1,2]:delete, (Str, Str), "delete undeserialized items";
+    cmp-deeply $sseq[^4]:exists, (True, False, False, True), ":exists reflect deletion results";
+    cmp-deeply $sseq.Array[^4]:exists, (True, False, False, True), "coercing into array preserves the holes";
+    ok $sseq.json-all-set, "deleting all undeserialized elements completes the sequence";
 }
 
 subtest "Errors" => {

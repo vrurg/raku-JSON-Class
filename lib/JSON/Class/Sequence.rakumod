@@ -1,7 +1,7 @@
 use v6.e.PREVIEW;
 unit class JSON::Class::Sequence:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
-use nqp;
 
+use JSON::Class::Collection;
 use JSON::Class::Common;
 use JSON::Class::Config;
 use JSON::Class::ItemDescriptor;
@@ -11,14 +11,15 @@ use JSON::Class::Types :NOT-SET;
 
 also does Positional;
 also does Iterable;
+also does JSON::Class::Collection;
 also does JSON::Class::Common;
 also does JSON::Class::Types::CloneFrom;
 
 # Un-deserialized yet items
-has Mu @!json-raw;
+has $!json-raw;
 has int $!json-unused-count;
 # Deserialized or user-installed items
-has @!json-items handles <ASSIGN-POS push append of>;
+has @!json-items handles <push append of>;
 
 multi method new(*@items, *%profile) {
     given self.bless(|%profile) {
@@ -27,45 +28,10 @@ multi method new(*@items, *%profile) {
     }
 }
 
-submethod TWEAK(:@!json-raw) {
+submethod TWEAK(:@json-raw) {
+    $!json-raw := @json-raw;
     @!json-items := self.json-new-seq-array;
-    $!json-unused-count = @!json-raw.elems;
-}
-
-method json-only-single-descriptor(@cands, JSON::Class::X::Base \ex, Mu \value, *%c) {
-    return @cands.head if @cands == 1;
-
-    if !@cands {
-        ex.new( :type(self.WHAT), :what(value), :why("no matching item definition found"), |%c ).throw
-    }
-
-    ex.new( :type(self.WHAT),
-            :what(value),
-            :why( "item definitions for types "
-                    ~ (@cands.map(*.type.^name).join(", "))
-                    ~ " are matching, but only one is expected"),
-            |%c ).throw
-}
-
-proto method json-guess-descriptor(|) {*}
-
-multi method json-guess-descriptor(::?CLASS:D: Mu :$item-value! is raw --> JSON::Class::ItemDescriptor:D) is raw {
-    my @desc = self.json-class.^json-item-descriptors.grep({ $item-value ~~ $^descr.type });
-
-    if !@desc {
-        JSON::Class::X::Serialize::Impossible.new(
-            :type(self.WHAT),
-            :what($item-value),
-            :why("type is not registered with the sequence")).throw
-    }
-    elsif @desc > 1 {
-        JSON::Class::X::Serialize::Impossible.new(
-            :type(self.WHAT),
-            :what($item-value),
-            :why("too many types are matching, possible candidates are " ~ @desc.map(*.type.^name).join(", "))).throw
-    }
-
-    @desc.head
+    $!json-unused-count = $!json-raw.elems;
 }
 
 multi method json-guess-descriptor(:$json-value! is raw, Int:D :$idx --> JSON::Class::ItemDescriptor:D) is raw {
@@ -80,31 +46,7 @@ multi method json-guess-descriptor(:$json-value! is raw, Int:D :$idx --> JSON::C
 
     # Since we trust user-provided matchers the most if any descriptor has claimed the JSON object then there is no
     # need in guessing.
-    unless @cands {
-        given $json-value {
-            when Map:D {
-                my $json-key-set;
-                my $config;
-                # Chose descriptors where either JSON object keys are a subset of class' JSON keys, or JSON object hash
-                # matches descriptor type (mostly useful with coercions), or descriptor represents an associative type.
-                @cands =
-                    @descr-for-guess.grep({
-                        ($^descr.is-a-class && do {
-                            my \cand-jclass = ($config //= self.json-config).jsonify(:nominal-what($descr.nominal-type));
-                            ($json-key-set //= $json-value.keys.Set) ⊆ cand-jclass.^json-mro-key-set;
-                        })
-                        || ($json-value ~~ (my \dtype = $descr.type) #`{ Mostly to support coercions })
-                        || (dtype ~~ Associative);
-                    });
-            }
-            when List:D {
-                @cands = @descr-for-guess.grep({ .type ~~ Positional })
-            }
-            default {
-                @cands = @descr-for-guess.grep({ $json-value ~~ $^descr.type });
-            }
-        }
-    }
+    @cands ||= self.json-guess-descr-candidates($json-value, @descr-for-guess);
 
     self.json-only-single-descriptor: @cands, JSON::Class::X::Deserialize::SeqItem, $json-value, :$idx
 }
@@ -157,28 +99,35 @@ method json-deserialize-item(::?CLASS:D: Int:D $idx, Mu $json-value is raw --> M
     }
     else {
         # Treat any undefined as Nil
-        $rc := (@!json-items[$idx] = Nil);
+        $rc := @!json-items.ASSIGN-POS($idx, Nil);
     }
 
     $rc
-
 }
 
 method json-all-set { !$!json-unused-count }
 
+method !json-delete-pos-raw($pos --> Mu) is raw {
+    my $rc := Nil;
+    if ($!json-raw andthen .EXISTS-POS($pos)) {
+        $rc := $!json-raw.DELETE-POS($pos);
+        if --$!json-unused-count == 0 {
+            $!json-raw := Empty;
+        }
+        elsif $!json-unused-count < 0 {
+            JSON::Class::X::AdHoc.new(
+                message => "We overused our lazy elements somehow, has taken "
+                            ~ $!json-unused-count.abs ~ " more elements than there was available!" ).throw;
+        }
+    }
+    $rc
+}
+
 method AT-POS(::?CLASS:D: Int:D $idx --> Mu) is raw {
-    return @!json-items[$idx] if @!json-items.EXISTS-POS($idx) || !@!json-raw.EXISTS-POS($idx);
+    return @!json-items[$idx] if @!json-items.EXISTS-POS($idx) || !$!json-raw.EXISTS-POS($idx);
     return self.^json-item-default if $idx > self.end;
 
-    my Mu $json-value := @!json-raw[$idx]:delete;
-    if --$!json-unused-count == 0 {
-        @!json-raw = Empty;
-    }
-    elsif $!json-unused-count < 0 {
-        JSON::Class::X::AdHoc.new(
-            message => "We overused our lazy elements somehow, has taken "
-                        ~ $!json-unused-count.abs ~ " more elements than was available!" ).throw;
-    }
+    my Mu $json-value := self!json-delete-pos-raw($idx);
 
     self.json-lazy-deserialize-context: {
         self.json-deserialize-item($idx, $json-value)
@@ -186,7 +135,12 @@ method AT-POS(::?CLASS:D: Int:D $idx --> Mu) is raw {
 }
 
 method EXISTS-POS(::?CLASS:D: Int:D $pos) {
-    @!json-raw.EXISTS-POS($pos) || @!json-items.EXISTS-POS($pos)
+    $!json-raw.EXISTS-POS($pos) || @!json-items.EXISTS-POS($pos)
+}
+
+multi method ASSIGN-POS(::?CLASS:D: Int:D $pos, Mu \value) is raw {
+    self!json-delete-pos-raw($pos);
+    @!json-items.ASSIGN-POS($pos, value)
 }
 
 proto method HAS-POS(::?CLASS:D: Any:D) {*}
@@ -194,17 +148,17 @@ multi method HAS-POS(::?CLASS:D: Int:D $pos, Bool:D :$has = True) {
     ! (@!json-items.EXISTS-POS($pos) ^^ $has)
 }
 multi method HAS-POS(::?CLASS:D: Iterable:D \positions, Bool:D :$has = True) {
-    positions.map({ ! (@!json-items.EXISTS-POS[$_] ^^ $has) })
+    positions.map({ ! (@!json-items.EXISTS-POS($_) ^^ $has) }).List
 }
 
 multi method DELETE-POS(::?CLASS:D: Int:D $pos) is raw {
-    @!json-raw.DELETE-POS($pos);
+    self!json-delete-pos-raw($pos);
     @!json-items.DELETE-POS($pos)
 }
 
-method elems(::?CLASS:D:) { @!json-raw.elems max @!json-items.elems }
+method elems(::?CLASS:D:) { $!json-raw.elems max @!json-items.elems }
 
-method end(::?CLASS:D:) { @!json-raw.end max @!json-items.end }
+method end(::?CLASS:D:) { $!json-raw.end max @!json-items.end }
 
 multi method iterator(::?CLASS:D:) {
     class :: does Iterator {
@@ -229,11 +183,14 @@ multi method List(::?CLASS:D:) {
 }
 
 multi method Array(::?CLASS:D:) {
-    self.json-new-seq-array.append:
-        self.json-all-set
-            ?? @!json-items
-            !! (^self.elems).map({ self.AT-POS($_) })
+    my $array := self.json-new-seq-array;
+    my $from := self.json-all-set ?? @!json-items !! self;
+    for ^$from.elems -> $pos {
+        $array.ASSIGN-POS($pos, $from.AT-POS($pos)) if $from.EXISTS-POS($pos);
+    }
+    $array
 }
 
-multi method Str(::?CLASS:D:) { self.List.Str }
-multi method gist(::?CLASS:D:) { self.List.gist }
+multi method Str(::?CLASS:D:) { self.Array.Str }
+multi method gist(::?CLASS:D:) { self.Array.gist }
+multi method raku(::?CLASS:D:) { self.^name ~ ".new(" ~ self.map(*.raku).join(", ") ~ ")" }

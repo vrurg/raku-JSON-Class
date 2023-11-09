@@ -197,24 +197,24 @@ multi method json-deserialize-value(Mu \dest-type, Nil, JSON::Class::Config :$co
     ($config // self.json-config).type-from(dest-type)
 }
 
-proto method json-serialize-value(::?CLASS:D: Mu, Mu) {*}
+proto method json-serialize-value(Mu, Mu) {*}
 
-multi method json-serialize-value(::CLASS:D: Mu, Mu:U \value) is raw { Nil }
+multi method json-serialize-value(Mu, Mu:U \value) is raw { Nil }
 
-multi method json-serialize-value(::?CLASS:D: Mu, JSON::Class::Jsonish:D \value) is default is raw {
+multi method json-serialize-value(Mu, JSON::Class::Jsonish:D \value) is default is raw {
     value.json-serialize(config => self.json-config)
 }
 
-multi method json-serialize-value(::?CLASS:D: Enumeration, \evalue) {
+multi method json-serialize-value(Enumeration, \evalue) {
     self.json-config.enums-as-value ?? evalue.value !! evalue.key
 }
 
-multi method json-serialize-value(::?CLASS:D: Positional \value-type, \list) {
+multi method json-serialize-value(Positional \value-type, \list) {
     my Mu \of-type = nominalize-type(value-type.of);
     list.map({ self.json-serialize-value(of-type, $_) }).eager.Array
 }
 
-multi method json-serialize-value(::?CLASS:D: Associative \value-type, \hash) {
+multi method json-serialize-value(Associative \value-type, \hash) {
     my Mu \of-type = nominalize-type(value-type.of);
     my Mu \keyof-type = nominalize-type(value-type.keyof);
 
@@ -224,9 +224,9 @@ multi method json-serialize-value(::?CLASS:D: Associative \value-type, \hash) {
     }).eager.Hash
 }
 
-multi method json-serialize-value(::?CLASS:D: Mu, JSONBasicType \value) { value }
+multi method json-serialize-value(Mu, JSONBasicType \value) { value }
 
-multi method json-serialize-value(::?CLASS:D: Mu, Mu:D \value) is raw {
+multi method json-serialize-value(Mu, Mu:D \value) is raw {
     my $config := self.json-config;
     my &fallback = { $config.jsonify(value).json-serialize(:$config) };
     with self.json-helper(value.WHAT, 'to-json') {
@@ -289,8 +289,7 @@ multi method from-json( Str:D $json,
 {
     verify-named-args(:%extra, :what("method 'from-json'"), :source(self.^name));
     self.json-config-context: :config($user-config), |%twiddles, -> $config {
-        my %profile = $config.from-json-profile;
-        self.json-deserialize(from-json($json, |%profile), :$config);
+        self.json-deserialize($config.from-json($json), :$config);
     }
 }
 
@@ -321,7 +320,6 @@ multi method to-json( ::?CLASS:D:
     self.json-config-context: :config($user-config), |%twiddles, -> $config {
         return self.json-serialize(:$config) if $raw;
 
-        my %profile := $config.to-json-profile;
-        to-json(self.json-serialize(:$config), |%profile);
+        $config.to-json: self.json-serialize(:$config)
     }
 }

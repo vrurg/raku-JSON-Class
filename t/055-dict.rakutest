@@ -1,0 +1,227 @@
+use v6.e.PREVIEW;
+use Test::Async;
+use JSON::Class:auth<zef:vrurg>;
+
+subtest "Basics" => {
+    plan 23;
+
+    my class JDict is json( :dictionary( default => Num, Num(Rat), Str:D ) ) {}
+
+    my $jdict = JDict.new("pi", π, "the-answer", 42.0, "foo" => "bar", "baz" => 12e0, "nullish" => Nil, "undefy" => Num);
+
+    throws-like {
+            $jdict<bad> = 13;
+        },
+        X::TypeCheck::Assignment,
+        :got(13),
+        :expected(JDict.of),
+        "assignment of a wrong value type";
+
+    throws-like {
+            $jdict<noundef> = Str;
+        },
+        X::TypeCheck::Assignment,
+        :got(Str),
+        :expected(JDict.of),
+        "assignment of an undef type";
+
+    my $json = $jdict.to-json(:!pretty, :sorted-keys);
+    my $expected = q<{"baz":12e0,"foo":"bar","nullish":null,"pi":3.141592653589793e0,"the-answer":42.0,"undefy":null}>;
+
+    is $json, $expected, "serialized dictionary";
+
+    my $deserialized = JDict.from-json($expected);
+
+    cmp-deeply $deserialized, $jdict, "deserialized into indentical object";
+    ok $deserialized.json-all-set, "iterating over all keys fully deserialzies";
+
+    $deserialized = JDict.from-json($expected);
+
+    nok $deserialized<undefy>:has, "an item is not deserialized";
+
+    my @expected-keys := <baz foo nullish pi the-answer undefy>;
+    cmp-deeply $deserialized.keys.sort.List, @expected-keys, "all keys found";
+    cmp-deeply $deserialized{@expected-keys}:has, False xx +@expected-keys, "pulling in keys doesn't deserialize";
+
+    is $deserialized<undefy>, Num, "deserialized initially undefined value";
+    is $deserialized<nullish>, Num, "deserialized initially Nil value, turned into the default";
+    is $deserialized<the-answer>, 42e0, "deserialized a former rational, coerced into a Num";
+
+    cmp-deeply $deserialized{@expected-keys}:has.List, (False, False, True, False, True, True),
+               ":has on unmarshalled is true";
+    ok $deserialized<nullish>:has, ":has on on individual key after deserialization";
+
+    cmp-deeply $deserialized{@expected-keys}:exists, (True xx +@expected-keys).List,
+               ":exists is true, no matter if already unmarshalled";
+
+    nok $deserialized<NO-VALUE-FOR-THIS>:has, ":has on a non-existing key";
+    nok $deserialized<NO-VALUE-FOR-THIS>:exists, ":exists on a non-existing key";
+
+    nok $deserialized.json-all-set, "still not fully deserialized";
+
+    # Older versions of Rakudo return hash .of upon deleting non-existing keys for parameterized hashes, not their `is
+    # default`. We just make sure here that JSON::Dict follows the current semantics.
+    my $std-hash := Hash.^parameterize($deserialized.of, $deserialized.keyof).new;
+    is-deeply $deserialized<baz foo pi>:delete, ($std-hash<foo>:delete xx 3).List,
+              "deleting pending items returns dictionary default value";
+
+    ok $deserialized.json-all-set, "deleting all pending items makes the dictionary complete";
+
+    subtest "preliminary completion" => {
+        plan 6;
+        $deserialized = JDict.from-json(q<{"foo":"bar"}>);
+        nok $deserialized.json-all-set, "not complete yet";
+        ok $deserialized<foo>:exists, "key exists";
+        nok $deserialized<foo>:has, "key not deserialized";
+        $deserialized<foo> = "override";
+        ok $deserialized<foo>:exists, "key still exists";
+        ok $deserialized<foo>:has, "key is deserialized";
+        ok $deserialized.json-all-set, "complete";
+    }
+
+    my @old-keys = $jdict.keys;
+    $jdict<> = (:key<first>, :second(2.0));
+    is ($jdict.keys ∩ @old-keys).elems, 0, "list-assigning to a dictionary replaces all keys";
+
+    my %jdict is JDict;
+    isa-ok %jdict, JDict, "JSON dictionary can be used as a %-sigil type";
+    %jdict = $jdict;
+    cmp-deeply %jdict, $jdict.Hash, "assigning from another JSON dictionary";
+}
+
+subtest "Key Marshalling" => {
+    plan 3;
+
+    subtest "Default Key Type" => {
+        plan 9;
+        my class JKDict
+            is json(
+                :dictionary(
+                    default => Num, Num(Numeric), Str:D,
+                    :keyof( to-json => { "FOO:" ~ $^key },
+                            from-json => {
+                                $^json-key.starts-with("FOO:")
+                                    ?? $json-key.substr(4)
+                                    !! die "bad source key '$json-key'"
+                            } ))) {}
+
+        my %jdict is JKDict = :k1(1), :k2<second>;
+
+        is-deeply %(%jdict.kv), %(%jdict.pairs), ".kv is identical to .pairs";
+        is-deeply %jdict.kv[0,2...*].sort, %jdict.keys.sort, "keys from .kv are the same as in .keys";
+        is (%jdict.kv[1,3...*] (-) %jdict.values).elems, 0, "values from .kv are the same as in .values";
+
+        my $expected = q<{"FOO:k1":1,"FOO:k2":"second"}>;
+
+        is-deeply %jdict.keys.List.sort, <k1 k2>, "keys are unmodified for the user";
+        is-deeply %jdict<k1 k2>, (1, "second"), "values are visible through the keys";
+        is %jdict.to-json(:!pretty, :sorted-keys), $expected,
+           "but serialized modified by the :to-json/:serializer code";
+
+        my %deserialized is JKDict .= from-json($expected);
+
+        cmp-deeply %deserialized.Hash, %jdict.Hash, "unmarshalling restores the original keys";
+
+        lives-ok { %deserialized := JKDict.from-json(q<{"bad-key":"dies"}>); }, "bad key survives lazy deserialization";
+        throws-like
+            { %deserialized.keys },
+            X::AdHoc,
+            :message("bad source key 'bad-key'"),
+            "user deserializer dies on what it considers a badly formatted key";
+    }
+
+    subtest "Coercive Key Type" => {
+        plan 5;
+
+        my class JKDict
+            is json(
+                :dictionary(
+                    default => False, Bool:D, Str:D,
+                    :keyof(
+                        Real:D(),
+                        to-json => { $^key.fmt("%.5f") } ))) {}
+
+        my %jdict is JKDict = (π) => True, (e) => True, 1 => False, 2.123456789 => "questionable";
+
+        my $expected = q<{"1.00000":false,"2.12346":"questionable","2.71828":true,"3.14159":true}>;
+
+        is %jdict.to-json(:!pretty, :sorted-keys), $expected, "user serializer modifies keys";
+
+        my %deserialized is JKDict .= from-json($expected);
+        # We can't test for roundtripping here because user serializer loses precission.
+        my %expected{Real:D()} = 1.0 => False, 2.12346 => "questionable", 2.71828 => True, 3.14159 => True;
+        cmp-deeply %deserialized.Hash, %expected, "deserialized correctly";
+        is-deeply %deserialized.keys.map({ .WHAT }).List, (Rat xx 4), "deserialized key types";
+
+        # Try different key type.
+        %deserialized .= from-json(q<{"1.00000e2":false,"2.12346":"questionable","2.71828":true,"3.14159":true}>);
+        is-deeply %deserialized.keys.sort.List, (2.12346, 2.71828, 3.14159, 1e2), "deserialized with different key types";
+        is-deeply %deserialized.keys.sort.map({ .WHAT }), (Rat xx 3, Num).flat, "deserialized key types are different";
+    }
+
+    subtest "Class Key Type" => {
+        plan 2;
+
+        my class DKey is json {
+            has Str:D $.fname is required;
+            has Int:D(Str:D) $.id is required;
+        }
+
+        my sub is-identical(\deserialized, \original, $msg?) is test-assertion {
+            my @dkeys = deserialized.keys;
+            my @okeys = original.keys;
+            ok ? ((original{@dkeys}:exists, deserialized{@okeys}:exists).flat.all
+                    && (original{@dkeys}.Bag (==) deserialized{@okeys}.Bag)),
+                ($msg // "deserialization is identical to the original");
+        }
+
+        subtest "Plain" => {
+            plan 3;
+            my class TDict is json( :dict( :keyof(DKey:D), Str:D ) ) {}
+
+            my $tdict = TDict.new(
+                DKey.new(:fname<f1>, :id(1)) => "v1",
+                DKey.new(:fname<f1>, :id(2)) => "v2",
+                DKey.new(:fname<f2>, :id(1)) => "v3",
+            );
+
+            is $tdict{ DKey.new(:fname<f1>, :id(1)) }, "v1", "key objects are invariants over their JSON representation";
+
+            my $expected = q<{"{\"fname\":\"f1\",\"id\":1}":"v1","{\"fname\":\"f1\",\"id\":2}":"v2","{\"fname\":\"f2\",\"id\":1}":"v3"}>;
+
+            is $tdict.to-json(:!pretty, :sorted-keys), $expected,
+               "by default class key serializes into its JSON representation";
+
+            my $deserialized = TDict.from-json($expected);
+
+            # WAITING cmp-deeply is for when fixed version 0.1.16+ of Test::Async gets published.
+            # cmp-deeply $deserialized, $tdict, "same as the original";
+
+            # Until we can use cmp-deeply compare the two by matching all keys and all values.
+            is-identical($deserialized, $tdict);
+        }
+
+        subtest "Custom Key Marshalling" => {
+            plan 2;
+            my class TDictCustom
+                is json(
+                    :dict(
+                        :keyof( DKey:D,
+                                to-json => { .fname ~ ":" ~ .id },
+                                from-json => { DKey.new(|%( <fname id> Z=> .split(":") )) } ),
+                        Str:D ) ) {}
+
+            my $tdict = TDictCustom.new(
+                DKey.new(:fname<f1>, :id(1)) => "v1",
+                DKey.new(:fname<f1>, :id(2)) => "v2",
+                DKey.new(:fname<f2>, :id(1)) => "v3",
+            );
+
+            my $expected = q<{"f1:1":"v1","f1:2":"v2","f2:1":"v3"}>;
+            is $tdict.to-json(:!pretty, :sorted-keys), $expected, "serialized";
+
+            my $deserialized = TDictCustom.from-json($expected);
+            is-identical($deserialized, $tdict);
+        }
+    }
+}

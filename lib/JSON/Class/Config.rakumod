@@ -2,6 +2,7 @@ use v6.e.PREVIEW;
 unit class JSON::Class::Config:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
 
 use AttrX::Mooish;
+use JSON::Fast;
 
 use JSON::Class::HOW::JSONified;
 use JSON::Class::HOW::TypeWrapper;
@@ -45,6 +46,9 @@ my $std-types-lock = Lock.new;
 
 has Bool $.using-defaults;
 
+has &!to-json is mooish(:lazy<to-json-routine>);
+has &!from-json is mooish(:lazy<from-json-routine>);
+
 our sub set-std-typeobjects( Mu :$class-how is raw,
                              Mu :$object is raw,
                              Mu :$representation is raw --> Nil )
@@ -59,6 +63,9 @@ our sub set-std-typeobjects( Mu :$class-how is raw,
 method json-class-how is raw { $json-class-how }
 method json-representation is raw { $json-representation }
 method json-object-class is raw { $json-object-class }
+method json-module { JSON::Fast }
+method to-json-routine { &JSON::Fast::to-json }
+method from-json-routine { &JSON::Fast::from-json }
 
 submethod TWEAK(Bool :defaults($!using-defaults) = True, Bool :$easy, Bool :$warn, Bool :$strict) {
     if $!using-defaults {
@@ -116,8 +123,6 @@ proto method eager(|) {*}
 multi method eager(::?CLASS:U:) { self.global.eager }
 multi method eager(::?CLASS:D:) { $!eager }
 
-proto method jsonify(|) {*}
-
 proto method non-jsonifiable(Mu:U) {*}
 
 multi method non-jsonifiable(::?CLASS:U: Mu:U \typeobj) {
@@ -139,6 +144,8 @@ multi method non-jsonifiable( ::?CLASS:D:
 }
 
 multi method non-jsonifiable(::?CLASS:D: Mu:U --> False) {}
+
+proto method jsonify(|) {*}
 
 multi method jsonify( Mu:U :$nominal-what is raw, Bool :$local --> Mu ) is raw {
     unless $nominal-what.HOW ~~ Metamodel::ClassHOW {
@@ -343,12 +350,30 @@ multi method notify(::?CLASS:D: *@msg --> Nil) {
     warn @msg.map(*.gist).join;
 }
 
-method to-json-profile is raw {
+proto method to-json-profile(|) {*}
+multi method to-json-profile(::?CLASS:U:) is raw { self.global.to-json-profile }
+multi method to-json-profile(::?CLASS:D:) is raw {
     ( :$!pretty, :$!sorted-keys, :$!enums-as-value, :$!spacing).Map
 }
 
-method from-json-profile is raw {
+proto method from-json-profile(|) {*}
+multi method from-json-profile(::?CLASS:U:) is raw { self.global.from-json-profile }
+multi method from-json-profile(::?CLASS:D:) is raw {
     ( :$!allow-jsonc ).Map
+}
+
+proto method to-json(|) {*}
+multi method to-json(::?CLASS:U: |c) { self.global.to-json(|c) }
+multi method to-json(::?CLASS:D: Mu \value, *%c) {
+    my %profile := self.to-json-profile;
+    &!to-json.(value, |%profile, |%c)
+}
+
+proto method from-json(|) {*}
+multi method from-json(::?CLASS:U: |c) { self.global.from-json(|c) }
+multi method from-json(::?CLASS:D: $json, *%c) {
+    my %profile := self.from-json-profile;
+    &!from-json.($json, |%profile, |%c)
 }
 
 method !PRESET-HELPERS {

@@ -47,6 +47,9 @@ method deserializer(::?CLASS:D: Str:D $kind) {
     $!helpers-lock.protect: { %!helpers{JSDeserialize} andthen .{$kind} orelse Nil }
 }
 
+method has-serializer(::?CLASS:D: Str:D $kind) { self.has-helper(JSSerialize, $kind) }
+method has-deserializer(::?CLASS:D: Str:D $kind) { self.has-helper(JSDeserialize, $kind) }
+
 method declarant(::?CLASS:D: --> Mu) is raw { $!declarant }
 method is-declarant-lazy(::?CLASS:D:) { $!declarant.HOW.json-is-lazy($!declarant) }
 

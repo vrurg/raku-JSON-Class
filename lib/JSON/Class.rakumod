@@ -6,6 +6,9 @@ use JSON::Fast;
 
 use JSON::Class::ClassHOW;
 use JSON::Class::Config;
+use JSON::Class::DictHOW;
+use JSON::Class::Dictionary;
+use JSON::Class::HOW::Dictionary;
 use JSON::Class::HOW::Sequential;
 use JSON::Class::HOW::TypeWrapper;
 use JSON::Class::Internals;
@@ -63,6 +66,12 @@ BEGIN {
         ).throw
     }
 
+    my sub one-collection-kind($sequence, $dict --> Nil) {
+        $sequence
+        andthen $dict
+        andthen JSON::Class::X::Trait::Argument.new(:why("both :sequence and :dict can't be used")).throw
+    }
+
     my sub jsonify-role( Mu:U \typeobj,
                          Bool :$implicit,
                          Bool :$lazy,
@@ -70,23 +79,31 @@ BEGIN {
                          :$does = (),
                          :$is = (),
                          :$sequence = NOT-SET,
+                         :dictionary(:$dict) = NOT-SET,
                          *%extra )
     {
         verify-named-args(:%extra, :what("trait '" ~ $*JSON-CLASS-TRAIT ~ "'"), :source(typeobj.^name));
+        one-collection-kind($sequence, $dict);
 
-        if $sequence === NOT-SET {
+        if $sequence !=== NOT-SET {
+            no-redeclare(typeobj, JSON::Class::HOW::Sequential, "role");
+
+            typeobj.HOW does JSON::Class::HOW::Sequential;
+            typeobj.^json-setup-sequence($sequence.List);
+        }
+        elsif $dict !=== NOT-SET {
+            no-redeclare(typeobj, JSON::Class::HOW::Dictionary, "role");
+
+            typeobj.HOW does JSON::Class::HOW::Dictionary;
+            typeobj.^json-setup-dictionary($dict.List);
+        }
+        else {
             no-redeclare(typeobj, JSON::Class::RoleHOW, "role");
 
             typeobj.HOW does JSON::Class::RoleHOW;
             typeobj.^json-set-explicit(!$_) with $implicit;
             typeobj.^json-set-skip-null($skip-null);
             typeobj.^json-configure-typeobject( :$lazy, is => is2list($is), does => does2list($does) )
-        }
-        else {
-            no-redeclare(typeobj, JSON::Class::HOW::Sequential, "role");
-
-            typeobj.HOW does JSON::Class::HOW::Sequential;
-            typeobj.^json-setup-sequence($sequence.List);
         }
     }
 
@@ -99,24 +116,33 @@ BEGIN {
                           :$does = (),
                           :$is = (),
                           :$sequence = NOT-SET,
+                          :dictionary(:$dict) = NOT-SET,
                           *%extra )
     {
         verify-named-args(:%extra, :what("trait 'json'"), :source(typeobj.^name));
+        one-collection-kind($sequence, $dict);
 
-        if $sequence === NOT-SET {
+        if $sequence !=== NOT-SET {
+            no-redeclare(typeobj, JSON::Class::SequenceHOW, "class");
+
+            typeobj.HOW does JSON::Class::SequenceHOW;
+            typeobj.^add_role(JSON::Class::Sequential);
+            typeobj.^json-setup-sequence($sequence.List);
+        }
+        elsif $dict !=== NOT-SET {
+            no-redeclare(typeobj, JSON::Class::DictHOW, "class");
+
+            typeobj.HOW does JSON::Class::DictHOW;
+            typeobj.^add_role(JSON::Class::Dictionary);
+            typeobj.^json-setup-dictionary($dict.List);
+        }
+        else {
             no-redeclare(typeobj, JSON::Class::ClassHOW, "class");
 
             typeobj.HOW does JSON::Class::ClassHOW;
             typeobj.^add_role(JSON::Class::Representation);
             typeobj.^json-set-explicit(!$_) with $implicit;
             typeobj.^json-set-skip-null($skip-null);
-        }
-        else {
-            no-redeclare(typeobj, JSON::Class::SequenceHOW, "class");
-
-            typeobj.HOW does JSON::Class::SequenceHOW;
-            typeobj.^add_role(JSON::Class::Sequential);
-            typeobj.^json-setup-sequence($sequence.List);
         }
 
         typeobj.^json-configure-typeobject( :$lazy, :$pretty, :$sorted-keys, is => is2list($is), does => does2list($does) );
@@ -166,6 +192,10 @@ BEGIN {
 
 multi sub postcircumfix:<[ ]>(JSON::Class::Sequence:D \JSONSEQ, Any:D $pos, Bool:D :$has!) is raw is export {
     JSONSEQ.HAS-POS($pos, :$has)
+}
+
+multi sub postcircumfix:<{ }>(JSON::Class::Dict:D \JSONDICT, Mu $key, Bool:D :$has!) is raw is export {
+    JSONDICT.HAS-KEY($key, :$has)
 }
 
 our sub META6 {
