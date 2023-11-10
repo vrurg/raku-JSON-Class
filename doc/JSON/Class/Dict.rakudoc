@@ -1,0 +1,6 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::Dict> - parent of JSON dictionary classes
+
+=end rakudoc
