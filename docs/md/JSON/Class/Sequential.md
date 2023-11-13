@@ -18,7 +18,7 @@
 
   - **`method json-item-descriptors(|)`**
     
-    Redirects to the same name method of [`JSON::Class::SequenceHOW`](SequenceHOW.md).
+    Redirects to the same name method of [`JSON::Class::HOW::Collection`](HOW/Collection.md).
 
   - **`method json-create(*%profile)`**
     

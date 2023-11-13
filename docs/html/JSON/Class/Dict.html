@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>JSON::Class::Dict</title>
+    <meta charset="UTF-8">
+    <style>hr,
+img {
+    box-sizing: content-box
+}
+body::after,
+body::before,
+hr::after,
+hr::before {
+    display: table;
+    content: ""
+}
+a,
+a:not([href]) {
+    text-decoration: none
+}
+
+hr,
+svg:not(:root) {
+    overflow: hidden
+}
+
+img,
+table tr {
+    background-color: #fff
+}
+
+pre,
+table {
+    overflow: auto
+}
+
+dl,
+dl dt,
+hr,
+pre code,
+pre>code,
+td,
+th {
+    padding: 0
+}
+
+input,
+pre code {
+    overflow: visible
+}
+
+pre,
+pre code {
+    word-wrap: normal
+}
+
+body {
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    color: #333;
+    font-family: "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    font-size: 16px;
+    line-height: 1.5;
+    word-wrap: break-word;
+    width: 820px;
+    margin: 2em auto;
+}
+
+a {
+    background-color: transparent;
+    -webkit-text-decoration-skip: objects;
+    color: #4078c0
+}
+
+a:active,
+a:hover {
+    outline-width: 0;
+    text-decoration: underline
+}
+
+h1 {
+    margin: .67em 0
+}
+
+img {
+    border-style: none;
+    max-width: 100%
+}
+
+h1,
+h2 {
+    padding-bottom: .3em;
+    border-bottom: 1px solid #eee
+}
+
+input {
+    font: inherit;
+    margin: 0;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit
+}
+
+* {
+    box-sizing: border-box
+}
+
+strong {
+    font-weight: 600
+}
+
+body::after,
+hr::after {
+    clear: both
+}
+
+table {
+    border-spacing: 0;
+    border-collapse: collapse;
+    display: block;
+    width: 100%
+}
+
+blockquote {
+    margin: 0;
+    padding: 0 1em;
+    color: #777;
+    border-left: .25em solid #ddd
+}
+
+ol ol,
+ul ol {
+    list-style-type: lower-roman
+}
+
+ol ol ol,
+ol ul ol,
+ul ol ol,
+ul ul ol {
+    list-style-type: lower-alpha
+}
+
+dd {
+    margin-left: 0
+}
+
+code {
+    font-family: Consolas, "Liberation Mono", Menlo, Courier, monospace
+}
+
+pre {
+    font: 12px Consolas, "Liberation Mono", Menlo, Courier, monospace
+}
+
+input {
+    -webkit-font-feature-settings: "liga" 0;
+    font-feature-settings: "liga" 0
+}
+
+body>:first-child {
+    margin-top: 0!important
+}
+
+body>:last-child {
+    margin-bottom: 0!important
+}
+
+a:not([href]) {
+    color: inherit
+}
+
+blockquote,
+dl,
+ol,
+p,
+pre,
+table,
+ul {
+    margin-top: 0;
+    margin-bottom: 16px
+}
+
+hr {
+    background: #e7e7e7;
+    height: .25em;
+    margin: 24px 0;
+    border: 0
+}
+
+blockquote>:first-child {
+    margin-top: 0
+}
+
+blockquote>:last-child {
+    margin-bottom: 0
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    margin-top: 24px;
+    margin-bottom: 16px;
+    font-weight: 600;
+    line-height: 1.25
+}
+
+dl dt,
+table th {
+    font-weight: 700
+}
+
+h1 code,
+h1 tt,
+h2 code,
+h2 tt,
+h3 code,
+h3 tt,
+h4 code,
+h4 tt,
+h5 code,
+h5 tt,
+h6 code,
+h6 tt {
+    font-size: inherit
+}
+
+h1 {
+    font-size: 2em
+}
+
+h2 {
+    font-size: 1.5em
+}
+
+h3 {
+    font-size: 1.25em
+}
+
+h4 {
+    font-size: 1em
+}
+
+h5 {
+    font-size: .875em
+}
+
+h6 {
+    font-size: .85em;
+    color: #777
+}
+
+ol,
+ul {
+    padding-left: 2em
+}
+
+ol ol,
+ol ul,
+ul ol,
+ul ul {
+    margin-top: 0;
+    margin-bottom: 0
+}
+
+li>p {
+    margin-top: 16px
+}
+
+li+li {
+    margin-top: .25em
+}
+
+dl dt {
+    margin-top: 16px;
+    font-size: 1em;
+    font-style: italic
+}
+
+dl dd {
+    padding: 0 16px;
+    margin-bottom: 16px
+}
+
+table td,
+table th {
+    padding: 6px 13px;
+    border: 1px solid #ddd
+}
+
+table tr {
+    border-top: 1px solid #ccc
+}
+
+table tr:nth-child(2n) {
+    background-color: #f8f8f8
+}
+
+code {
+    padding: .2em 0;
+    margin: 0;
+    font-size: 85%;
+    background-color: rgba(0, 0, 0, .04);
+    border-radius: 3px
+}
+
+code::after,
+code::before {
+    letter-spacing: -.2em;
+    content: "\00a0"
+}
+
+pre>code {
+    margin: 0;
+    font-size: 100%;
+    word-break: normal;
+    white-space: pre;
+    background: 0 0;
+    border: 0
+}
+
+pre {
+    padding: 16px;
+    font-size: 85%;
+    line-height: 1.45;
+    background-color: #f7f7f7;
+    border-radius: 3px
+}
+
+pre code {
+    display: inline;
+    max-width: auto;
+    margin: 0;
+    line-height: inherit;
+    background-color: transparent;
+    border: 0
+}
+
+pre code::after,
+pre code::before {
+    content: normal
+}
+
+kbd {
+    display: inline-block;
+    padding: 3px 5px;
+    font: 11px Consolas, "Liberation Mono", Menlo, Courier, monospace;
+    line-height: 10px;
+    color: #555;
+    vertical-align: middle;
+    background-color: #fcfcfc;
+    border: 1px solid #ccc;
+    border-bottom-color: #bbb;
+    border-radius: 3px;
+    box-shadow: inset 0 -1px 0 #bbb
+}
+
+hr {
+    border-bottom-color: #eee
+}
+</style>
+
+    
+<style>.toc-level-1 .toc-text { padding-left: 1.5em; }
+.toc-level-2 .toc-text { padding-left: 2.5em; }
+.toc-level-3 .toc-text { padding-left: 3.5em; }
+.toc-level-4 .toc-text { padding-left: 4.5em; }
+.toc-level-5 .toc-text { padding-left: 5.5em; }
+#TOC * { border-width: 0; }
+li > p { margin: inherit; }
+li > .pod-block-code { margin-top: 16px; }
+</style></head>
+
+<body class="pod">
+    <div id="___top"></div>
+    <nav class="indexgroup">
+<table id="TOC">
+<caption><h2 id="TOC_Title">Table of Contents</h2></caption>
+<tr class="toc-level-1"><td class="toc-number">1</td><td class="toc-text"><a href="#NAME">NAME</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">2</td><td class="toc-text"><a href="#DESCRIPTION">DESCRIPTION</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">2.1</td><td class="toc-text"><a href="#Dictionary_Key_Objects">Dictionary Key Objects</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">3</td><td class="toc-text"><a href="#METHODS">METHODS</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">3.1</td><td class="toc-text"><a href="#The_Standard_Methods">The Standard Methods</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">4</td><td class="toc-text"><a href="#SEE_ALSO">SEE ALSO</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">5</td><td class="toc-text"><a href="#COPYRIGHT">COPYRIGHT</a></td></tr>
+<tr class="toc-level-1"><td class="toc-number">6</td><td class="toc-text"><a href="#LICENSE">LICENSE</a></td></tr>
+
+</table>
+</nav>
+
+
+    <div class="pod-body">
+    <h1 id="NAME"><a class="u" href="#___top" title="go to top of document">NAME</a></h1>
+<p><code>JSON::Class::Dict</code> - parent of JSON dictionary classes</p>
+<h1 id="DESCRIPTION"><a class="u" href="#___top" title="go to top of document">DESCRIPTION</a></h1>
+<p>This class is injected into the list of parents of any JSON dictionary class. It implements the essential functionality of dictionary marshalling.</p>
+<h2 id="Dictionary_Key_Objects"><a class="u" href="#___top" title="go to top of document">Dictionary Key Objects</a></h2>
+<p>Dictionaries allow to use non-string key objects. This is equivalent to <code>my %h{Foo:D}</code> kind of hashes:</p>
+<pre class="pod-block-code">class JDict is json( :dictionary(..., :keyof(Foo:D)) ) {}
+</pre>
+<p>See more about the <code>is json</code> trait and its arguments at <a href="../Class.html"><code>JSON::Class</code></a> page.</p>
+<p>Let's mention a non-apparent aspect of keying over class instances.</p>
+<p>When we use objects as hash keys it works best with value objects. For non-values hashes are using objects unique identifiers as key values since these never change during an instance life time. This result in cases where seemingly identical objects of the same class result in different keys on a hash:</p>
+<pre class="pod-block-code">class Foo { has Str:D $.id is required; }
+my $foo1 = Foo.new(:id&lt;the-answer-is-42&gt;);
+my $foo2 = Foo.new(:id&lt;the-answer-is-42&gt;);
+my %h{Foo:D};
+%h{$foo1} = True;
+say %h{$foo2}:exists; # False
+say %h{$foo1}:exists; # False
+</pre>
+<p>This is a problem for <code>JSON::Class</code> because whenever we deserialize a just've serialized JSON we get a new object, not the original one. But from the user perspective if there is a deserialization of a JSON object in a dictionary <code>$jdict</code> of the <code>JDict</code> type from above example, where there is a key produced from the <code>$foo1</code> instance, then it would be natural if <code>$jdict{$foo2}</code> would return that key's value.</p>
+<p>With all this in mind, there is a common rule for JSON dictionary keys:</p>
+<p><em>Key objects of a JSON dictionary are invariants over their JSON serialization.</em></p>
+<p>As an implication, JSON dictionaries internally index over JSON representations of key objects.</p>
+<p>Another implication is that iteration over a JSON dictionary keys may return not the originally used key objects.</p>
+<h1 id="METHODS"><a class="u" href="#___top" title="go to top of document">METHODS</a></h1>
+<p>This class implements most of the methods standard for the mutable associative types like the <a href="https://docs.raku.org/type/Hash"><code>Hash</code></a> itself. I.e. <code>AT-KEY</code>, <code>elems</code>, etc. This set could be incomplete yet, but new methods may be added to it later.</p>
+<ul><li><p><strong><code>method json-all-set()</code></strong></p>
+<p>Returns <em>True</em> if all dictionary values are deserialized.</p>
+</li>
+<li><p><strong><code>multi method json-guess-descriptor(:$json-value, :$key)</code></strong></p>
+<p>Returns a matching value descriptor for the given JSON value. <code>$key</code> is the dictionary key object which is being deserialized now.</p>
+</li>
+<li><p><strong><code>method json-serialize-item(JSON::Class::ItemDescriptor:D $descriptor, Pair:D $item)</code></strong></p>
+<p>Serialize given <code>$item</code>, both key and value, using value <code>$descriptor</code>. Since there is no need to guess key descriptor as there is always only one available through <code>self.json-key-descriptor</code>, it is not passed in as an argument.</p>
+</li>
+<li><p><strong><code>method json-deserialize-item(Mu $key, $json-value)</code></strong></p>
+<p>Deserializer for JSON value at <code>$key</code>. Note that this method only takes care about a value, not the key, which is already passed in in its deserialized form.</p>
+</li>
+<li><p><strong><code>method json-key2str(Mu \key-type, Mu \key --</code> Str:D)</strong>&gt;</p>
+<p>This method key serialization falls back to to turn a <code>key</code> object into JSON-supported string representation.</p>
+<ul><li><p><strong><code>multi method json-key2str(Str, Str:D \key)</code></strong></p>
+<p>Identity method, <code>key</code> just falls through unchanged.</p>
+</li>
+<li><p><strong><code>multi method json-key2str(Mu \key-type, Mu \key)</code></strong></p>
+<p>Serialize <code>key</code> using <code>json-serialize-value</code> method. Then turns it into a JSON string with <a href="Config.html"><code>JSON::Class::Config</code></a> <code>to-json</code> method using <code>:!pretty</code> and <code>:sorted-keys</code> arguments in order to get compact and reproducible representation of the <code>key</code>.</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>proto method json-str2key(|)</code></strong></p>
+<p>The fallback method for key deserialization.</p>
+<ul><li><p><strong><code>multi method json-str2key(Str:D $json-key, JSON::Class::Jsonish \key-type --</code> Mu)</strong>&gt;</p>
+<p>Simply calls <code>from-json</code> method on <code>key-type</code>. This candidate is also used for non-JSON classes by implicitly JSONifying the key type first. Therefore the return value of the <code>from-json</code> method could be an instance of the original, non-JSON class.</p>
+</li>
+<li><p><strong><code>multi method json-str2key(Str:D $json-key, Mu \key-type)</code></strong></p>
+<p>This candidate tries to coerce <code>$json-key</code> into the key type.</p>
+</li>
+</ul>
+</li>
+<li><p><strong><code>multi method json-deserialize(%from, JSON::Class::Config :$config)</code></strong></p>
+<p>The method first tries to map its <code>self.WHAT</code> into a destination type by using <a href="Config.html"><code>JSON::Class::Config</code></a> type mapping. Then the result of the previous step is instantiated and returned.</p>
+</li>
+</ul>
+<p><em>Note:</em> The following methods operate on serialized, i.e. JSON, versions of keys directly in the backend storage.</p>
+<ul><li><p><strong><code>method json-key-object(Str:D $json-key --</code> Mu)</strong>&gt;</p>
+<p>Returns a deserialization of the <code>$json-key</code> or <code>Nil</code> if no such key is found in the backend storage. The deserialization is cached, so that subsequent calls to this method just pull an existing object for its JSON key.</p>
+</li>
+<li><p><strong><code>method json-exists-key(Str:D $json-key)</code></strong></p>
+<p>Returns <em>True</em> if the keys is known to the backend storage.</p>
+</li>
+<li><p><strong><code>method json-has-key(Str:D $json-key)</code></strong></p>
+<p>Returns <em>True</em> if the value for <code>$json-key</code> has been unmarshalled already.</p>
+</li>
+<li><p><strong><code>method json-assign-key(Str:D $json-key, Mu \value, Mu :$key)</code></strong></p>
+<p>Assign a value at <code>$json-key</code>. <code>$key</code> named argument can provide the original key object for caching.</p>
+</li>
+<li><p><strong><code>method json-delete-key(Str:D $json-key --</code> Mu)</strong>&gt;</p>
+<p>Delete an item by its JSON key. For undeserialized yet items the default would be returned as if they never existed. This may seem a bit illogical, but to return a deserialization would require it to be produced in first place, but does it worth spending CPU cycles when it is most likely for the result to be immediately sinked? If the value is needed the best course of actions would be either to check out if it's there already with <code>$jdict{$key}:has</code></p>
+</li>
+</ul>
+<h2 id="The_Standard_Methods"><a class="u" href="#___top" title="go to top of document">The Standard Methods</a></h2>
+<p>Currently implemented methods, standard for Raku's mutable associative types:</p>
+<ul><li><p><strong><code>ASSIGN-KEY</code></strong></p>
+</li>
+<li><p><strong><code>AT-KEY</code></strong></p>
+</li>
+<li><p><strong><code>CLEAR</code></strong></p>
+</li>
+<li><p><strong><code>DELETE-KEY</code></strong></p>
+</li>
+<li><p><strong><code>EXISTS-KEY</code></strong></p>
+</li>
+<li><p><strong><code>HAS-KEY</code></strong></p>
+</li>
+<li><p><strong><code>append</code></strong></p>
+</li>
+<li><p><strong><code>elems</code></strong></p>
+</li>
+<li><p><strong><code>end</code></strong></p>
+</li>
+<li><p><strong><code>gist</code></strong></p>
+</li>
+<li><p><strong><code>Hash</code></strong></p>
+</li>
+<li><p><strong><code>iterator</code></strong></p>
+</li>
+<li><p><strong><code>keys</code></strong></p>
+</li>
+<li><p><strong><code>kv</code></strong></p>
+</li>
+<li><p><strong><code>list</code></strong></p>
+</li>
+<li><p><strong><code>pairs</code></strong></p>
+</li>
+<li><p><strong><code>push</code></strong></p>
+</li>
+<li><p><strong><code>raku</code></strong></p>
+</li>
+<li><p><strong><code>Str</code></strong></p>
+</li>
+<li><p><strong><code>values</code></strong></p>
+</li>
+</ul>
+<h1 id="SEE_ALSO"><a class="u" href="#___top" title="go to top of document">SEE ALSO</a></h1>
+<ul><li><p><a href="../Class.html"><code>JSON::Class</code></a></p>
+</li>
+<li><p><a href="Details.html"><code>JSON::Class::Details</code></a></p>
+</li>
+<li><p><a href="Dictionary.html"><code>JSON::Class::Dictionary</code></a></p>
+</li>
+<li><p><a href="DictHOW.html"><code>JSON::Class::DictHOW</code></a></p>
+</li>
+<li><p><a href="../../../../INDEX.html"><code>INDEX</code></a></p>
+</li>
+</ul>
+<h1 id="COPYRIGHT"><a class="u" href="#___top" title="go to top of document">COPYRIGHT</a></h1>
+<p>(c) 2023, Vadim Belman &lt;vrurg@cpan.org&gt;</p>
+<h1 id="LICENSE"><a class="u" href="#___top" title="go to top of document">LICENSE</a></h1>
+<p>Artistic License 2.0</p>
+<p>See the <a href="../../../../LICENSE"><em>LICENSE</em></a> file in this distribution.</p>
+
+    </div>
+
+    
+</body>
+</html>

@@ -10,11 +10,11 @@ use JSON::Class::X;
 has Mu $.json-class is built(:bind) is required;
 
 proto method parse-trait-def(|) {*}
-multi method parse-trait-def( Mu:U \typeobj = Str:D,
+multi method parse-trait-def( Mu:U \typeobj,
                               Str:D :$kind = 'item',
                               *%c ( :to-json(:$serializer), :from-json(:$deserializer), :$matcher, *%extra) )
 {
-    verify-named-args(:%extra, :what($collection-kind ~ " item definition for " ~ typeobj.^name), :source(self.^name));
+    verify-named-args(:%extra, :what($collection-kind ~ " $kind declaration for " ~ typeobj.^name), :source($!json-class.^name));
 
     my $descr := JSON::Class::ItemDescriptor.new( :declarant($!json-class),
                                                   :type(typeobj),

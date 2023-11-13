@@ -19,7 +19,14 @@ has JSON::Class::Config $!json-lazy-config;
 method json-serialize {...}
 method json-all-set {...}
 
-submethod TWEAK(:$!json-lazy-config = Nil) {}
+my $warnings-reported;
+
+submethod TWEAK(:$!json-lazy-config = Nil) {
+    unless $warnings-reported {
+        self.json-class.^json-report-warnings(self.json-config);
+        $warnings-reported := True;
+    }
+}
 
 method json-create(*%profile) {
     (self.HOW ~~ JSON::Class::HOW::JSONified ?? self.^json-FROM !! self.WHAT).new: |%profile
@@ -98,15 +105,9 @@ my sub try-user-code(&code, Capture:D \args, &fallback --> Mu) is raw {
     $use-fallback ?? &fallback() !! $rc
 }
 
-proto method json-try-serializer(::?CLASS:D: |) {*}
+proto method json-try-serializer(|) {*}
 
-multi method json-try-serializer( ::?CLASS:D:
-                                  &serializer,
-                                  Capture:D \serializer-args,
-                                  &fallback
-                                  --> Mu)
-    is raw
-{
+multi method json-try-serializer(&serializer, Capture:D \serializer-args, &fallback --> Mu) is raw {
     try-user-code(&serializer, serializer-args, &fallback)
 }
 
@@ -143,7 +144,7 @@ multi method json-try-deserializer(Str:D $kind, JSON::Class::Descriptor:D $descr
     &fallback()
 }
 
-proto method json-deserialize-value(|) {*}
+proto method json-deserialize-value(Mu, Mu) {*}
 
 multi method json-deserialize-value( Mu \dest-type,
                                      Mu:D \from-value,
@@ -197,40 +198,45 @@ multi method json-deserialize-value(Mu \dest-type, Nil, JSON::Class::Config :$co
     ($config // self.json-config).type-from(dest-type)
 }
 
-proto method json-serialize-value(Mu, Mu) {*}
+proto method json-serialize-value(|) {*}
+
+multi method json-serialize-value(Mu \value, *%c) {
+    self.json-serialize-value(value.WHAT, value, |%c)
+}
 
 multi method json-serialize-value(Mu, Mu:U \value) is raw { Nil }
 
-multi method json-serialize-value(Mu, JSON::Class::Jsonish:D \value) is default is raw {
-    value.json-serialize(config => self.json-config)
+multi method json-serialize-value(Mu, JSON::Class::Jsonish:D \value, JSON::Class::Config :$config) is default is raw {
+    value.json-serialize(config => ($config //self.json-config))
 }
 
-multi method json-serialize-value(Enumeration, \evalue) {
-    self.json-config.enums-as-value ?? evalue.value !! evalue.key
+multi method json-serialize-value(Enumeration, \evalue, JSON::Class::Config :$config) {
+    ($config // self.json-config).enums-as-value ?? evalue.value !! evalue.key
 }
 
-multi method json-serialize-value(Positional \value-type, \list) {
-    my Mu \of-type = nominalize-type(value-type.of);
-    list.map({ self.json-serialize-value(of-type, $_) }).eager.Array
+multi method json-serialize-value(Positional, \list, *%c) {
+    my Mu \of-type = nominalize-type(list.of);
+    list.map({ self.json-serialize-value(of-type, $_, |%c) }).eager.Array
 }
 
-multi method json-serialize-value(Associative \value-type, \hash) {
-    my Mu \of-type = nominalize-type(value-type.of);
-    my Mu \keyof-type = nominalize-type(value-type.keyof);
+multi method json-serialize-value(Associative, \hash, *%c) {
+    my Mu \of-type = nominalize-type(hash.of);
+    my Mu \keyof-type = nominalize-type(hash.keyof);
 
     hash.pairs.map({
-        self.json-serialize-value(keyof-type, .key)
-            => self.json-serialize-value(of-type, .value)
+        self.json-serialize-value(keyof-type, .key, |%c)
+            => self.json-serialize-value(of-type, .value, |%c)
     }).eager.Hash
 }
 
 multi method json-serialize-value(Mu, JSONBasicType \value) { value }
 
-multi method json-serialize-value(Mu, Mu:D \value) is raw {
-    my $config := self.json-config;
-    my &fallback = { $config.jsonify(value).json-serialize(:$config) };
+multi method json-serialize-value(Mu, Mu:D \value, JSON::Class::Config :$config = self.json-config, *%c) is raw {
+    my &fallback = {
+        $config.jsonify(value).json-serialize(:$config)
+    };
     with self.json-helper(value.WHAT, 'to-json') {
-        self.json-try-serializer($_, \(value), &fallback)
+        return self.json-try-serializer($_, \(value), &fallback)
     }
     &fallback()
 }

@@ -363,7 +363,15 @@ hr {
 </style>
 
     
-</head>
+<style>.toc-level-1 .toc-text { padding-left: 1.5em; }
+.toc-level-2 .toc-text { padding-left: 2.5em; }
+.toc-level-3 .toc-text { padding-left: 3.5em; }
+.toc-level-4 .toc-text { padding-left: 4.5em; }
+.toc-level-5 .toc-text { padding-left: 5.5em; }
+#TOC * { border-width: 0; }
+li > p { margin: inherit; }
+li > .pod-block-code { margin-top: 16px; }
+</style></head>
 
 <body class="pod">
     <div id="___top"></div>
@@ -394,7 +402,7 @@ hr {
 <p>Returns a parameterization of <a href="https://docs.raku.org/type/Array"><code>Array</code></a> which would be validating against sequence types, listed in the trait arguments. Same array type backs <a href="Sequence.html"><code>JSON::Class::Sequence</code></a> functionality.</p>
 </li>
 <li><p><strong><code>method json-item-descriptors(|)</code></strong></p>
-<p>Redirects to the same name method of <a href="SequenceHOW.html"><code>JSON::Class::SequenceHOW</code></a>.</p>
+<p>Redirects to the same name method of <a href="HOW/Collection.html"><code>JSON::Class::HOW::Collection</code></a>.</p>
 </li>
 <li><p><strong><code>method json-create(*%profile)</code></strong></p>
 <p>Exists for compatibility with other components of this distribution. Currently it is just a redirect to <code>new</code>.</p>

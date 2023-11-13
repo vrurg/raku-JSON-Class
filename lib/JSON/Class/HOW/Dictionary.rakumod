@@ -12,8 +12,8 @@ also does JSON::Class::HOW::Collection;
 has Mu $!json-key-descriptor;
 
 my class DefParser does JSON::Class::HOW::Collection::DefParser['dictionary'] {
-    multi method parse-trait-def(Mu :$keyof! is raw) {
-        self.parse-trait-def(:kind<keyof>, |$keyof.List.Capture);
+    multi method parse-trait-def(List(Mu) :$keyof! is raw (Mu:U \type = Str:D(), *%c)) {
+        self.parse-trait-def(type, |%c, :kind<keyof>);
     }
 
     multi method handle-definition('keyof', JSON::Class::Descriptor:D $descr) {
@@ -21,25 +21,31 @@ my class DefParser does JSON::Class::HOW::Collection::DefParser['dictionary'] {
     }
 }
 
-method json-set-key-descriptor(Mu \obj, JSON::Class::Descriptor:D $descr) {
+method json-set-key-descriptor(Mu \obj, JSON::Class::Descriptor:D $descr, Bool :$offer --> Nil) {
+    return if $offer && $!json-key-descriptor.DEFINITE;
     $!json-key-descriptor := $descr<>;
 }
 
-method json-key-descriptor(Mu \obj) is raw {
+method json-key-descriptor(Mu \obj, Bool :$peek) is raw {
     $!json-key-descriptor //
-        ($!json-key-descriptor :=
-            JSON::Class::ItemDescriptor.new(:declarant(obj.WHAT), :type(Str()), :name("keyof Str")))
+        ($peek
+            ?? Nil
+            !! ($!json-key-descriptor :=
+                JSON::Class::ItemDescriptor.new(:declarant(obj.WHAT), :type(Str()), :name("keyof Str"))))
 }
 
 method json-keyof(Mu \obj --> Mu) is raw { self.json-key-descriptor(obj).type }
 
-method json-setup-dictionary(Mu \obj, +@definitions) {
-    self.json-init-dictionary(obj);
+method json-setup-dictionary(Mu \obj) {
     self.json-set-item-default(obj, NOT-SET, :force);
 
     my $def-parser = DefParser.new(json-class => obj.WHAT);
-    for @definitions {
-        $def-parser.parse-trait-def($_);
+    my $trait-name = $*JSON-CLASS-TRAIT // self.json-trait-name(obj);
+    {
+        my $*JSON-CLASS-TRAIT := $trait-name;
+        for self.json-item-declarations(:clear) {
+            $def-parser.parse-trait-def($_);
+        }
     }
 
     self.json-set-item-default(obj, nominalize-type( self.json-item-descriptors(obj).head.type ));

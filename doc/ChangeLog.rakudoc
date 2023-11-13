@@ -1,9 +1,16 @@
 =begin pod
-=config :title<Changes>
+=config  :title<Changes>
 =head1 CHANGELOG
 
 =begin item
 B<v0.0.3>
+
+=item Implemented L<C<JSON::Class::Dict>|rakudoc:JSON::Class::Dict>
+=item Fixed some cases where L<C<JSON::Class::Sequence>|rakudoc:JSON::Class::Sequence> would not transition into "all set" state
+=end item
+
+=begin item
+B<v0.0.2>
 
 =item Added default marshalling for L<C<Version>|https://docs.raku.org/type/Version>, and L<C<QuantHash>|https://docs.raku.org/type/QuantHash>es
 =item Implicit JSONification now reports a problem for some problematic types

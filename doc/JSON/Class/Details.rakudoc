@@ -46,21 +46,52 @@ parse JSON source, or produce a JSON string. Otherwise they delegate to C<json-s
 A JSONified class or sequence are built by C<is json> trait injecting corresponding roles into the classes themselves
 and into their meta-classes.
 
-JSON classes get L<C<JSON::Class::Representation>|rakudoc:JSON::Class::Representation> role, and their meta gets
+=begin item
+B<JSON classes> get L<C<JSON::Class::Representation>|rakudoc:JSON::Class::Representation> role, and their meta gets
 L<C<JSON::Class::ClassHOW>|rakudoc:JSON::Class::ClassHOW>.
+=end item
 
-JSON sequences get L<C<JSON::Class::Sequential>|rakudoc:JSON::Class::Sequential>, and their meta gets
+=begin item
+B<JSON sequences> get L<C<JSON::Class::Sequential>|rakudoc:JSON::Class::Sequential>, and their meta gets
 L<C<JSON::Class::SequenceHOW>|rakudoc:JSON::Class::SequenceHOW>.
+=end item
 
-JSON roles doesn't actually implement any functionality by themselves, therefore only their meta objects are modified.
-If a role declared as sequence the meta received L<C<JSON::Class::HOW::Sequential>|rakudoc:JSON::Class::HOW::Sequential>; otherwise it is
-L<C<JSON::Class::RoleHOW>|rakudoc:JSON::Class::RoleHOW>.
+=begin item
+B<JSON dictionaries> get L<C<JSON::Class::Dictionary>|rakudoc:JSON::Class::Dictionary>, and their meta gets
+L<C<JSON::Class::DictHOW>|rakudoc:JSON::Class::DictHOW>.
+=end item
 
-Declarations of L<C<JSON::Class::Representation>|rakudoc:JSON::Class::Representation> and L<C<JSON::Class::Sequential>|rakudoc:JSON::Class::Sequential>
-roles include classes L<C<JSON::Class::Object>|rakudoc:JSON::Class::Object> and L<C<JSON::Class::Sequence>|rakudoc:JSON::Class::Sequence> as their parents.
-Though such structure could look like an overkill at first, it allows a JSONified type to be subclasses with no extra
-hassle because access to the most used metaobject interfaces is proxied by the roles where C<::?CLASS> symbol points at
-the JSONified type, no matter what the MRO of an object is. For example:
+=begin item
+B<JSON roles> doesn't actually implement any functionality by themselves, therefore only their meta objects are
+receiving L<C<JSON::Class::RoleHOW>|rakudoc:JSON::Class::RoleHOW> mixin.
+=end item
+
+=begin item
+B<JSON sequence roles> meta does L<C<JSON::Class::HOW::Sequential>|rakudoc:JSON::Class::HOW::Sequential>.
+=end item
+
+=begin item
+B<JSON dictionary roles> meta does L<C<JSON::Class::HOW::Dictionary>|rakudoc:JSON::Class::HOW::Dictionary>.
+=end item
+
+The above mentioned roles also add implicit parents to their classes:
+
+=begin item
+L<C<JSON::Class::Representation>|rakudoc:JSON::Class::Representation> comes with L<C<JSON::Class::Object>|rakudoc:JSON::Class::Object>
+=end item
+
+=begin item
+L<C<JSON::Class::Dictionary>|rakudoc:JSON::Class::Dictionary> – L<C<JSON::Class::Dict>|rakudoc:JSON::Class::Dict>
+=end item
+
+=begin item
+L<C<JSON::Class::Sequential>|rakudoc:JSON::Class::Sequential> – L<C<JSON::Class::Sequence>|rakudoc:JSON::Class::Sequence>
+=end item
+
+Though such structure could look like an overkill at first, with its abundance of roles and classes, it allows a
+JSONified type to be subclassed with no extra hassle because access to the most used metaobject interfaces is proxied by
+the roles where C<::?CLASS> symbol points exactly at the JSONified type, no matter what the MRO of an object (C<self>)
+is. For example:
 
 =begin code :lang<raku>
 class Foo is json {...}
@@ -113,7 +144,7 @@ important to remember when reading the following sections.
 
 The following example is, perhaps, the best demonstration of how marshalling works
 
-=begin item :example("examples/custom-hash-marshaller.raku") :mtime(1698417912)
+=begin item :example("examples/custom-hash-marshaller.raku") :mtime(1699754677)
 From L<examples/custom-hash-marshaller.raku|file:examples/custom-hash-marshaller.raku>
 
 =begin code :example :lang("raku")
@@ -154,8 +185,8 @@ Sample output:
 =begin output :example
 ### Serializing ###
 Attribute-level serializes: {k1 => 2023-10-23, k2 => 3.141592653589793, k3 => v3.4}
-Key-level serializes  : k2
 Key-level serializes  : k3
+Key-level serializes  : k2
 Key-level serializes  : k1
 {"idx":{"Foo.k1":"Date.new(2023,10,23)","Foo.k2":"3.141592653589793e0","Foo.k3":"v3.4"}}
 
@@ -163,10 +194,10 @@ Key-level serializes  : k1
 Attribute-level deserializes: {Foo.k1 => Date.new(2023,10,23), Foo.k2 => 3.141592653589793e0, Foo.k3 => v3.4}
 Key-level deserializes  : 'Foo.k1'
 Value-level deserializes: 'Date.new(2023,10,23)'
-Key-level deserializes  : 'Foo.k3'
-Value-level deserializes: 'v3.4'
 Key-level deserializes  : 'Foo.k2'
 Value-level deserializes: '3.141592653589793e0'
+Key-level deserializes  : 'Foo.k3'
+Value-level deserializes: 'v3.4'
 Foo.new(idx => ${"oo.k1" => Date.new(2023,10,23), "oo.k2" => 3.141592653589793e0, "oo.k3" => v3.4})
 =end output
 
@@ -192,7 +223,7 @@ method is expected to receive the source JSON value is its only positional argum
 
 Ok, but what if we want to marshall using JSON class owns methods? It can be done using C<$*JSON-CLASS-SELF> variable.
 
-=begin item :example("examples/marshall-via-json-class.raku") :mtime(1698417912)
+=begin item :example("examples/marshall-via-json-class.raku") :mtime(1699754677)
 From L<examples/marshall-via-json-class.raku|file:examples/marshall-via-json-class.raku>
 
 =begin code :example :lang("raku")
@@ -231,7 +262,7 @@ Serializing π  : {"n":"Num:3.141592653589793"}
 Serializing Num: {"n":"Num"}
 
 Deserializing a Rat: Rat|-621/50
-Deserializing a type: Int|U3324726349136
+Deserializing a type: Int|U4151608216912
 =end output
 
 =end item
@@ -243,7 +274,7 @@ I<value> can be attribute value for serialization, and JSON value for deserializ
 method of L<C<Routine>|https://docs.raku.org/type/Routine>. Apparently, when there is match the code gets invoked.
 Otherwise the situation is treated as if the marshaller invoked C<json-I-cant> and gave up on processing the value:
 
-=begin item :example("examples/marshaller-signature-match.raku") :mtime(1698417912)
+=begin item :example("examples/marshaller-signature-match.raku") :mtime(1699754677)
 From L<examples/marshaller-signature-match.raku|file:examples/marshaller-signature-match.raku>
 
 =begin code :example :lang("raku")
@@ -276,10 +307,10 @@ C<MyProject::Response> which extends the original class functionality for our ne
 simple code if the C<Web::Service> module is using C<JSON::Class>:
 
 =begin code :lang<raku>
-JSON::Class::Config().map-type(Web::Service::Response(), MyProject::Response());
-my $web-service = Web::Service().new();
-await($web-service.request().andthen({
-    say(.response().^name())
+JSON::Class::Config.map-type(Web::Service::Response, MyProject::Response);
+my $web-service = Web::Service.new;
+await($web-service.request.andthen({
+    say(.response.^name)
 }))
 =end code
 
@@ -303,7 +334,7 @@ The trait doesn't install the mapping automatically though. This might be undesi
 this to activate it:
 
 =begin code :lang<raku>
-$config.map-type(MyProject::Response())
+$config.map-type(MyProject::Response)
 =end code
 
 =head2 Descriptors
@@ -321,6 +352,7 @@ classes or JSON roles consumed are merged to form the full picture of what's to 
 =head1 SEE ALSO
 
 =item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<INDEX>|rakudoc:..::INDEX>
 
 =head1 COPYRIGHT
 

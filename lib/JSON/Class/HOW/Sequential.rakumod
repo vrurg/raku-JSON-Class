@@ -11,15 +11,16 @@ also does JSON::Class::HOW::Collection;
 
 my class DefParser does JSON::Class::HOW::Collection::DefParser['sequence'] {}
 
-method json-init-sequence() {...}
-
-method json-setup-sequence(Mu \obj, +@definitions) {
-    self.json-init-sequence(obj);
+method json-setup-sequence(Mu \obj) {
     self.json-set-item-default(obj, NOT-SET, :force);
 
     my $def-parser = DefParser.new(json-class => obj);
-    for @definitions {
-        $def-parser.parse-trait-def($_);
+    my $trait-name = $*JSON-CLASS-TRAIT // self.json-trait-name(obj);
+    {
+        my $*JSON-CLASS-TRAIT := $trait-name;
+        for self.json-item-declarations(:clear) {
+            $def-parser.parse-trait-def($_);
+        }
     }
 
     self.json-set-item-default(obj, nominalize-type( self.json-item-descriptors(obj).head.type ));

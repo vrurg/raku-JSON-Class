@@ -18,9 +18,19 @@
 
   - [`JSON::Class::Details`](docs/md/JSON/Class/Details.md)
 
+  - [`JSON::Class::Dict`](docs/md/JSON/Class/Dict.md)
+
+  - [`JSON::Class::DictHOW`](docs/md/JSON/Class/DictHOW.md)
+
+  - [`JSON::Class::Dictionary`](docs/md/JSON/Class/Dictionary.md)
+
   - [`JSON::Class::HOW::AttributeContainer`](docs/md/JSON/Class/HOW/AttributeContainer.md)
 
+  - [`JSON::Class::HOW::Collection`](docs/md/JSON/Class/HOW/Collection.md)
+
   - [`JSON::Class::HOW::Configurable`](docs/md/JSON/Class/HOW/Configurable.md)
+
+  - [`JSON::Class::HOW::Dictionary`](docs/md/JSON/Class/HOW/Dictionary.md)
 
   - [`JSON::Class::HOW::Explicit`](docs/md/JSON/Class/HOW/Explicit.md)
 

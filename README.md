@@ -4,7 +4,7 @@
 
 # SYNOPSIS
 
-``` 
+``` raku
 use JSON::Class:auth<zef:vrurg>;
 
 role Base is json(:!skip-null) {
@@ -28,7 +28,7 @@ This module is an alternative to the family of [`JSON::Marshal`](https://raku.la
     In order to use this module it is mandatory to use `:auth<zef:vrurg>` in your `use` statement:
     
     ``` raku
-    use JSON::Class:auth<zef:vrurg>;
+    use JSON::Class:auth<zef:vrurg>
     ```
     
     Otherwise you are likely to accidentally pull in [`JSON::Class:auth<zef:jonathanstowe>`](https://raku.land/zef:jonathanstowe/JSON::Class).
@@ -38,6 +38,8 @@ Also, this module tries to follow the standards of [`LibXML::Class`](https://rak
 From here on whenever `JSON::Class` name is used it refers to this module unless otherwise stated or implied by the context.
 
 # BASICS
+
+In this section some basic concepts of `JSON::Class` are explained. If you feel like skipping it then skip over to the *QUICK INTRO BY EXAMPLE* section below.
 
 ## Basic Or "Complex" Types
 
@@ -84,21 +86,29 @@ There is also a global configuration singleton used when no other configuration 
 
 A *JSON class* is one which has `is json` trait applied. Sometimes, depending on the context and especially when referring to an instance of the class, another term *JSON object* can be used.
 
-## JSON Sequence
-
-*JSON sequence* is also a class with `is json` trait applied, but the trait is given `:sequence` argument.
-
-Term "sequence" is used here for something that is rather an array and, most definitely, not a sequence ([`Seq`](https://docs.raku.org/type/Seq)) in Raku view. The term was borrowed from [`LibXML::Class`](https://raku.land/zef:vrurg/LibXML::Class), which implements the same concept, and where it was adopted from XML schema definitions.
-
-A sequence is primarily defined by its two properties:
-
-  - its elements are lazily deserialized on demand
-
-  - it does its best to serve as a container for multiple types, including user classes
-
 ## Laziness
 
 Deserialization of big deeply nested structures could be a long process, no matter if we need an element of the structure right away, or it is going to be requested later, or not used at all. `JSON::Class` attempts to bring some relieve by postponing deserialization for later time.
+
+## Lazy Collections
+
+`JSON::Class` implements two [*collection*](https://en.wikipedia.org/wiki/Collection_\(abstract_data_type\)) types: sequences and dictionaries, namely *JSON sequences* and *JSON dictionaries*. The first is a [`Postional`](https://docs.raku.org/type/Postional) and [`Iterable`](https://docs.raku.org/type/Iterable), the second is an [`Associative`](https://docs.raku.org/type/Associative).
+
+Both types are primarily defined by these two properties:
+
+  - their elements are lazily deserialized on demand
+
+  - they do their best to serve as a container for multiple types, including user classes
+
+### JSON Sequence
+
+*JSON sequence* is a class with `is json( :sequence(...) )` trait applied.
+
+Term "sequence" is used here for something that is rather an array and, most definitely, not a sequence ([`Seq`](https://docs.raku.org/type/Seq)) from Raku's point of view. The term was borrowed from [`LibXML::Class`](https://raku.land/zef:vrurg/LibXML::Class), which implements the same concept, and where it was adopted from XML schema definitions.
+
+### JSON Dictionary
+
+*JSON dictionary* is, in a way, similar to JSON sequence in terms of been a lazily deserialized collection. Dictionary is an [`Associative`](https://docs.raku.org/type/Associative) implementation produced with `is json( :dictionary(...) )`.
 
 ## Explicit Or Implicit Typeobjects
 
@@ -122,9 +132,9 @@ has SomeType $.st is required is json(:skip-null, :!lazy);
 
 ## Naming Convention
 
-With only few exception, names of all attributes and methods introduced by `JSON::Class` distribution are starting with `json-` prefix. This rule may not be followed by some internal data structures, but is almost 100% true to what is injected into JSONified typeobject as part of their public or private API.
+With only few exceptions, names of all attributes and methods introduced by `JSON::Class` distribution are starting with `json-` prefix. This rule may not be followed by some internal data structures, but is almost 100% true about entities injected into JSONified typeobject as part of their public or private API.
 
-There is a consequence to this rule: implicit JSONification of attributes skip those with `json-`-prefixed names:
+There is a consequence to this rule: implicit JSONification of attributes skips these with `json-`-prefixed names:
 
   - From [examples/json-pfx-attr.raku](examples/json-pfx-attr.raku)
     
@@ -164,9 +174,13 @@ There is a consequence to this rule: implicit JSONification of attributes skip t
     
     If *True* then attributes of this typeobject are not serialized if their value is undefined. When omitted then value of this parameter is obtained from the configuration object. See [*t/020-json-basics.rakutest*](t/020-json-basics.rakutest), subtest "Undefineds".
 
-  - `Bool` **`:sequence(...)`**
+  - **`:sequence(...)`**
     
-    This type object is a sequence. See [Sequences](#Sequences) section.
+    This type object is a sequence. See the [Sequences](#Sequences) section.
+
+  - **`:dictionary(...)`** or **`:dict(...)`**
+    
+    This type object is a dictionary. See the [Dictionaries](#Dictionaries) section.
 
   - **`:is(...)`**, **`:does(...)`**
     
@@ -216,9 +230,11 @@ Parameters set via `is json` trait for attributes are normally overriding these 
     
     See 'Custom Marshallers' in [`JSON::Class::Details`](docs/md/JSON/Class/Details.md).
 
-## Sequences
+### Collections
 
-A class is declared as a JSON sequence with `:sequence` argument of the `is json` trait. The argument can be one or few typeobject declarations and an optional `:default` adverb. A typeobject declaration can be either:
+A class is declared as a JSON collection with `:sequence` or `:dictionary` (also aliased as `:dict`) adverbs of the `is json` trait. The adverbs are expected to be a list of declarations where each item of the list either specify a type constraint or a default value. For dictionaries it is possible to type constrain their keys.
+
+A type constraint declaration can be either:
 
   - a plain typeobject
     
@@ -246,17 +262,17 @@ Typeobject modifiers are:
 
 The last one's meaning is explained below in this section.
 
-The `:default` argument is similar in meaning to the `is default` trait: it sets the default value to be used when `Nil` is assigned into a sequence position, or when out of bounds position is queried:
+The **`:default`** declaration is similar in semantics to the `is default` trait: it sets the value to be used when `Nil` is assigned into a sequence position, or when a non-existing element requested:
 
 ``` raku
-class JSeq is json(:sequence(..., :default(42))) {}
+class JDict is json(:dict(..., :default(42))) {}
 
-say JSeq.new.[0]; # 42
+say JDict.new.<not-here-yet>; # 42
 ```
 
-Default value is not obliged to be a concrete value.
+Default is not obliged to be a concrete value.
 
-Whenever a sequence is declared with multiple types it is equivalent to declaring an array with a subset matching all the same types:
+Whenever a collection is declared with multiple types it is equivalent to declaring an array or a hash with a subset matching all the same types:
 
 ``` raku
 class JSeq is json(:sequece(Int:D, Str:D, Foo)) {}
@@ -271,15 +287,27 @@ my JSeqOF @jseq;
 
   - *Note*
     
-    There is a potential problem with this declaration: assigning a `Nil` will result in a type mismatch because the default value would me [`Mu`](https://docs.raku.org/type/Mu), but it doesn't match the subset. Therefore safe way to do it would be something like:
+    There is a potential problem with this declaration: assigning a `Nil` will result in a type mismatch because the default value would me [`Mu`](https://docs.raku.org/type/Mu), but it doesn't match the subset. Therefore a safe way to do it would be something like:
     
     ``` raku
     class JSeq is json(:sequece(Int:D, Str:D, Foo, :default(Foo))) {}
     ```
 
-### The Multitype Matching Problem
+#### Dictionary Only Declaration
 
-When a sequence is declared with two or more classes that are not basic types a problem of matching JSON object into a class arises. Apparently, JSON itself lacks any means of distinguishing one JSON object from another *(kids, let's say "Hello\!" to JavaScript OO\!)*. In other words, having something like:
+**`:keyof(...)`** declaration can only be used with the `:dictionary` adverb. It's value has the same format as a single type constraint declaration:
+
+``` raku
+class JDict is json( :dictionary( ..., :keyof(Foo:D()) ) )
+```
+
+``` raku
+class JDict is json( :dictionary( ..., :keyof(Foo:D(), :serializer(&foo2json), :deserializer(&json2foo)) ) )
+```
+
+#### The Multitype Matching Problem
+
+When a collection is declared with two or more value classes that are not basic types a problem of matching JSON object to a class arises. Apparently, JSON itself lacks any means of distinguishing one JSON object from another *(kids, let's say "Hello\!" to JavaScript's OO\!)*. In other words, having something like:
 
 ``` JSON
 [
@@ -288,7 +316,7 @@ When a sequence is declared with two or more classes that are not basic types a 
 ]
 ```
 
-One wouldn't be able to tell what classes each item represents. The only way for us to tell is to guess. When we see:
+One wouldn't be able to tell what classes each JSON object represents. The only way for us to distinguish is to guess. Say, we have:
 
 ``` raku
 class Foo {
@@ -301,9 +329,9 @@ class Bar {
 }
 ```
 
-It is rather clear that the first JSON object is for `Foo`, and the other one – for `Bar`.
+In this case it is obvious that the first JSON object matches `Foo`, whereas the other one matches `Bar`.
 
-This is what `JSON::Class` sequence basically does: it compares sets of keys per each class-candidate to the key of a JSON object. This works well until a very rare case pops up where two classes has the same key names. Say:
+This is what `JSON::Class` sequence basically does by default: it compares sets of keys per each class-candidate to the keys of JSON object. So far – so good, until a very rare case pops up where two classes has the same key names. Say:
 
 ``` raku
 class Book {
@@ -316,7 +344,20 @@ class Article {
 }
 ```
 
-The default matching algorithm would fail here with `JSON::Class::X::Deserialize::SeqItem` exception. One can work around the problem by introducing extra layers of data, for example. But what if we know that IDs of a book and an article are sufficiently different to tell exactly which is is which? For example, book ID could start with *ISBN:*, whereas article ID starts with a date-based *YYYY-MM-DD:* prefix? In this case one can use custom matchers to tell one JSON object from another:
+The default matching algorithm would throw here with `JSON::Class::X::Deserialize::SeqItem` or `JSON::Class::X::Deserialize::DictItem` exception, depending on the collection type, due to the unresolvable ambiguity. What can we do to avoid that?
+
+One can work around the problem by introducing extra layers of data, for example:
+
+``` raku
+class BookOrArticle is json {
+    has Book $.book;
+    has Article $.article;
+}
+```
+
+This approach unreasonably complicates things and not even always possible.
+
+But what if we know that IDs of books and articles are sufficiently different to tell exactly which is is which? For example, book ID could start with *ISBN:*, whereas article ID starts with a date-based *YYYY-MM-DD:* prefix? In this case custom matchers can distinguish one JSON object from another:
 
   - From [examples/book-article-seq.raku](examples/book-article-seq.raku)
     
@@ -356,13 +397,15 @@ The default matching algorithm would fail here with `JSON::Class::X::Deserialize
     Article.new(id => "2006-04-01:the-pop-one", name => "What's the programmer's most popular book out there?")
     ```
 
+This approach, in essence, is applicable to dictionaries too.
+
 There are other ways of solving this task that involve custom marshalling where we can manipulate with serializable data or keys to inject clues as to what's the source type of JSON object was.
 
 #### Alternative Solutions To Matching
 
 A universal matcher for type can also be set using [`JSON::Class::Config`](docs/md/JSON/Class/Config.md) `set-helpers` method.
 
-Another way is to try overriding `json-guess-descriptor` method of [`JSON::Class::Sequence`](docs/md/JSON/Class/Sequence.md). But to do so one is better be familiar with the internals of `JSON::Class`.
+Another way is to try overriding `json-guess-descriptor` method of a container class. In this case it would even be possible to base your guess on value's position is a sequence, or its key in a dictionary. But to do so one is better be familiar with the internals of `JSON::Class`.
 
 # DYNAMIC VARIABLES
 
@@ -572,7 +615,7 @@ Notice that except for `C3`, all other classes and roles are not JSONified. Only
       "what": "The Answer"
     }
     --- C2 serialization:
-    {"what":"The Answer","count":42}
+    {"count":42,"what":"The Answer"}
     ```
 
 ## Sequence
@@ -605,17 +648,17 @@ Apparently, this example doesn't cover all of `JSON::Class` sequence features.
         }
     }
     
-    my $jseq = JSeq.new("something", Item2.new(:section<A>, :chapter("22.1")));
+    my $jseq = JSeq.new("something", Item2.new(:section<S>, :chapter("22.1")));
     
     $jseq.push: Item1.new(:id<EBCA-12F>, :quantity(13));
     $jseq.push: "final";
     
     say "--- Initial    : ", $jseq.to-json;
-    $jseq[1]:delete;
+    say "--- Delete 2nd : ", $jseq[1]:delete;
     say "--- 2nd deleted: ", $jseq.to-json;
     my $deserialized := JSeq.from-json: q<["something",{"quantity":12,"id":"9123-BBB"},"different",{"section":"B","chapter":"2.9b"}]>;
     for ^$deserialized.elems -> $idx {
-        say "--- $idx ---";
+        say "\n--- $idx ---";
         say "Deserialized before accessing? ", $deserialized[$idx]:has;
         say "Item: ", $deserialized[$idx].raku;
         say "Deserialized after accessing? ", $deserialized[$idx]:has;
@@ -625,27 +668,108 @@ Apparently, this example doesn't cover all of `JSON::Class` sequence features.
     Sample output:
     
     ``` 
-    --- Initial    : ["something",{"chapter":"22.1","section":"A"},{"quantity":13,"id":"EBCA-12F"},"final"]
+    --- Initial    : ["something",{"section":"S","chapter":"22.1"},{"id":"EBCA-12F","quantity":13},"final"]
+    --- Delete 2nd : Item2.new(section => "S", chapter => "22.1")
     --- 2nd deleted: ["something","removed",{"id":"EBCA-12F","quantity":13},"final"]
+    
     --- 0 ---
     Deserialized before accessing? False
     ... deserializing [0] ...
     Item: "something"
     Deserialized after accessing? True
+    
     --- 1 ---
     Deserialized before accessing? False
     ... deserializing [1] ...
     Item: Item1.new(id => "9123-BBB", quantity => 12)
     Deserialized after accessing? True
+    
     --- 2 ---
     Deserialized before accessing? False
     ... deserializing [2] ...
     Item: "different"
     Deserialized after accessing? True
+    
     --- 3 ---
     Deserialized before accessing? False
     ... deserializing [3] ...
     Item: Item2.new(section => "B", chapter => "2.9b")
+    Deserialized after accessing? True
+    ```
+
+## Dictionary
+
+  - From [examples/simple-dictionary.raku](examples/simple-dictionary.raku)
+    
+    ``` raku
+    class Item1 is json {
+        has Str $.id;
+        has Int $.quantity;
+    }
+    
+    class Item2 is json {
+        has Str $.section;
+        has Str $.chapter;
+    }
+    
+    class JDict
+        is json(
+            :dictionary( Str:D, Item1:D, Item2:D, :default("<not there>") ) )
+    {
+        method json-deserialize-item(Mu \key, |) {
+            say "... deserializing key '", key, "'";
+            nextsame
+        }
+    }
+    
+    #my $jdict = JDict.new;
+    my %jdict is JDict =
+        "plain" => "string",
+        "i1" => Item1.new(:id<AB12-EFZK>, :quantity(2));
+    
+    %jdict.push: "i2" => Item2.new(:section<D>, :chapter("66.6"));
+    
+    say "--- Initial        : ", %jdict.to-json;
+    say "--- Delete i1      : ", %jdict<i1>:delete;
+    say "--- Default is     : ", %jdict<this-never-been-here>;
+    say "--- JSON without i1: ", %jdict.to-json;
+    
+    my $deserialized =
+        JDict.from-json(
+            q<{"sval":"some string","entry1":{"id":"FROM-JSON","quantity":0},"in":{"section":"DS","chapter":"43.2.1"}}>);
+    
+    for $deserialized.keys -> $key {
+        say "\n--- Key '$key' ---";
+        say "Deserialized before accessing? ", $deserialized{$key}:has;
+        say "Value: ", $deserialized{$key};
+        say "Deserialized after accessing? ", $deserialized{$key}:has;
+    }
+    ```
+    
+    Sample output:
+    
+    ``` 
+    --- Initial        : {"plain":"string","i2":{"chapter":"66.6","section":"D"},"i1":{"id":"AB12-EFZK","quantity":2}}
+    --- Delete i1      : Item1.new(id => "AB12-EFZK", quantity => 2)
+    --- Default is     : <not there>
+    --- JSON without i1: {"plain":"string","i2":{"section":"D","chapter":"66.6"}}
+    
+    --- Key 'in' ---
+    Deserialized before accessing? False
+    ... deserializing key 'in'
+    Value: Item2.new(section => "DS", chapter => "43.2.1")
+    Deserialized after accessing? True
+    
+    --- Key 'entry1' ---
+    Deserialized before accessing? False
+    ... deserializing key 'entry1'
+    Value: Item1.new(id => "FROM-JSON", quantity => 0)
+    Deserialized after accessing? True
+    
+    --- Key 'sval' ---
+    Deserialized before accessing? False
+    ... deserializing key 'sval'
+    Value: some string
     Deserialized after accessing? True
     ```
 
@@ -832,7 +956,7 @@ These two subjects are tightly bound to each other, hence single example for bot
     We expect an exception here: X::Method::NotFound
     Exception message: No such method 'update-record' for invocant of type 'Status'
     Serialization with custom config using standard defaults:
-      {"st":{"notes":"to be done","verified":false,"code":"1A-CD3"},"rec":{"what":"irrelevant","count":0}}
+      {"rec":{"count":0,"what":"irrelevant"},"st":{"verified":false,"code":"1A-CD3","notes":"to be done"}}
     ```
 
 ## Custom Serialziers And Deserializers
@@ -1008,6 +1132,26 @@ Here we use custom marshallers too, this time for array values. But there is a t
     
     Implements the actual deserialization task. `$from` can be a hash or an array. JSON sequences only accept arrays.
 
+  - **`proto method json-serialize-value(|)`**
+    
+    Produce a value that can be immediately serialized by the underlying JSON module (think [`JSON::Fast`](https://raku.land/?q=JSON::Fast)). Say, for complex objects it would produce a hash; for an [`Enumeration`](https://docs.raku.org/type/Enumeration) it would return either its symbol name, or value, depending on [`JSON::Class::Config`](docs/md/JSON/Class/Config.md) `enums-as-value` parameter.
+    
+    This is a low-level method also used as a fallback when other means of serialization are not possible for whatever reason.
+    
+      - **`multi method json-serialize-value(Mu \value, *%nameds)`**
+        
+        Tries to serialize any kind of `value`. Any of `%nameds` are passed down the call chain to other candidates.
+    
+      - **`multi method json-serialize-value(Mu \target-type, Mu \value, JSON::Class::Config :$config, *%nameds)`**
+        
+        There are a few candidates with two-argument signature, responsible for serializing different kinds of `target-type`. These are somewhat specialized to serve `JSON::Class` internals. Yet, it is possible to introduce own candidates in a subclass if necessary.
+        
+        Some candidates are using the `$config` named argument. Any unknown arguments are passed down the call chain to other candidates.
+
+  - **`proto method json-deserialize-value(Mu \dest-type, Mu \json-value, JSON::Class::Config :$config)`**
+    
+    This is a low-level method to produce a `dest-type` object from a `json-value` which is one of [a JSON data type](https://en.wikipedia.org/wiki/JSON#Data_types), returned by `from-json` routine.
+
   - **`method json-create(|)`**
     
     This method acts almost like `new`, but the difference is in what class it eventually creates. If it belongs to a run-time JSONified class, i.e. to one created by [`JSON::Class::Config`](docs/md/JSON/Class/Config.md) `jsonify` method, then `json-create` would return an instance of the original class, not its JSONification.
@@ -1038,11 +1182,15 @@ Here we use custom marshallers too, this time for array values. But there is a t
 
 # SEE ALSO
 
+  - [`JSON::Class::Details`](docs/md/JSON/Class/Details.md)
+
   - [`JSON::Class::Config`](docs/md/JSON/Class/Config.md)
 
   - [`JSON::Class::Descriptor`](docs/md/JSON/Class/Descriptor.md)
 
   - [`JSON::Class::Object`](docs/md/JSON/Class/Object.md)
+
+  - [`JSON::Class::Dict`](docs/md/JSON/Class/Dict.md)
 
   - [`JSON::Class::Sequence`](docs/md/JSON/Class/Sequence.md)
 

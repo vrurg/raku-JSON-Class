@@ -24,9 +24,9 @@ The class implements standard positional methods like `AT-POS`, `EXISTS-POS`, `D
         
         Must return a [`JSON::Class::ItemDescriptor:D`](ItemDescriptor.md) for a given JSON value for deserialization; or throw if no descriptor matches the `$json-value`. `$idx` is the position of the value in the original JSON array.
 
-  - **`method json-serialize-item(::?CLASS:D: JSON::Class::ItemDescriptor:D $descr, Mu $value)`**
+  - **`method json-serialize-item(::?CLASS:D: JSON::Class::ItemDescriptor:D $descriptor, Mu $value)`**
     
-    Serialize given `$value` using item descriptor `$descr`.
+    Serialize given `$value` using item `$descriptor`.
 
   - **`method json-deserialize-item(::?CLASS:D: Int:D $idx, Mu $json-value)`**
     
@@ -55,6 +55,8 @@ The class implements standard positional methods like `AT-POS`, `EXISTS-POS`, `D
   - [`JSON::Class::Sequential`](Sequential.md)
 
   - [`JSON::Class::SequenceHOW`](SequenceHOW.md)
+
+  - [`INDEX`](../../../../INDEX.md)
 
 # COPYRIGHT
 

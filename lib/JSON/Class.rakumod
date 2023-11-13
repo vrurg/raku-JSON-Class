@@ -8,8 +8,8 @@ use JSON::Class::ClassHOW;
 use JSON::Class::Config;
 use JSON::Class::DictHOW;
 use JSON::Class::Dictionary;
-use JSON::Class::HOW::Dictionary;
-use JSON::Class::HOW::Sequential;
+use JSON::Class::HOW::DictionaryRole;
+use JSON::Class::HOW::SequentialRole;
 use JSON::Class::HOW::TypeWrapper;
 use JSON::Class::Internals;
 use JSON::Class::Jsonish;
@@ -86,16 +86,16 @@ BEGIN {
         one-collection-kind($sequence, $dict);
 
         if $sequence !=== NOT-SET {
-            no-redeclare(typeobj, JSON::Class::HOW::Sequential, "role");
+            no-redeclare(typeobj, JSON::Class::HOW::SequentialRole, "role");
 
-            typeobj.HOW does JSON::Class::HOW::Sequential;
-            typeobj.^json-setup-sequence($sequence.List);
+            typeobj.HOW does JSON::Class::HOW::SequentialRole;
+            typeobj.^json-set-item-declarations($sequence.List);
         }
         elsif $dict !=== NOT-SET {
-            no-redeclare(typeobj, JSON::Class::HOW::Dictionary, "role");
+            no-redeclare(typeobj, JSON::Class::HOW::DictionaryRole, "role");
 
-            typeobj.HOW does JSON::Class::HOW::Dictionary;
-            typeobj.^json-setup-dictionary($dict.List);
+            typeobj.HOW does JSON::Class::HOW::DictionaryRole;
+            typeobj.^json-set-item-declarations($dict.List);
         }
         else {
             no-redeclare(typeobj, JSON::Class::RoleHOW, "role");
@@ -127,14 +127,14 @@ BEGIN {
 
             typeobj.HOW does JSON::Class::SequenceHOW;
             typeobj.^add_role(JSON::Class::Sequential);
-            typeobj.^json-setup-sequence($sequence.List);
+            typeobj.^json-set-item-declarations($sequence.List);
         }
         elsif $dict !=== NOT-SET {
             no-redeclare(typeobj, JSON::Class::DictHOW, "class");
 
             typeobj.HOW does JSON::Class::DictHOW;
             typeobj.^add_role(JSON::Class::Dictionary);
-            typeobj.^json-setup-dictionary($dict.List);
+            typeobj.^json-set-item-declarations($dict.List);
         }
         else {
             no-redeclare(typeobj, JSON::Class::ClassHOW, "class");

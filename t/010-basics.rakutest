@@ -3,6 +3,8 @@ use Test::Async;
 use JSON::Class::Types:auth<zef:vrurg>;
 use JSON::Class::Utils:auth<zef:vrurg>;
 
+plan 13;
+
 cmp-ok Mu, &[~~], JSONBasicType, "Mu is considered a basic type";
 cmp-ok Any, &[~~], JSONBasicType, "Any is considered a basic type";
 nok Promise ~~ JSONBasicType, "Promise isn't a basic type";

@@ -318,7 +318,3 @@ subtest "Attribute Aliasing" => {
 }
 
 done-testing;
-
-# my class JDict is json( :dict( :keyof(Mu),
-#                                 Str:D, Int, Foo
-#                         )) {}

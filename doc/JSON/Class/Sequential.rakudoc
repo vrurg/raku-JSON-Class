@@ -14,8 +14,9 @@ Returns the class C<is json> trait was applied to.
 =begin item
 B<C<method json-config-defaults()>>
 
-Returns a hash of configuration properties to be used as defaults for a new L<C<JSON::Class::Config>|rakudoc:JSON::Class::Config>
-instance. See also L<C<JSON::Class>|rakudoc:JSON::Class> and L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>.
+Returns a hash of configuration properties to be used as defaults for a new
+L<C<JSON::Class::Config>|rakudoc:JSON::Class::Config> instance. See also L<C<JSON::Class>|rakudoc:JSON::Class> and
+L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>.
 =end item
 
 =begin item
@@ -28,7 +29,7 @@ types, listed in the trait arguments. Same array type backs L<C<JSON::Class::Seq
 =begin item
 B<C<method json-item-descriptors(|)>>
 
-Redirects to the same name method of L<C<JSON::Class::SequenceHOW>|rakudoc:JSON::Class::SequenceHOW>.
+Redirects to the same name method of L<C<JSON::Class::HOW::Collection>|rakudoc:JSON::Class::HOW::Collection>.
 =end item
 
 =begin item

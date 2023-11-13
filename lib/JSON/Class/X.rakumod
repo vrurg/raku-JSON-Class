@@ -24,6 +24,14 @@ class UnsupportedType does Base does Typed {
     }
 }
 
+class BadTarget does Base does Typed {
+    has Str $.why;
+    has Mu $!target is required is built;
+    method message {
+        "Cannot use '" ~ self.type.^name ~ "' with '" ~ $!target.^name ~ ($.why andthen ": " ~ $_ orelse "")
+    }
+}
+
 class Redeclaration does Base {
     has Str:D $.kind is required;
     has Str:D $.name is required;

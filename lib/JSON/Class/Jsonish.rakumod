@@ -7,3 +7,5 @@ method json-serialize {...}
 method json-deserialize {...}
 method json-create {...}
 method clone-from {...}
+
+my $warnings-reported;

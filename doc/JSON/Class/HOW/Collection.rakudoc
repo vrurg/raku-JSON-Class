@@ -1,0 +1,63 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::Collection> - base role for metas implementing collections
+
+=head1 METHODS
+
+=begin item
+B<C<method json-set-item-default(Mu \item-default)>>
+
+Set collection default value.
+=end item
+
+=begin item
+B<C<method json-item-default(Mu \obj)>>
+
+Returns collection default value.
+=end item
+
+=begin item
+B<C<method json-item-descriptors(Mu \obj, Bool :$local, Bool :$class, Bool :$with-matcher)>>
+
+Return a list of collection's value descriptors. Arguments are:
+
+=begin item
+C<Bool> B<C<:$local>>
+
+Only descriptors immediately declared on the collection type.
+=end item
+
+=begin item
+C<Bool> B<C<:$class>>
+
+Only descriptors where type is a non-basic type class.
+=end item
+
+=begin item
+C<Bool> B<C<:$with-matcher>>
+
+Only descriptors with matcher helper.
+=end item
+
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::HOW::Dictionary>|rakudoc:JSON::Class::HOW::Dictionary>
+=item L<C<JSON::Class::HOW::Sequential>|rakudoc:JSON::Class::HOW::Sequential>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<INDEX>|rakudoc:..::INDEX>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENSE>|file:LICENSE> file in this distribution.
+=end rakudoc
+

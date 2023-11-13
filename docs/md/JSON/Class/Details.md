@@ -28,13 +28,27 @@ The difference in functionality between these methods is that `from-json` and `t
 
 A JSONified class or sequence are built by `is json` trait injecting corresponding roles into the classes themselves and into their meta-classes.
 
-JSON classes get [`JSON::Class::Representation`](Representation.md) role, and their meta gets [`JSON::Class::ClassHOW`](ClassHOW.md).
+  - **JSON classes** get [`JSON::Class::Representation`](Representation.md) role, and their meta gets [`JSON::Class::ClassHOW`](ClassHOW.md).
 
-JSON sequences get [`JSON::Class::Sequential`](Sequential.md), and their meta gets [`JSON::Class::SequenceHOW`](SequenceHOW.md).
+  - **JSON sequences** get [`JSON::Class::Sequential`](Sequential.md), and their meta gets [`JSON::Class::SequenceHOW`](SequenceHOW.md).
 
-JSON roles doesn't actually implement any functionality by themselves, therefore only their meta objects are modified. If a role declared as sequence the meta received [`JSON::Class::HOW::Sequential`](HOW/Sequential.md); otherwise it is [`JSON::Class::RoleHOW`](RoleHOW.md).
+  - **JSON dictionaries** get [`JSON::Class::Dictionary`](Dictionary.md), and their meta gets [`JSON::Class::DictHOW`](DictHOW.md).
 
-Declarations of [`JSON::Class::Representation`](Representation.md) and [`JSON::Class::Sequential`](Sequential.md) roles include classes [`JSON::Class::Object`](Object.md) and [`JSON::Class::Sequence`](Sequence.md) as their parents. Though such structure could look like an overkill at first, it allows a JSONified type to be subclasses with no extra hassle because access to the most used metaobject interfaces is proxied by the roles where `::?CLASS` symbol points at the JSONified type, no matter what the MRO of an object is. For example:
+  - **JSON roles** doesn't actually implement any functionality by themselves, therefore only their meta objects are receiving [`JSON::Class::RoleHOW`](RoleHOW.md) mixin.
+
+  - **JSON sequence roles** meta does [`JSON::Class::HOW::Sequential`](HOW/Sequential.md).
+
+  - **JSON dictionary roles** meta does [`JSON::Class::HOW::Dictionary`](HOW/Dictionary.md).
+
+The above mentioned roles also add implicit parents to their classes:
+
+  - [`JSON::Class::Representation`](Representation.md) comes with [`JSON::Class::Object`](Object.md)
+
+  - [`JSON::Class::Dictionary`](Dictionary.md) – [`JSON::Class::Dict`](Dict.md)
+
+  - [`JSON::Class::Sequential`](Sequential.md) – [`JSON::Class::Sequence`](Sequence.md)
+
+Though such structure could look like an overkill at first, with its abundance of roles and classes, it allows a JSONified type to be subclassed with no extra hassle because access to the most used metaobject interfaces is proxied by the roles where `::?CLASS` symbol points exactly at the JSONified type, no matter what the MRO of an object (`self`) is. For example:
 
 ``` raku
 class Foo is json {...}
@@ -120,8 +134,8 @@ The following example is, perhaps, the best demonstration of how marshalling wor
     ``` 
     ### Serializing ###
     Attribute-level serializes: {k1 => 2023-10-23, k2 => 3.141592653589793, k3 => v3.4}
-    Key-level serializes  : k2
     Key-level serializes  : k3
+    Key-level serializes  : k2
     Key-level serializes  : k1
     {"idx":{"Foo.k1":"Date.new(2023,10,23)","Foo.k2":"3.141592653589793e0","Foo.k3":"v3.4"}}
     
@@ -129,10 +143,10 @@ The following example is, perhaps, the best demonstration of how marshalling wor
     Attribute-level deserializes: {Foo.k1 => Date.new(2023,10,23), Foo.k2 => 3.141592653589793e0, Foo.k3 => v3.4}
     Key-level deserializes  : 'Foo.k1'
     Value-level deserializes: 'Date.new(2023,10,23)'
-    Key-level deserializes  : 'Foo.k3'
-    Value-level deserializes: 'v3.4'
     Key-level deserializes  : 'Foo.k2'
     Value-level deserializes: '3.141592653589793e0'
+    Key-level deserializes  : 'Foo.k3'
+    Value-level deserializes: 'v3.4'
     Foo.new(idx => ${"oo.k1" => Date.new(2023,10,23), "oo.k2" => 3.141592653589793e0, "oo.k3" => v3.4})
     ```
 
@@ -186,7 +200,7 @@ Ok, but what if we want to marshall using JSON class owns methods? It can be don
     Serializing Num: {"n":"Num"}
     
     Deserializing a Rat: Rat|-621/50
-    Deserializing a type: Int|U3324726349136
+    Deserializing a type: Int|U4151608216912
     ```
 
 ### Marshaller Signature Match
@@ -219,10 +233,10 @@ When `JSON::Class` verifies if a marshaller can be used it tries to match its si
 For example, let's say there is an API module for a web-service which de-JSONifies a REST response into an instance of `Web::Service::Response`. The raw response object is barely useful for us and we decide to subclass it with `MyProject::Response` which extends the original class functionality for our needs. Now it all winds down to rather simple code if the `Web::Service` module is using `JSON::Class`:
 
 ``` raku
-JSON::Class::Config().map-type(Web::Service::Response(), MyProject::Response());
-my $web-service = Web::Service().new();
-await($web-service.request().andthen({
-    say(.response().^name())
+JSON::Class::Config.map-type(Web::Service::Response, MyProject::Response);
+my $web-service = Web::Service.new;
+await($web-service.request.andthen({
+    say(.response.^name)
 }))
 ```
 
@@ -243,7 +257,7 @@ class MyProject::Response is json-wrap(Web::Service::Response) {
 The trait doesn't install the mapping automatically though. This might be undesirable. One would still need a call like this to activate it:
 
 ``` raku
-$config.map-type(MyProject::Response())
+$config.map-type(MyProject::Response)
 ```
 
 ## Descriptors
@@ -260,6 +274,8 @@ Each JSONified type obejct has its own registry. When a new JSON class or sequen
 
   - [`JSON::Class`](../Class.md)
 
+  - [`INDEX`](../../../../INDEX.md)
+
 # COPYRIGHT
 
 (c) 2023, Vadim Belman <vrurg@cpan.org>
@@ -268,4 +284,4 @@ Each JSONified type obejct has its own registry. When a new JSON class or sequen
 
 Artistic License 2.0
 
-See the [*LICENSE*](../../../../LICENSE) file in this distributio
+See the [*LICENSE*](../../../../LICENSE) file in this distrib

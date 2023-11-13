@@ -38,10 +38,11 @@ submethod TWEAK(:%json-raw) {
     given self.json-key-descriptor {
         # In the most simple case of string keys with no marshallers we may skip mapping from JSON keys into the
         # sequence keys.
-        $!json-keys :=
-            .type !~~ Str || .has-serializer("item") || .has-deserializer("item")
-                ?? self.json-new-key-hash
-                !! Nil;
+        my \typeobj = .type<>;
+        $!json-keys := self.json-new-key-hash;
+            # !(typeobj ~~ Str && typeobj.^archetypes.definite) || .has-serializer("item") || .has-deserializer("item")
+            #     ?? self.json-new-key-hash
+            #     !! Nil;
     }
 }
 
@@ -116,12 +117,12 @@ method json-serialize(::?CLASS:D:) is raw {
     my $*JSON-CLASS-SELF := self;
     my $iter = self.iterator;
 
-    (gather loop {
+    (do loop {
         last if (my $item := $iter.pull-one) =:= IterationEnd;
 
         my $*JSON-CLASS-DESCRIPTOR :=
         my JSON::Class::ItemDescriptor:D $descr = self.json-guess-descriptor(item-value => $item.value);
-        take self.json-serialize-item($descr, $item)
+        self.json-serialize-item($descr, $item)
     }).Hash
 }
 
@@ -136,8 +137,8 @@ multi method json-deserialize(%from, JSON::Class::Config :$config is copy) {
         json-lazy-config => $config
 }
 
-proto method json-key2str(Mu, Mu) {*}
-multi method json-key2str(Str \key-type, Str \key) { key }
+proto method json-key2str(Mu, Mu --> Str:D) {*}
+multi method json-key2str(Str \key-type, Str:D \key) { key }
 multi method json-key2str(Mu \key-type, Mu \key) {
     self.json-config.to-json: self.json-serialize-value(key-type, key), :!pretty, :sorted-keys
 }
@@ -145,7 +146,7 @@ multi method json-key2str(Mu \key-type, Mu \key) {
 method json-serialize-dict-key(::?CLASS:D: Mu \key, Bool :$store) {
     my $descr = self.json-key-descriptor;
     my $json-key := self.json-try-serializer: 'item', $descr, key, { self.json-key2str($descr.type, key) };
-    self!json-store-key-object($json-key, key) if $store;
+    $!json-keys.ASSIGN-KEY($json-key, key) if $store;
     $json-key
 }
 
@@ -156,7 +157,7 @@ multi method json-str2key(Str:D $json-key, JSON::Class::Jsonish \key-type --> Mu
 multi method json-str2key(Str:D $json-key, ::T Mu \key-type --> T) { my T() $ = $json-key }
 
 method json-serialize-dict-value(::?CLASS:D: JSON::Class::ItemDescriptor:D $descr, Mu \value) {
-    self.json-try-deserializer: 'item', $descr, value, { self.json-serialize-value: $descr.nominal-type, value }
+    self.json-try-serializer: 'item', $descr, value, { self.json-serialize-value: $descr.nominal-type, value }
 }
 
 method json-serialize-item(::?CLASS:D: JSON::Class::ItemDescriptor:D $descr, Pair:D $pair) {
@@ -167,7 +168,14 @@ method json-serialize-item(::?CLASS:D: JSON::Class::ItemDescriptor:D $descr, Pai
 
 method json-deserialize-dict-key(::?CLASS::D: Str:D $key --> Mu) is raw {
     my $descr = self.json-key-descriptor;
-    self.json-try-deserializer: 'item', $descr, $key, { self.json-str2key($key, $descr.type) }
+    self.json-try-deserializer: 'item', $descr, $key,
+                                {
+                                    my \dtype = $descr.type;
+                                    self.json-str2key: $key,
+                                                       is-a-class-type(dtype)
+                                                            ?? self.json-config.jsonify(dtype)
+                                                            !! dtype
+                                }
 }
 
 method json-deserialize-dict-value(::?CLASS:D: JSON::Class::ItemDescriptor:D $descr, $json-value --> Mu) is raw {
@@ -176,7 +184,7 @@ method json-deserialize-dict-value(::?CLASS:D: JSON::Class::ItemDescriptor:D $de
         { self.json-deserialize-value($descr.value-type, $json-value) }
 }
 
-method json-deserialize-item(::?CLASS:D: Mu $key is raw, Mu $json-value is raw --> Mu) is raw {
+method json-deserialize-item(::?CLASS:D: Mu $key is raw, $json-value is raw --> Mu) is raw {
     my Mu $rc;
 
     with $json-value {
@@ -210,28 +218,12 @@ method !json-normalize(Str:D $json) {
     .to-json( .from-json($json), :!pretty, :sorted-keys ) given self.json-config
 }
 
-method !json-store-key-object(Str:D $json-key, Mu \key) is raw {
-    with $!json-keys {
-        .ASSIGN-KEY($json-key, key)
-    }
-    key
-}
-
-method !json-delete-key-object(Str:D $json-key --> Mu) is raw {
-    with $!json-keys {
-        .DELETE-KEY($json-key)
-    }
-    else {
-        Nil
-    }
-}
-
 method json-key-object(::?CLASS:D: Str:D $json-key --> Mu) {
-    return $json-key without $!json-keys;
+    return Nil unless self.json-exists-key($json-key);
 
     $!json-keys.EXISTS-KEY($json-key)
         ?? $!json-keys.AT-KEY($json-key)
-        !! self!json-store-key-object($json-key, self.json-deserialize-dict-key($json-key))
+        !! $!json-keys.ASSIGN-KEY($json-key, self.json-deserialize-dict-key($json-key))
 }
 
 method json-at-key(::?CLASS:D: Str:D $json-key, Bool :$p = False, Mu :$key is raw = NOT-SET --> Mu) is raw {
@@ -245,7 +237,7 @@ method json-at-key(::?CLASS:D: Str:D $json-key, Bool :$p = False, Mu :$key is ra
             my Mu $json-value := self!json-delete-key-raw($json-key);
 
             self.json-lazy-deserialize-context: {
-                self!json-store-key-object($json-key, key);
+                $!json-keys.ASSIGN-KEY($json-key, key);
                 $!json-items.ASSIGN-KEY: $json-key, self.json-deserialize-item(key, $json-value)
             }
         };
@@ -256,16 +248,26 @@ method json-at-key(::?CLASS:D: Str:D $json-key, Bool :$p = False, Mu :$key is ra
 
 method json-delete-key(::?CLASS:D: Str:D $json-key --> Mu) is raw {
     self!json-delete-key-raw($json-key);
-    self!json-delete-key-object($json-key);
-    $!json-items.DELETE-KEY($json-key);
+    $!json-keys.DELETE-KEY($json-key);
+    $!json-items.DELETE-KEY($json-key)
 }
 
 method json-exists-key(::?CLASS:D: Str:D $json-key --> Mu) is raw {
     ($!json-raw andthen .EXISTS-KEY($json-key)) || $!json-items.EXISTS-KEY($json-key)
 }
 
-method json-assign-key(::?CLASS:D: Str:D $json-key, Mu \value, Mu :$key is raw = NOT-SET --> Mu) is raw {
-    self!json-store-key-object($json-key, $key) unless $key =:= NOT-SET;
+method json-has-key(::?CLASS:D: Str:D $json-key --> Bool:D) is raw {
+    $!json-items.EXISTS-KEY($json-key)
+}
+
+method json-assign-key( ::?CLASS:D:
+                        Str:D $json-key,
+                        Mu \value,
+                        Mu :$key is raw = NOT-SET
+                        --> Mu )
+    is raw is hidden-from-backtrace
+{
+    $!json-keys.ASSIGN-KEY($json-key, $key) unless $key =:= NOT-SET;
     self!json-delete-key-raw($json-key);
     $!json-items.ASSIGN-KEY($json-key, value)
 }

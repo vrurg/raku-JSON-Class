@@ -1,0 +1,38 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::DictHOW> – meta for JSON dictionaries
+
+=head1 CONSUMES
+
+=item L<C<JSON::Class::HOW::Configurable>|rakudoc:JSON::Class::HOW::Configurable>
+=item L<C<JSON::Class::HOW::Laziness>|rakudoc:JSON::Class::HOW::Laziness>
+=item L<C<JSON::Class::HOW::Dictionary>|rakudoc:JSON::Class::HOW::Dictionary>
+
+=head1 METHODS
+
+=begin item
+B<C<method json-hash-type(Mu)>>
+
+Returns an L<C<Hash>|https://docs.raku.org/type/Hash> type parameterized with dictionary key and value types.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<JSON::Class::Dict>|rakudoc:JSON::Class::Dict>
+=item L<C<JSON::Class::Dictionary>|rakudoc:JSON::Class::Dictionary>
+=item L<C<JSON::Class::HOW::Laziness>|rakudoc:JSON::Class::HOW::Laziness>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENSE>|file:LICENSE> file in this distribution.
+=end rakudoc
+

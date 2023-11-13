@@ -44,7 +44,7 @@ my Mu:U $json-representation;
 my Mu:U $json-object-class;
 my $std-types-lock = Lock.new;
 
-has Bool $.using-defaults;
+has Bool $!using-defaults;
 
 has &!to-json is mooish(:lazy<to-json-routine>);
 has &!from-json is mooish(:lazy<from-json-routine>);
@@ -122,6 +122,10 @@ multi method skip-null(::?CLASS:D:) { $!skip-null }
 proto method eager(|) {*}
 multi method eager(::?CLASS:U:) { self.global.eager }
 multi method eager(::?CLASS:D:) { $!eager }
+
+proto method using-defaults(|) {*}
+multi method using-defaults(::?CLASS:U:) { self.global.using-defaults }
+multi method using-defaults(::?CLASS:D:) { $!using-defaults }
 
 proto method non-jsonifiable(Mu:U) {*}
 
@@ -344,8 +348,8 @@ multi method alert(::?CLASS:D: *@msg) is hidden-from-backtrace {
 }
 
 proto method notify(|) {*}
-multi method notify(::?CLASS:U: |c) { self.global.notify(|c) }
-multi method notify(::?CLASS:D: *@msg --> Nil) {
+multi method notify(::?CLASS:U: |c) is hidden-from-backtrace { self.global.notify(|c) }
+multi method notify(::?CLASS:D: *@msg --> Nil) is hidden-from-backtrace {
     return if ($*JSON-CLASS-SEVERITY // $!severity) == EASY;
     warn @msg.map(*.gist).join;
 }

@@ -3,9 +3,11 @@ unit role JSON::Class::DictHOW:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION
 
 use experimental :will-complain;
 
+use JSON::Class::HOW::Collection::Class;
 use JSON::Class::HOW::Configurable;
 use JSON::Class::HOW::Dictionary;
 use JSON::Class::HOW::Laziness;
+use JSON::Class::HOW::RoleContainer;
 use JSON::Class::HOW::SelfConfigure;
 use JSON::Class::ItemDescriptor;
 use JSON::Class::Jsonish;
@@ -13,15 +15,24 @@ use JSON::Class::Types :NOT-SET;
 use JSON::Class::Utils;
 use JSON::Class::X;
 
+also does JSON::Class::HOW::Collection::Class;
 also does JSON::Class::HOW::Configurable;
+also does JSON::Class::HOW::RoleContainer;
 also does JSON::Class::HOW::Laziness;
 also does JSON::Class::HOW::Dictionary;
 also does JSON::Class::HOW::SelfConfigure;
 
 has $!json-hash-type;
 
-method json-init-dictionary(Mu) {
+method compose(Mu --> Mu) is raw {
+    my Mu \obj = callsame();
+    obj.^json-init-dictionary;
+    obj
+}
+
+method json-init-dictionary(|c) {
     $!json-hash-type := NOT-SET;
+    self.json-setup-dictionary(|c)
 }
 
 method json-build-collection-type(Mu \obj, @descriptors) {
@@ -32,3 +43,5 @@ method json-hash-type(Mu \obj) {
     self.json-build-from-mro(obj);
     $!json-hash-type
 }
+
+method json-kind { 'dictionary' }

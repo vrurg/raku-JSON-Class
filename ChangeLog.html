@@ -363,7 +363,15 @@ hr {
 </style>
 
     
-</head>
+<style>.toc-level-1 .toc-text { padding-left: 1.5em; }
+.toc-level-2 .toc-text { padding-left: 2.5em; }
+.toc-level-3 .toc-text { padding-left: 3.5em; }
+.toc-level-4 .toc-text { padding-left: 4.5em; }
+.toc-level-5 .toc-text { padding-left: 5.5em; }
+#TOC * { border-width: 0; }
+li > p { margin: inherit; }
+li > .pod-block-code { margin-top: 16px; }
+</style></head>
 
 <body class="pod">
     <div id="___top"></div>
@@ -380,6 +388,13 @@ hr {
     <div class="pod-body">
     <h1 id="CHANGELOG"><a class="u" href="#___top" title="go to top of document">CHANGELOG</a></h1>
 <ul><li><p><strong>v0.0.3</strong></p>
+<ul><li><p>Implemented <a href="docs/html/JSON/Class/Dict.html"><code>JSON::Class::Dict</code></a></p>
+</li>
+<li><p>Fixed some cases where <a href="docs/html/JSON/Class/Sequence.html"><code>JSON::Class::Sequence</code></a> would not transition into "all set" state</p>
+</li>
+</ul>
+</li>
+<li><p><strong>v0.0.2</strong></p>
 <ul><li><p>Added default marshalling for <a href="https://docs.raku.org/type/Version"><code>Version</code></a>, and <a href="https://docs.raku.org/type/QuantHash"><code>QuantHash</code></a>es</p>
 </li>
 <li><p>Implicit JSONification now reports a problem for some problematic types</p>

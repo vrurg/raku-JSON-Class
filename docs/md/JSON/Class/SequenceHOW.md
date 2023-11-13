@@ -2,6 +2,14 @@
 
 `JSON::Class::SequenceHOW` – meta for JSON sequences
 
+# CONSUMES
+
+  - [`JSON::Class::HOW::Configurable`](HOW/Configurable.md)
+
+  - [`JSON::Class::HOW::Laziness`](HOW/Laziness.md)
+
+  - [`JSON::Class::HOW::Sequential`](HOW/Sequential.md)
+
 # METHODS
 
   - **`method json-array-type()`**

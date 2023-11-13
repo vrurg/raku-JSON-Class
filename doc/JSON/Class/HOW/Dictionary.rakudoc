@@ -1,0 +1,38 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::HOW::Dictionary>
+
+=head1 METHODS
+
+=begin item
+B<C<method json-key-descriptor(Mu)>>
+
+Returns dictionary keys descriptor.
+=end item
+
+=begin item
+B<C<method json-keyof(Mu)>>
+
+Returns dictionary key type.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<JSON::Class::DictHOW>|rakudoc:JSON::Class::DictHOW>
+=item L<C<JSON::Class::Dict>|rakudoc:JSON::Class::Dict>
+=item L<C<INDEX>|rakudoc:..::INDEX>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENSE>|file:LICENSE> file in this distribution.
+=end rakudoc
+

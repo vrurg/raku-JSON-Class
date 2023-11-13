@@ -363,7 +363,15 @@ hr {
 </style>
 
     
-</head>
+<style>.toc-level-1 .toc-text { padding-left: 1.5em; }
+.toc-level-2 .toc-text { padding-left: 2.5em; }
+.toc-level-3 .toc-text { padding-left: 3.5em; }
+.toc-level-4 .toc-text { padding-left: 4.5em; }
+.toc-level-5 .toc-text { padding-left: 5.5em; }
+#TOC * { border-width: 0; }
+li > p { margin: inherit; }
+li > .pod-block-code { margin-top: 16px; }
+</style></head>
 
 <body class="pod">
     <div id="___top"></div>
@@ -409,10 +417,28 @@ hr {
 <p>The difference in functionality between these methods is that <code>from-json</code> and <code>to-json</code> are "administrators": their primary task is to prepare configuration context (see the next section). Then, depending on arguments, they either parse JSON source, or produce a JSON string. Otherwise they delegate to <code>json-serizlie</code> or <code>json-deserialize</code> methods.</p>
 <h2 id="Object_Architechture"><a class="u" href="#___top" title="go to top of document">Object Architechture</a></h2>
 <p>A JSONified class or sequence are built by <code>is json</code> trait injecting corresponding roles into the classes themselves and into their meta-classes.</p>
-<p>JSON classes get <a href="Representation.html"><code>JSON::Class::Representation</code></a> role, and their meta gets <a href="ClassHOW.html"><code>JSON::Class::ClassHOW</code></a>.</p>
-<p>JSON sequences get <a href="Sequential.html"><code>JSON::Class::Sequential</code></a>, and their meta gets <a href="SequenceHOW.html"><code>JSON::Class::SequenceHOW</code></a>.</p>
-<p>JSON roles doesn't actually implement any functionality by themselves, therefore only their meta objects are modified. If a role declared as sequence the meta received <a href="HOW/Sequential.html"><code>JSON::Class::HOW::Sequential</code></a>; otherwise it is <a href="RoleHOW.html"><code>JSON::Class::RoleHOW</code></a>.</p>
-<p>Declarations of <a href="Representation.html"><code>JSON::Class::Representation</code></a> and <a href="Sequential.html"><code>JSON::Class::Sequential</code></a> roles include classes <a href="Object.html"><code>JSON::Class::Object</code></a> and <a href="Sequence.html"><code>JSON::Class::Sequence</code></a> as their parents. Though such structure could look like an overkill at first, it allows a JSONified type to be subclasses with no extra hassle because access to the most used metaobject interfaces is proxied by the roles where <code>::?CLASS</code> symbol points at the JSONified type, no matter what the MRO of an object is. For example:</p>
+<ul><li><p><strong>JSON classes</strong> get <a href="Representation.html"><code>JSON::Class::Representation</code></a> role, and their meta gets <a href="ClassHOW.html"><code>JSON::Class::ClassHOW</code></a>.</p>
+</li>
+<li><p><strong>JSON sequences</strong> get <a href="Sequential.html"><code>JSON::Class::Sequential</code></a>, and their meta gets <a href="SequenceHOW.html"><code>JSON::Class::SequenceHOW</code></a>.</p>
+</li>
+<li><p><strong>JSON dictionaries</strong> get <a href="Dictionary.html"><code>JSON::Class::Dictionary</code></a>, and their meta gets <a href="DictHOW.html"><code>JSON::Class::DictHOW</code></a>.</p>
+</li>
+<li><p><strong>JSON roles</strong> doesn't actually implement any functionality by themselves, therefore only their meta objects are receiving <a href="RoleHOW.html"><code>JSON::Class::RoleHOW</code></a> mixin.</p>
+</li>
+<li><p><strong>JSON sequence roles</strong> meta does <a href="HOW/Sequential.html"><code>JSON::Class::HOW::Sequential</code></a>.</p>
+</li>
+<li><p><strong>JSON dictionary roles</strong> meta does <a href="HOW/Dictionary.html"><code>JSON::Class::HOW::Dictionary</code></a>.</p>
+</li>
+</ul>
+<p>The above mentioned roles also add implicit parents to their classes:</p>
+<ul><li><p><a href="Representation.html"><code>JSON::Class::Representation</code></a> comes with <a href="Object.html"><code>JSON::Class::Object</code></a></p>
+</li>
+<li><p><a href="Dictionary.html"><code>JSON::Class::Dictionary</code></a> – <a href="Dict.html"><code>JSON::Class::Dict</code></a></p>
+</li>
+<li><p><a href="Sequential.html"><code>JSON::Class::Sequential</code></a> – <a href="Sequence.html"><code>JSON::Class::Sequence</code></a></p>
+</li>
+</ul>
+<p>Though such structure could look like an overkill at first, with its abundance of roles and classes, it allows a JSONified type to be subclassed with no extra hassle because access to the most used metaobject interfaces is proxied by the roles where <code>::?CLASS</code> symbol points exactly at the JSONified type, no matter what the MRO of an object (<code>self</code>) is. For example:</p>
 <pre class="pod-block-code">class Foo is json {...}
 class Bar is Foo {...}
 say Bar.json-class; # (Foo) – the method is implemented by JSON::Class::Representation
@@ -475,8 +501,8 @@ say Foo.from-json($json);
 <p>Sample output:</p>
 <pre class="pod-block-code">### Serializing ###
 Attribute-level serializes: {k1 =&gt; 2023-10-23, k2 =&gt; 3.141592653589793, k3 =&gt; v3.4}
-Key-level serializes  : k2
 Key-level serializes  : k3
+Key-level serializes  : k2
 Key-level serializes  : k1
 {"idx":{"Foo.k1":"Date.new(2023,10,23)","Foo.k2":"3.141592653589793e0","Foo.k3":"v3.4"}}
 
@@ -484,10 +510,10 @@ Key-level serializes  : k1
 Attribute-level deserializes: {Foo.k1 =&gt; Date.new(2023,10,23), Foo.k2 =&gt; 3.141592653589793e0, Foo.k3 =&gt; v3.4}
 Key-level deserializes  : 'Foo.k1'
 Value-level deserializes: 'Date.new(2023,10,23)'
-Key-level deserializes  : 'Foo.k3'
-Value-level deserializes: 'v3.4'
 Key-level deserializes  : 'Foo.k2'
 Value-level deserializes: '3.141592653589793e0'
+Key-level deserializes  : 'Foo.k3'
+Value-level deserializes: 'v3.4'
 Foo.new(idx =&gt; ${"oo.k1" =&gt; Date.new(2023,10,23), "oo.k2" =&gt; 3.141592653589793e0, "oo.k3" =&gt; v3.4})
 </pre>
 </li>
@@ -531,7 +557,7 @@ say "Deserializing a type: ", Foo.from-json(q&lt;{"n":"Int"}&gt;).n.WHICH;
 Serializing Num: {"n":"Num"}
 
 Deserializing a Rat: Rat|-621/50
-Deserializing a type: Int|U3324726349136
+Deserializing a type: Int|U4151608216912
 </pre>
 </li>
 </ul>
@@ -555,10 +581,10 @@ say Foo.new(foo =&gt; 1.2).to-json;
 <h2 id="Type_Mapping"><a class="u" href="#___top" title="go to top of document">Type Mapping</a></h2>
 <p><code>JSON::Class</code> supports deserialization type mapping which allows user code to override 3rd-party standard types with their own classes.</p>
 <p>For example, let's say there is an API module for a web-service which de-JSONifies a REST response into an instance of <code>Web::Service::Response</code>. The raw response object is barely useful for us and we decide to subclass it with <code>MyProject::Response</code> which extends the original class functionality for our needs. Now it all winds down to rather simple code if the <code>Web::Service</code> module is using <code>JSON::Class</code>:</p>
-<pre class="pod-block-code">JSON::Class::Config().map-type(Web::Service::Response(), MyProject::Response());
-my $web-service = Web::Service().new();
-await($web-service.request().andthen({
-    say(.response().^name())
+<pre class="pod-block-code">JSON::Class::Config.map-type(Web::Service::Response, MyProject::Response);
+my $web-service = Web::Service.new;
+await($web-service.request.andthen({
+    say(.response.^name)
 }))
 </pre>
 <p>That's all folks! Committing away the first line of the example will result in <em>Web::Service::Response</em> output again.</p>
@@ -570,7 +596,7 @@ await($web-service.request().andthen({
 }
 </pre>
 <p>The trait doesn't install the mapping automatically though. This might be undesirable. One would still need a call like this to activate it:</p>
-<pre class="pod-block-code">$config.map-type(MyProject::Response())
+<pre class="pod-block-code">$config.map-type(MyProject::Response)
 </pre>
 <h2 id="Descriptors"><a class="u" href="#___top" title="go to top of document">Descriptors</a></h2>
 <p><code>JSON::Class</code> avoids modifying attribute objects of meta-object of a class. Instead, it creates a registry of them where the information about the ways of JSONifying their values is kept. The details of registry implementation are irrelevant, all we need to know is that it holds instances of <em>descriptors</em>. There are two kinds of descriptors:</p>
@@ -582,6 +608,8 @@ await($web-service.request().andthen({
 <p>Each JSONified type obejct has its own registry. When a new JSON class or sequence is built registries from parent classes or JSON roles consumed are merged to form the full picture of what's to be marshalled.</p>
 <h1 id="SEE_ALSO"><a class="u" href="#___top" title="go to top of document">SEE ALSO</a></h1>
 <ul><li><p><a href="../Class.html"><code>JSON::Class</code></a></p>
+</li>
+<li><p><a href="../../../../INDEX.html"><code>INDEX</code></a></p>
 </li>
 </ul>
 <h1 id="COPYRIGHT"><a class="u" href="#___top" title="go to top of document">COPYRIGHT</a></h1>

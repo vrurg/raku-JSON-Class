@@ -39,9 +39,9 @@ C<$idx> is the position of the value in the original JSON array.
 =end item
 
 =begin item
-B<C<method json-serialize-item(::?CLASS:D: JSON::Class::ItemDescriptor:D $descr, Mu $value)>>
+B<C<method json-serialize-item(::?CLASS:D: JSON::Class::ItemDescriptor:D $descriptor, Mu $value)>>
 
-Serialize given C<$value> using item descriptor C<$descr>.
+Serialize given C<$value> using item C<$descriptor>.
 =end item
 
 =begin item
@@ -82,6 +82,7 @@ invoked for each.
 =item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
 =item L<C<JSON::Class::Sequential>|rakudoc:JSON::Class::Sequential>
 =item L<C<JSON::Class::SequenceHOW>|rakudoc:JSON::Class::SequenceHOW>
+=item L<C<INDEX>|rakudoc:..::INDEX>
 
 =head1 COPYRIGHT
 

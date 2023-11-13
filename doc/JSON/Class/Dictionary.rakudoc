@@ -1,0 +1,79 @@
+=begin rakudoc
+=head1 NAME
+
+C<JSON::Class::Dictionary> – base role for JSON dictionaries
+
+=head1 METHODS
+
+=begin item
+B<C<method json-class()>>
+
+Returns the class C<is json> trait was applied to.
+=end item
+
+=begin item
+B<C<method json-config-defaults()>>
+
+Returns a hash of configuration properties to be used as defaults for a new
+L<C<JSON::Class::Config>|rakudoc:JSON::Class::Config> instance. See also L<C<JSON::Class>|rakudoc:JSON::Class> and
+L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>.
+=end item
+
+=begin item
+B<C<method json-dictionary-type()>>
+
+Returns a parameterization of L<C<Hash>|https://docs.raku.org/type/Hash> which would be validating against dictionary
+types, both value and key. L<C<JSON::Class::Dict>|rakudoc:JSON::Class::Dict> uses an instance of this type as its
+backing storage.
+=end item
+
+=begin item
+B<C<method json-key-descriptor()>>
+
+Returns the descriptor object for dictionary keys. Redirects to the same name method of
+L<C<JSON::Class::DictHOW>|rakudoc:JSON::Class::DictHOW>.
+=end item
+
+=begin item
+B<C<method json-item-descriptors(|)>>
+
+Redirects to the same name method of L<C<JSON::Class::HOW::Collection>|rakudoc:JSON::Class::HOW::Collection>.
+=end item
+
+=begin item
+B<C<method json-create(*%profile)>>
+
+Exists for compatibility with other components of this distribution. Currently it is just a redirect to C<new>.
+=end item
+
+=begin item
+B<C<method keyof()>>
+
+Returns the dictionary key type.
+=end item
+
+=begin item
+B<C<method of()>>
+
+Returns the dictionary value type.
+=end item
+
+=head1 SEE ALSO
+
+=item L<C<JSON::Class>|rakudoc:JSON::Class>
+=item L<C<JSON::Class::Dict>|rakudoc:JSON::Class::Dict>
+=item L<C<JSON::Class::DictHOW>|rakudoc:JSON::Class::DictHOW>
+=item L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>
+=item L<C<INDEX>|rakudoc:..::INDEX>
+
+=head1 COPYRIGHT
+
+(c) 2023, Vadim Belman <vrurg@cpan.org>
+
+=head1 LICENSE
+
+Artistic License 2.0
+
+See the L<I<LICENSE>|file:LICENSE> file in this distribution.
+=end rakudoc
+

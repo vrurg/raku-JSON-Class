@@ -2,6 +2,8 @@ use v6.e.PREVIEW;
 use Test::Async;
 use JSON::Class:auth<zef:vrurg>;
 
+plan 5;
+
 subtest "Basics" => {
     plan 23;
 
@@ -89,6 +91,33 @@ subtest "Basics" => {
     cmp-deeply %jdict, $jdict.Hash, "assigning from another JSON dictionary";
 }
 
+subtest "Non-basic Values" => {
+    plan 3;
+    my class JRec is json {
+        has Num:D(Numeric:D) $.x is required;
+        has Num:D(Numeric:D) $.y is required;
+        has Num:D(Numeric:D) $.size is required;
+    }
+
+    my class Rec {
+        has Str:D $.descr is required;
+        has Rat:D(Numeric:D) $.value is required;
+    }
+
+    class JDict is json( :dictionary(JRec, Rec:D) ) {}
+
+    my %jdict is JDict =
+        jrec => JRec.new(:x(10), :y(20), :size(1.25)),
+        rec => Rec.new(:descr("some object"), :value(3.1415926));
+
+    my $expected = q<{"jrec":{"size":1.25e0,"x":10e0,"y":20e0},"rec":{"descr":"some object","value":3.1415926}}>;
+    is %jdict.to-json(:!pretty, :sorted-keys), $expected, "serialized";
+
+    my $deserialized = JDict.from-json($expected);
+    cmp-deeply $deserialized, %jdict, "deserialization is identical to the original";
+    cmp-ok $deserialized<rec>.WHAT, &[=:=], Rec, "deserialization of a non-JSON class doesn't alter original value type";
+}
+
 subtest "Key Marshalling" => {
     plan 3;
 
@@ -160,7 +189,7 @@ subtest "Key Marshalling" => {
     }
 
     subtest "Class Key Type" => {
-        plan 2;
+        plan 3;
 
         my class DKey is json {
             has Str:D $.fname is required;
@@ -223,5 +252,84 @@ subtest "Key Marshalling" => {
             my $deserialized = TDictCustom.from-json($expected);
             is-identical($deserialized, $tdict);
         }
+
+        subtest "Non-JSON Key Class" => {
+            my class PKey {
+                has Str:D $.name is required;
+                has Rat:D $.q is required;
+            }
+            my class TDictPKey is json( :dict( :keyof(PKey:D), Str:D ) ) {}
+
+            my $tdict = TDictPKey.new(
+                PKey.new(:name<pk1>, :q(1.2)) => "v1",
+                PKey.new(:name<pk1>, :q(3.141)) => "v2",
+                PKey.new(:name<pk2>, :q(42.12)) => "v3",
+            );
+
+            my $expected = q<{"{\"name\":\"pk1\",\"q\":1.2}":"v1","{\"name\":\"pk1\",\"q\":3.141}":"v2","{\"name\":\"pk2\",\"q\":42.12}":"v3"}>;
+            is $tdict.to-json(:!pretty, :sorted-keys), $expected, "non-JSON class instance as key";
+
+            my $deserialized = TDictPKey.from-json: $expected;
+            ok ? $deserialized.keys.map({ .WHAT =:= PKey }).all, "all keys are of the original type";
+        }
     }
 }
+
+subtest "Inheritance And Roles" => {
+    plan 10;
+
+    my role RDict is json(:dictionary(Str:D, :keyof(Str:D))) {}
+
+    my class PDict is json(:dictionary(Num:D, :keyof(Int))) {}
+
+    my class CDict1 is json(:dictionary(Int:D, :default(42))) does RDict {}
+    my class CDict2 is json(:dictionary(Int:D, :default(42))) is PDict does RDict {}
+
+    my $cdict1 := CDict1.new;
+    my %cdict2 is CDict2;
+
+    isa-ok CDict2, PDict, "dictionary is subclassing another dictionary";
+
+    cmp-ok CDict1.keyof, &[=:=], Str:D, "key type is picked from role";
+    cmp-ok CDict2.keyof, &[=:=], Str:D, "key type is picked from role, inheritance is irrelevant";
+
+    lives-ok { $cdict1<what> = "The Answer" }, "assignment with valid key type";
+
+    throws-like
+        { $cdict1{11} = 12 },
+        X::TypeCheck::Assignment,
+        "using a wrong key type throws";
+
+    throws-like
+        { $cdict1<what> = 1e0 },
+        X::TypeCheck::Assignment,
+        "assigning a wrong type throws";
+
+    throws-like
+        { $cdict1{Str} = 2e0 },
+        X::TypeCheck::Assignment,
+        "undefined key throw when keyof is a definite";
+
+    lives-ok { %cdict2<what> = 1e0 }, "value type is picked from parent class";
+
+    %cdict2.CLEAR;
+
+    %cdict2 = the-answer => 42, const => π, comment => "better a good one";
+
+    my $expected = q<{"comment":"better a good one","const":3.141592653589793e0,"the-answer":42}>;
+    is %cdict2.to-json(:sorted-keys), $expected, "serialized";
+
+    cmp-deeply CDict2.from-json($expected), %cdict2, "deserialized";
+}
+
+subtest "Errors" => {
+    plan 1;
+
+    throws-like
+        q<class BDict is json( :dictionary(:keyof(:default(42))) ) {}>,
+        X::Adverb,
+        :message(/"Unexpected adverb ':default'" .* "'BDict'"/),
+        ":keyof accepts only constraint-related declarations";
+}
+
+done-testing;

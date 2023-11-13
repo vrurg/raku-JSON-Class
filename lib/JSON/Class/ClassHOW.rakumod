@@ -7,20 +7,23 @@ use AttrX::Mooish::Helper;
 use JSON::Class::Attr;
 use JSON::Class::Jsonish;
 use JSON::Class::HOW::AttributeContainer;
+use JSON::Class::HOW::RoleContainer;
 use JSON::Class::HOW::Configurable;
 use JSON::Class::HOW::Explicit;
 use JSON::Class::HOW::Imply;
 use JSON::Class::HOW::SelfConfigure;
+use JSON::Class::HOW::Jsonish;
 use JSON::Class::Internals;
 use JSON::Class::Utils;
 
+also does JSON::Class::HOW::Jsonish;
 also does JSON::Class::HOW::AttributeContainer;
+also does JSON::Class::HOW::RoleContainer;
 also does JSON::Class::HOW::Configurable;
 also does JSON::Class::HOW::Explicit;
 also does JSON::Class::HOW::Imply;
 also does JSON::Class::HOW::SelfConfigure;
 
-has $!json-roles;
 has $!json-composed;
 
 method compose_attributes(Mu \obj, |) {
@@ -33,13 +36,11 @@ method compose_attributes(Mu \obj, |) {
     if self.is_composed(obj) {
         $!json-composed := True;
 
-        with $!json-roles {
-            # Move attribute descriptors from roles to class local registry and re-bind them to class' attribute instances.
-            for $!json-roles.List -> Mu \jsony-role {
-                for jsony-role.^json-attrs.values -> JSON::Class::Attr:D $json-attr {
-                    my Attribute:D $my-attr := self.get_attribute_for_usage(obj, $json-attr.name);
-                    self.json-attr-register(obj, $json-attr.clone(:attr($my-attr)));
-                }
+        # Move attribute descriptors from roles to class local registry and re-bind them to class' attribute instances.
+        for self.json-roles(obj) -> Mu \jsony-role {
+            for jsony-role.^json-attrs.values -> JSON::Class::Attr:D $json-attr {
+                my Attribute:D $my-attr := self.get_attribute_for_usage(obj, $json-attr.name);
+                self.json-attr-register(obj, $json-attr.clone(:attr($my-attr)));
             }
         }
 
@@ -55,10 +56,6 @@ method compose_attributes(Mu \obj, |) {
     }
 
     nextsame();
-}
-
-method json-register-role(Mu \obj, Mu \typeobj) {
-    ($!json-roles // ($!json-roles := Array[Mu].new)).push: typeobj;
 }
 
 method json-incorporate-attributes(Mu \obj --> Nil) {
@@ -77,3 +74,5 @@ method json-incorporate-attributes(Mu \obj --> Nil) {
 
 # For classes jsonified by JSON::Class::Config this method will return the original class.
 method json-FROM(Mu \obj) is raw { obj.WHAT }
+
+method json-kind { 'class' }

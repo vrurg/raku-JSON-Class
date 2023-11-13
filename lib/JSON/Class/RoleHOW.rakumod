@@ -5,12 +5,14 @@ use AttrX::Mooish::Helper;
 
 use JSON::Class::Attr;
 use JSON::Class::HOW::Explicit;
+use JSON::Class::HOW::Jsonish;
 use JSON::Class::HOW::Imply;
 use JSON::Class::HOW::Configurable;
 use JSON::Class::HOW::AttributeContainer;
 use JSON::Class::HOW::SelfConfigure;
 use JSON::Class::Config;
 
+also does JSON::Class::HOW::Jsonish;
 also does JSON::Class::HOW::AttributeContainer;
 also does JSON::Class::HOW::Configurable;
 also does JSON::Class::HOW::Explicit;
@@ -39,3 +41,5 @@ method specialize(Mu \obj, Mu \target-class, |) is raw {
     }
     nextsame
 }
+
+method json-kind { 'role' }

@@ -3,6 +3,12 @@
 
 C<JSON::Class::SequenceHOW> – meta for JSON sequences
 
+=head1 CONSUMES
+
+=item L<C<JSON::Class::HOW::Configurable>|rakudoc:JSON::Class::HOW::Configurable>
+=item L<C<JSON::Class::HOW::Laziness>|rakudoc:JSON::Class::HOW::Laziness>
+=item L<C<JSON::Class::HOW::Sequential>|rakudoc:JSON::Class::HOW::Sequential>
+
 =head1 METHODS
 
 =begin item

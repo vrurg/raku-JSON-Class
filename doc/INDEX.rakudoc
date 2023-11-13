@@ -12,8 +12,13 @@
 =item L«C«JSON::Class::Config»|rakudoc:JSON::Class::Config»
 =item L«C«JSON::Class::Descriptor»|rakudoc:JSON::Class::Descriptor»
 =item L«C«JSON::Class::Details»|rakudoc:JSON::Class::Details»
+=item L«C«JSON::Class::Dict»|rakudoc:JSON::Class::Dict»
+=item L«C«JSON::Class::DictHOW»|rakudoc:JSON::Class::DictHOW»
+=item L«C«JSON::Class::Dictionary»|rakudoc:JSON::Class::Dictionary»
 =item L«C«JSON::Class::HOW::AttributeContainer»|rakudoc:JSON::Class::HOW::AttributeContainer»
+=item L«C«JSON::Class::HOW::Collection»|rakudoc:JSON::Class::HOW::Collection»
 =item L«C«JSON::Class::HOW::Configurable»|rakudoc:JSON::Class::HOW::Configurable»
+=item L«C«JSON::Class::HOW::Dictionary»|rakudoc:JSON::Class::HOW::Dictionary»
 =item L«C«JSON::Class::HOW::Explicit»|rakudoc:JSON::Class::HOW::Explicit»
 =item L«C«JSON::Class::HOW::Laziness»|rakudoc:JSON::Class::HOW::Laziness»
 =item L«C«JSON::Class::HOW::Sequential»|rakudoc:JSON::Class::HOW::Sequential»
