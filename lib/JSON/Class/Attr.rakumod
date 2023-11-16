@@ -1,7 +1,8 @@
 use v6.e.PREVIEW;
 unit role JSON::Class::Attr:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
 
-use AttrX::Mooish:ver<1.0.5>;
+use AttrX::Mooish;
+use AttrX::Mooish::Attribute;
 
 use JSON::Class::Attr::Jsonish;
 use JSON::Class::Descriptor;
