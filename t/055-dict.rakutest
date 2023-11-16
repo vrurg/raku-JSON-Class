@@ -2,7 +2,7 @@ use v6.e.PREVIEW;
 use Test::Async;
 use JSON::Class:auth<zef:vrurg>;
 
-plan 5;
+plan 6;
 
 subtest "Basics" => {
     plan 23;
@@ -320,6 +320,62 @@ subtest "Inheritance And Roles" => {
     is %cdict2.to-json(:sorted-keys), $expected, "serialized";
 
     cmp-deeply CDict2.from-json($expected), %cdict2, "deserialized";
+}
+
+subtest "Vivification" => {
+    plan 2;
+
+    my class JDict is json( :dictionary(Int:D) ) {}
+
+    subtest "Scalar" => {
+        plan 12;
+
+        my JDict $jdict;
+
+        nok $jdict.defined, "not defined initially";
+        lives-ok { $jdict<foo> = 42; }, "assign into a key on undefined";
+        ok $jdict.defined, "the scalar now has a definite value";
+        isa-ok $jdict, JDict, "scalar value is the dictionary";
+        is $jdict<foo>, 42, "key value";
+
+        lives-ok { $jdict = Nil; }, "reset the scalar";
+        nok $jdict.defined, "reset to undef";
+
+        throws-like
+            { $jdict<bar> = "13"; },
+            X::TypeCheck::Assignment,
+            :expected(JDict.of),
+            :got(Str),
+            "wrong value type on assignment vivifies and then throws on assignment";
+
+        ok $jdict.defined, "thrown assignment still leaves the scalar vivified";
+
+        $jdict = Nil;
+        $jdict.STORE: (:K1(11), :K2(21));
+
+        ok $jdict.defined, ".STORE vivifies";
+        is $jdict.Hash, %(:K1(11), :K2(21)), ".STORE works";
+
+        $jdict = Nil;
+        throws-like
+            { $jdict.STORE: (:B(1e0),) },
+            X::TypeCheck::Assignment,
+            :expected(JDict.of),
+            :got(Num),
+            "wrong value type when .STORE vivifies and then throws on assignment";
+    }
+
+    subtest "%-Attribute" => {
+        my class Rec is json {
+            has %.jdict is JDict;
+        }
+
+        my $r = Rec.from-json: q<{"jdict":{"a":1,"b":2}}>;
+        nok $r.json-has-jdict, "the attribute is initially unset";
+        cmp-deeply $r.jdict.Hash, {:a(1), :b(2)}, "deserialized";
+        ok $r.json-has-jdict, "access to the attribute vivifies it";
+    }
+
 }
 
 subtest "Errors" => {
