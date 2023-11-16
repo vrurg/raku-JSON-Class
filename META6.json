@@ -5,7 +5,7 @@
         "Vadim Belman"
     ],
     "depends": [
-        "AttrX::Mooish:auth<zef:vrurg>:ver<1.0.5>",
+        "AttrX::Mooish:auth<zef:vrurg>:ver<1.0.6>",
         "JSON::Fast:ver<0.19>:auth<cpan:TIMOTIMO>"
     ],
     "description": "JSON de-/serialization for classes and roles",
@@ -19,17 +19,16 @@
         "JSON::Class::Attr::Jsonish": "lib/JSON/Class/Attr/Jsonish.rakumod",
         "JSON::Class::Attr::Positional": "lib/JSON/Class/Attr/Positional.rakumod",
         "JSON::Class::Attr::Scalar": "lib/JSON/Class/Attr/Scalar.rakumod",
-        "JSON::Class::CX": "lib/JSON/Class/CX.rakumod",
         "JSON::Class::ClassHOW": "lib/JSON/Class/ClassHOW.rakumod",
         "JSON::Class::Collection": "lib/JSON/Class/Collection.rakumod",
         "JSON::Class::Common": "lib/JSON/Class/Common.rakumod",
         "JSON::Class::Config": "lib/JSON/Class/Config.rakumod",
+        "JSON::Class::CX": "lib/JSON/Class/CX.rakumod",
         "JSON::Class::Descriptor": "lib/JSON/Class/Descriptor.rakumod",
         "JSON::Class::Dict": "lib/JSON/Class/Dict.rakumod",
         "JSON::Class::DictHOW": "lib/JSON/Class/DictHOW.rakumod",
         "JSON::Class::Dictionary": "lib/JSON/Class/Dictionary.rakumod",
         "JSON::Class::HOW::AttributeContainer": "lib/JSON/Class/HOW/AttributeContainer.rakumod",
-        "JSON::Class::HOW::RoleContainer": "lib/JSON/Class/HOW/RoleContainer.rakumod",
         "JSON::Class::HOW::Collection": "lib/JSON/Class/HOW/Collection.rakumod",
         "JSON::Class::HOW::Collection::Class": "lib/JSON/Class/HOW/Collection/Class.rakumod",
         "JSON::Class::HOW::Collection::DefParser": "lib/JSON/Class/HOW/Collection/DefParser.rakumod",
@@ -39,9 +38,10 @@
         "JSON::Class::HOW::DictionaryRole": "lib/JSON/Class/HOW/DictionaryRole.rakumod",
         "JSON::Class::HOW::Explicit": "lib/JSON/Class/HOW/Explicit.rakumod",
         "JSON::Class::HOW::Imply": "lib/JSON/Class/HOW/Imply.rakumod",
-        "JSON::Class::HOW::Jsonish": "lib/JSON/Class/HOW/Jsonish.rakumod",
         "JSON::Class::HOW::JSONified": "lib/JSON/Class/HOW/JSONified.rakumod",
+        "JSON::Class::HOW::Jsonish": "lib/JSON/Class/HOW/Jsonish.rakumod",
         "JSON::Class::HOW::Laziness": "lib/JSON/Class/HOW/Laziness.rakumod",
+        "JSON::Class::HOW::RoleContainer": "lib/JSON/Class/HOW/RoleContainer.rakumod",
         "JSON::Class::HOW::SelfConfigure": "lib/JSON/Class/HOW/SelfConfigure.rakumod",
         "JSON::Class::HOW::Sequential": "lib/JSON/Class/HOW/Sequential.rakumod",
         "JSON::Class::HOW::SequentialRole": "lib/JSON/Class/HOW/SequentialRole.rakumod",
@@ -70,7 +70,7 @@
         "JSON"
     ],
     "test-depends": [
-        "Test::Async"
+        "Test::Async:auth<zef:vrurg>:ver<0.1.16>"
     ],
     "version": "0.0.3"
 }

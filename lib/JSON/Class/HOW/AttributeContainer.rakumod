@@ -3,7 +3,7 @@ unit role JSON::Class::HOW::AttributeContainer:ver($?DISTRIBUTION.meta<ver>):aut
 
 # use experimental :will-complain;
 
-use AttrX::Mooish;
+use AttrX::Mooish:ver<1.0.6>;
 
 use JSON::Class::Attr;
 use JSON::Class::Attr::Associative;

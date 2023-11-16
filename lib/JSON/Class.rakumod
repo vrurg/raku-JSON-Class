@@ -1,7 +1,7 @@
 use v6.e.PREVIEW;
 unit module JSON::Class:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
 
-use AttrX::Mooish:ver<1.0.5>;
+use AttrX::Mooish:ver<1.0.6>;
 use JSON::Fast;
 
 use JSON::Class::ClassHOW;
