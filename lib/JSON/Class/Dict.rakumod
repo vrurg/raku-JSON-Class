@@ -1,6 +1,7 @@
 use v6.e.PREVIEW;
 unit class JSON::Class::Dict:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
 
+use nqp;
 use JSON::Class::Collection;
 use JSON::Class::Common;
 use JSON::Class::Config;
@@ -78,7 +79,11 @@ method !STORE-FROM-ITERATOR(Iterator \iter) is hidden-from-backtrace {
     self
 }
 
-proto method STORE(::?CLASS:D: |) {*}
+proto method STORE(|) {*}
+multi method STORE(::?CLASS:U \SELF: |c) {
+    my \newdict = self!json-vivify-self(SELF);
+    newdict.STORE(|c)
+}
 multi method STORE(::?CLASS:D: ::?CLASS:D $from) is hidden-from-backtrace {
     self.CLEAR;
     self!STORE-FROM-ITERATOR($from.iterator)
@@ -323,7 +328,9 @@ method json-append-or-push(::?CLASS:D: Iterable:D \values, Bool :$push) is raw {
 }
 
 method !json-vivify-self(Mu \SELF) {
-    SELF = ::?CLASS.new
+    nqp::iscont(SELF)
+        ?? (SELF = SELF.WHAT.new)
+        !! SELF.WHAT.new
 }
 
 proto method AT-KEY(|) {*}
