@@ -17,6 +17,7 @@ has $!json-unused;
 
 # For lazies this is a hash with unclaimed yet keys.
 has $!json-lazies;
+has $!json-lazies-lock = Lock.new;
 
 submethod TWEAK( Associative :$!json-unused, Associative :$!json-lazies ) {}
 
@@ -27,16 +28,22 @@ method clone(*%twiddles) {
         if $attr ~~ AttrX::Mooish::Attribute && $attr.is-set(self) {
             %profile{$attr.base-name} := $attr.get_value(self);
         }
-        %profile<json-lazies> := $!json-lazies.clone;
+        %profile<json-lazies> := self.json-lazies; # The method returns a clone and is thread-safe
         callwith(|%profile, |%twiddles)
     }
 }
 
 method json-unused(::?CLASS:D:) { $!json-unused }
-method json-lazies(::?CLASS:D:) { $!json-lazies }
+method json-lazies(::?CLASS:D:) {
+    $!json-lazies-lock.protect: {
+        $!json-lazies.clone
+    }
+}
 
 method json-all-set(::?CLASS:D:) {
-    ! $!json-lazies
+    $!json-lazies-lock.protect: {
+        ! $!json-lazies
+    }
 }
 
 proto method json-serialize-attr(::?CLASS:D: JSON::Class::Attr:D, Mu, |) {*}
@@ -85,16 +92,18 @@ method json-serialize(::?CLASS:D: JSON::Class::Config :$config is copy) is raw {
 }
 
 method !json-lazy(JSON::Class::Attr:D $json-attr) is raw {
-    ($!json-lazies
-        andthen (.EXISTS-KEY(my $key = $json-attr.name)
-                    ?? .DELETE-KEY($key)
-                    !! Nil)) // Nil
+    $!json-lazies-lock.protect: {
+        ($!json-lazies
+            andthen (.EXISTS-KEY(my $key = $json-attr.name)
+                        ?? .DELETE-KEY($key)
+                        !! Nil)) // Nil
+    }
 }
 
 method json-build-attr(::?CLASS:D: Str:D :$attribute! --> Mu) is raw {
     self.json-lazy-deserialize-context:
         { self.json-deserialize-attr(self.json-class.^json-get-attr($attribute)) },
-        finalize => { $!json-lazies := Nil; }
+        finalize => { $!json-lazies-lock.protect: { $!json-lazies := Nil; } }
 }
 
 proto method json-deserialize-attr(|) {*}
