@@ -2,10 +2,12 @@ use v6.e.PREVIEW;
 unit class JSON::Class::Attr::Positional:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
 
 use JSON::Class::Attr;
+use JSON::Class::Attr::Collection;
 use JSON::Class::Internals;
 use JSON::Class::Types;
 
 also does JSON::Class::Attr;
+also does JSON::Class::Attr::Collection;
 
 method build-value-type { $!attr.type.of }
 

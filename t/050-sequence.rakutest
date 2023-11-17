@@ -2,7 +2,7 @@ use v6.e.PREVIEW;
 use Test::Async;
 use JSON::Class:auth<zef:vrurg>;
 
-plan 8;
+plan 9;
 
 subtest "Basics" => {
     plan 21;
@@ -44,6 +44,33 @@ subtest "Basics" => {
         { $sseq[$sseq.elems] = Nil; },
         X::TypeCheck::Assignment,
         "assigning a Nil throws because the default is an undefined";
+}
+
+subtest "Deep Struct" => {
+    plan 2;
+
+    my class Rec is json(:implicit) {
+        has Int:D $.id is required;
+        has Str:D $.file is required;
+    }
+
+    my class RecSeq is json( :sequence(Rec:D) ) {}
+
+    my class Ledger is json(:implicit) {
+        has Version:D() $.ver is required;
+        has @.records is RecSeq;
+    }
+
+    my $ld = Ledger.new(:ver<0.1.2>);
+    $ld.records.push:
+        Rec.new(id => 10, file => "d/e/f.jpg"),
+        Rec.new(id => 11, file => "sample.raku");
+
+    my $expected = q<{"records":[{"file":"d/e/f.jpg","id":10},{"file":"sample.raku","id":11}],"ver":"0.1.2"}>;
+    is $ld.to-json(:!pretty, :sorted-keys), $expected, "serialized";
+
+    my $deserialized = Ledger.from-json($expected);
+    cmp-deeply $deserialized, $ld, "deserialized";
 }
 
 subtest "Multitype" => {

@@ -4,11 +4,13 @@ unit class JSON::Class::Attr::Associative:ver($?DISTRIBUTION.meta<ver>):auth($?D
 use AttrX::Mooish;
 
 use JSON::Class::Attr;
+use JSON::Class::Attr::Collection;
 use JSON::Class::Internals;
 use JSON::Class::Types;
 use JSON::Class::Utils;
 
 also does JSON::Class::Attr;
+also does JSON::Class::Attr::Collection;
 
 has Mu $.key-type is mooish(:lazy);
 has Mu $.nominal-keytype is mooish(:lazy);

@@ -1,7 +1,6 @@
 use v6.e.PREVIEW;
 unit class JSON::Class::Dict:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
 
-use nqp;
 use JSON::Class::Collection;
 use JSON::Class::Common;
 use JSON::Class::Config;
@@ -50,7 +49,10 @@ submethod TWEAK(:%json-raw) {
 method !STORE-FROM-ITERATOR(Iterator \iter) is hidden-from-backtrace {
     my Mu $last := NOT-SET;
 
+    my $found = 0;
+
     until (my Mu $item := iter.pull-one) =:= IterationEnd {
+        ++$found;
 
         my proto sub add-item(|) {*}
         multi sub add-item(Pair:D $ (Mu :$key is raw, Mu :$value is raw)) is hidden-from-backtrace {
@@ -73,7 +75,7 @@ method !STORE-FROM-ITERATOR(Iterator \iter) is hidden-from-backtrace {
     }
 
     unless $last =:= NOT-SET {
-        X::Hash::Store::OddNumber.new( :found(2 * self.elems + 1), :$last ).throw
+        X::Hash::Store::OddNumber.new(:$found, :$last).throw
     }
 
     self
@@ -81,8 +83,7 @@ method !STORE-FROM-ITERATOR(Iterator \iter) is hidden-from-backtrace {
 
 proto method STORE(|) {*}
 multi method STORE(::?CLASS:U \SELF: |c) {
-    my \newdict = self!json-vivify-self(SELF);
-    newdict.STORE(|c)
+    self!json-vivify-self(SELF).STORE(|c)
 }
 multi method STORE(::?CLASS:D: ::?CLASS:D $from) is hidden-from-backtrace {
     self.CLEAR;
@@ -325,12 +326,6 @@ method json-append-or-push(::?CLASS:D: Iterable:D \values, Bool :$push) is raw {
     }
 
     self
-}
-
-method !json-vivify-self(Mu \SELF) {
-    nqp::iscont(SELF)
-        ?? (SELF = SELF.WHAT.new)
-        !! SELF.WHAT.new
 }
 
 proto method AT-KEY(|) {*}

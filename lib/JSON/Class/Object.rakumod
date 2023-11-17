@@ -108,11 +108,14 @@ multi method json-deserialize-attr(JSON::Class::Attr::Positional:D $json-attr, M
     self.json-try-deserializer:
         'attribute', $json-attr, value,
         {
-            value.List.map(-> \item {
-                self.json-try-deserializer:
-                    'value', $json-attr, item,
-                    { self.json-deserialize-value($json-attr.value-type, item, :$config) }
-            })
+            $json-attr.jsonish
+                ?? self.json-deserialize-value($json-attr.type, value)
+                !! value.List.map(
+                    -> \item {
+                        self.json-try-deserializer:
+                            'value', $json-attr, item,
+                            { self.json-deserialize-value($json-attr.value-type, item, :$config) }
+                    })
         }
 }
 
@@ -125,12 +128,15 @@ multi method json-deserialize-attr(JSON::Class::Attr::Associative:D $json-attr, 
     self.json-try-deserializer:
         'attribute', $json-attr, value,
         {
-            value.pairs.map(-> (:$key is raw, :$value is raw) {
-                self.json-try-deserializer('key', $json-attr, $key, { $key }) =>
-                    self.json-try-deserializer(
-                        'value', $json-attr, $value,
-                        { self.json-deserialize-value($json-attr.value-type, $value, :$config) } )
-            })
+            $json-attr.jsonish
+                ?? self.json-deserialize-value($json-attr.type, value)
+                !! value.pairs.map(
+                    -> (:$key is raw, :$value is raw) {
+                        self.json-try-deserializer('key', $json-attr, $key, { $key }) =>
+                            self.json-try-deserializer(
+                                'value', $json-attr, $value,
+                                { self.json-deserialize-value($json-attr.value-type, $value, :$config) } )
+                    })
         }
 }
 

@@ -2,7 +2,7 @@ use v6.e.PREVIEW;
 use Test::Async;
 use JSON::Class:auth<zef:vrurg>;
 
-plan 6;
+plan 7;
 
 subtest "Basics" => {
     plan 23;
@@ -63,8 +63,9 @@ subtest "Basics" => {
 
     # Older versions of Rakudo return hash .of upon deleting non-existing keys for parameterized hashes, not their `is
     # default`. We just make sure here that JSON::Dict follows the current semantics.
-    my $std-hash := Hash.^parameterize($deserialized.of, $deserialized.keyof).new;
-    is-deeply $deserialized<baz foo pi>:delete, ($std-hash<foo>:delete xx 3).List,
+    my Int:D %std{Str:D} is default(42);
+    my $expected-default := %std<foo>:delete ~~ 42 ?? JDict.^json-item-default !! JDict.of;
+    is-deeply $deserialized<baz foo pi>:delete, ($expected-default xx 3).List,
               "deleting pending items returns dictionary default value";
 
     ok $deserialized.json-all-set, "deleting all pending items makes the dictionary complete";
@@ -89,6 +90,32 @@ subtest "Basics" => {
     isa-ok %jdict, JDict, "JSON dictionary can be used as a %-sigil type";
     %jdict = $jdict;
     cmp-deeply %jdict, $jdict.Hash, "assigning from another JSON dictionary";
+}
+
+subtest "Deep Struct" => {
+    plan 2;
+    my class Rec is json(:implicit) {
+        has Int:D $.id is required;
+        has Str:D $.file is required;
+    }
+
+    my class RecDict is json( :dict(Rec:D) ) {}
+
+    my class State is json(:implicit) {
+        has Version:D() $.ver is required;
+        has %.records is RecDict;
+    }
+
+    my $st = State.new(:ver<0.1.2>);
+    $st.records =
+        "r1" => Rec.new(id => 1, file => "a/b/c.pdf"),
+        "r2" => Rec.new(id => 2, file => "X/Y/Z.txt");
+
+    my $expected = q<{"records":{"r1":{"file":"a/b/c.pdf","id":1},"r2":{"file":"X/Y/Z.txt","id":2}},"ver":"0.1.2"}>;
+    is $st.to-json(:!pretty, :sorted-keys), $expected, "serialized";
+
+    my $deserialized = State.from-json($expected);
+    cmp-deeply $deserialized, $st, "deserialized";
 }
 
 subtest "Non-basic Values" => {

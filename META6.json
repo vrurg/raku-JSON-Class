@@ -16,6 +16,7 @@
         "JSON::Class": "lib/JSON/Class.rakumod",
         "JSON::Class::Attr": "lib/JSON/Class/Attr.rakumod",
         "JSON::Class::Attr::Associative": "lib/JSON/Class/Attr/Associative.rakumod",
+        "JSON::Class::Attr::Collection": "lib/JSON/Class/Attr/Collection.rakumod",
         "JSON::Class::Attr::Jsonish": "lib/JSON/Class/Attr/Jsonish.rakumod",
         "JSON::Class::Attr::Positional": "lib/JSON/Class/Attr/Positional.rakumod",
         "JSON::Class::Attr::Scalar": "lib/JSON/Class/Attr/Scalar.rakumod",

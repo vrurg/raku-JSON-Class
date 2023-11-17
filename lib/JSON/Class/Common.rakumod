@@ -167,7 +167,7 @@ multi method json-deserialize-value( Mu \dest-type,
         }).eager
     }
 
-    multi sub j2v(Associative \final-type, Associative:D \value) is raw {
+    multi sub j2v(Associative \final-type, \value) is raw {
         my Mu \of-type = $config.type-from(final-type.of);
         my Mu \keyof-type = $config.type-from(final-type.keyof);
         value.map({ j2v(keyof-type, .key) => j2v(of-type, .value) }).eager

@@ -1,6 +1,7 @@
 use v6.e.PREVIEW;
 unit role JSON::Class::Collection:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
 
+use nqp;
 use JSON::Class::ItemDescriptor;
 use JSON::Class::X;
 
@@ -63,4 +64,10 @@ multi method json-guess-descriptor(::?CLASS:D: Mu :$item-value! is raw --> JSON:
     }
 
     @desc.head
+}
+
+method !json-vivify-self(Mu \SELF) {
+    nqp::iscont(SELF)
+        ?? (SELF = SELF.WHAT.new)
+        !! SELF.WHAT.new
 }

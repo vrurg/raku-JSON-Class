@@ -34,6 +34,30 @@ submethod TWEAK(:@json-raw) {
     $!json-unused-count = $!json-raw.elems;
 }
 
+method !STORE-FROM-ITERATOR(Iterator \iter) is hidden-from-backtrace {
+    until (my Mu $item := iter.pull-one) =:= IterationEnd {
+        self.push: $item
+    }
+    self
+}
+
+proto method STORE(|) {*}
+multi method STORE(::?CLASS:U \SELF: |c) {
+    self!json-vivify-self(SELF).STORE(|c)
+}
+multi method STORE(::?CLASS:D: ::?CLASS:D $from) is hidden-from-backtrace {
+    self.CLEAR;
+    self!STORE-FROM-ITERATOR($from.iterator)
+}
+multi method STORE(::?CLASS:D: Iterable:D \values) is hidden-from-backtrace {
+    self.CLEAR;
+    self!STORE-FROM-ITERATOR(values.iterator)
+}
+multi method STORE(::?CLASS:D: *@values) is hidden-from-backtrace {
+    self.CLEAR;
+    self!STORE-FROM-ITERATOR(@values.iterator);
+}
+
 multi method json-guess-descriptor(:$json-value! is raw, Int:D :$idx --> JSON::Class::ItemDescriptor:D) is raw {
     my @cands;
     my @descr-for-guess;
@@ -154,6 +178,14 @@ multi method HAS-POS(::?CLASS:D: Iterable:D \positions, Bool:D :$has = True) {
 multi method DELETE-POS(::?CLASS:D: Int:D $pos) is raw {
     self!json-delete-pos-raw($pos);
     @!json-items.DELETE-POS($pos)
+}
+
+proto method CLEAR() {*}
+multi method CLEAR(::?CLASS:U: --> Nil) {}
+multi method CLEAR(::?CLASS:D: --> Nil) {
+    $!json-raw := Empty;
+    $!json-unused-count = 0;
+    @!json-items := self.json-new-seq-array;
 }
 
 method elems(::?CLASS:D:) { $!json-raw.elems max @!json-items.elems }
