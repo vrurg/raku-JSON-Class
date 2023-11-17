@@ -3,6 +3,11 @@
 =head1 CHANGELOG
 
 =begin item
+B<v0.0.4>
+
+=end item
+
+=begin item
 B<v0.0.3>
 
 =item Implemented L<C<JSON::Class::Dict>|rakudoc:JSON::Class::Dict>

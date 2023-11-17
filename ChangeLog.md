@@ -1,5 +1,7 @@
 # CHANGELOG
 
+  - **v0.0.4**
+
   - **v0.0.3**
     
       - Implemented [`JSON::Class::Dict`](docs/md/JSON/Class/Dict.md)
