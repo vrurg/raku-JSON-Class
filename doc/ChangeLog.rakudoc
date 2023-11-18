@@ -5,6 +5,7 @@
 =begin item
 B<v0.0.4>
 
+=item Fix incorrect C<.elems> on a fully deserialized dictionary
 =end item
 
 =begin item

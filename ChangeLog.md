@@ -1,6 +1,8 @@
 # CHANGELOG
 
   - **v0.0.4**
+    
+      - Fix incorrect `.elems` on a fully deserialized dictionary
 
   - **v0.0.3**
     
