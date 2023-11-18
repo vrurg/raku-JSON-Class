@@ -24,6 +24,17 @@ has $!json-items;
 # to obtain info/value from the Dict are tend to be ignored.
 has $!json-keys;
 
+my class EmptyRaw is Nil {
+    method new { self.WHAT }
+    method Bool { False }
+    method EXISTS-KEY(| --> False) {}
+    method keys(--> Empty) {}
+    method elems(--> 0) {}
+    method FALLBACK($name, |c) {
+        die "Method '$name' is not allowed for empty raw storage"
+    }
+}
+
 multi method new(*%profile) { self.bless(|%profile) }
 multi method new(::?CLASS:D $from, *%profile) {
     self.bless(|%profile)!STORE-FROM-ITERATOR($from.iterator)
@@ -99,7 +110,7 @@ multi method STORE(::?CLASS:D: *@values) is hidden-from-backtrace {
 }
 
 method json-all-set {
-    !($!json-raw andthen .elems)
+    !$!json-raw.elems
 }
 
 multi method json-guess-descriptor(:$json-value! is raw, Mu :$key --> JSON::Class::ItemDescriptor:D) is raw {
@@ -215,7 +226,7 @@ method !json-delete-key-raw(::?CLASS:D: Str:D $json-key --> Mu) is raw {
     my $rc := Nil;
     with $!json-raw {
         $rc := .DELETE-KEY($json-key);
-        $!json-raw := Nil unless $!json-raw.elems;
+        $!json-raw := EmptyRaw unless $!json-raw.elems;
     }
     $rc
 }
@@ -259,7 +270,7 @@ method json-delete-key(::?CLASS:D: Str:D $json-key --> Mu) is raw {
 }
 
 method json-exists-key(::?CLASS:D: Str:D $json-key --> Mu) is raw {
-    ($!json-raw andthen .EXISTS-KEY($json-key)) || $!json-items.EXISTS-KEY($json-key)
+    $!json-raw.EXISTS-KEY($json-key) || $!json-items.EXISTS-KEY($json-key)
 }
 
 method json-has-key(::?CLASS:D: Str:D $json-key --> Bool:D) is raw {
@@ -368,7 +379,7 @@ multi method DELETE-KEY(::?CLASS:D: \key is raw --> Mu) {
 proto method CLEAR() {*}
 multi method CLEAR(::?CLASS:U: --> Nil) {}
 multi method CLEAR(::?CLASS:D: --> Nil) {
-    $!json-raw := Nil;
+    $!json-raw := EmptyRaw;
     .STORE(Empty) with $!json-keys;
     $!json-items := self.json-new-dict-hash;
 }
@@ -384,7 +395,7 @@ multi method end(::?CLASS:D:) {
 
 my class DictIter does Iterator {
     has $!items-iter is built;
-    has $!raw is built;
+    has Mu $!raw is built;
     has $!dict is built;
 
     submethod TWEAK(:$items is raw) {
@@ -417,7 +428,7 @@ my class DictIter-Keys does Iterator {
     has $!raw-iter;
     has $!dict is built is required;
 
-    submethod TWEAK(:$items, :$raw) {
+    submethod TWEAK(:$items, Mu :$raw) {
         $!items-iter := $items.keys.iterator;
         $!raw-iter := $raw.keys.iterator;
     }
@@ -443,7 +454,7 @@ my class DictIter-Keys does Iterator {
 
 my class DictIter-Values does Iterator {
     has $!items-iter;
-    has $!raw is built is required;
+    has Mu $!raw is built is required;
     has $!dict is built is required;
 
     submethod TWEAK(:$items) {
@@ -473,7 +484,7 @@ my class DictIter-Values does Iterator {
 
 my class DictIter-KV does Iterator {
     has $!items-iter;
-    has $!raw is built;
+    has Mu $!raw is built;
     has $!dict is built;
     has $!last-pair;
     has $!is-key;
@@ -506,7 +517,7 @@ my class DictIter-KV does Iterator {
                     $!last-pair := $!dict.json-at-key( .keys.head, :p );
                 }
                 else {
-                    $!raw := Nil;
+                    $!raw := EmptyRaw;
                 }
             }
         }

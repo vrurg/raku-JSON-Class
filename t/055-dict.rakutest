@@ -5,7 +5,7 @@ use JSON::Class:auth<zef:vrurg>;
 plan 7;
 
 subtest "Basics" => {
-    plan 23;
+    plan 25;
 
     my class JDict is json( :dictionary( default => Num, Num(Rat), Str:D ) ) {}
 
@@ -34,8 +34,11 @@ subtest "Basics" => {
 
     my $deserialized = JDict.from-json($expected);
 
+    is $deserialized.elems, 6, "element count before full deserialization";
     cmp-deeply $deserialized, $jdict, "deserialized into indentical object";
     ok $deserialized.json-all-set, "iterating over all keys fully deserialzies";
+    # Address a bug where resetting $!json-raw to Nil results in it counted as an extra element.
+    is $deserialized.elems, 6, "element count after full deserialization";
 
     $deserialized = JDict.from-json($expected);
 
