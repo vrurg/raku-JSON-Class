@@ -58,6 +58,16 @@ B<C<method json-has-key(Mu, Str:D $json-key, Bool :$local = True)>>
 Tell if we have a descriptor for the give JSON key.
 =end item
 
+=begin item
+B<C<method jsonify-attribute(Mu $type, Attribute:D $attribute, *%adverbs)>>
+
+This method adds C<$attribute> to the pool of marshallable attributes of the C<$type>. This is done by creating an
+appropriate descriptor and, if necessary, by turning the C<$attribute> into a lazy one using
+L<C<AttrX::Mooish>|rakudoc:AttrX::Mooish> module.
+
+The set and types of allowed C<%adverbs> is the same as for C<is json> trait for attributes.
+=end item
+
 =head1 SEE ALSO
 
 =item L<C<JSON::Class>|rakudoc:JSON::Class>

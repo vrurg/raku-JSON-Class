@@ -36,6 +36,12 @@
     
     Tell if we have a descriptor for the give JSON key.
 
+  - **`method jsonify-attribute(Mu $type, Attribute:D $attribute, *%adverbs)`**
+    
+    This method adds `$attribute` to the pool of marshallable attributes of the `$type`. This is done by creating an appropriate descriptor and, if necessary, by turning the `$attribute` into a lazy one using [`AttrX::Mooish`](https://raku.land/?q=AttrX::Mooish) module.
+    
+    The set and types of allowed `%adverbs` is the same as for `is json` trait for attributes.
+
 # SEE ALSO
 
   - [`JSON::Class`](../../Class.md)
