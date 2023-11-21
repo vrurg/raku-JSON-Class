@@ -104,7 +104,7 @@ class ReMooify does Base does Typed {
     has Attribute:D $.attr is required;
     method message {
         "Don't use lazy mode with attribute "
-            ~ $!attr.name ~ " of " ~ $.type.^name
+            ~ $!attr.name ~ " of " ~ $!type.^name
             ~ " to which 'is mooish' trait is already applied"
     }
 }
