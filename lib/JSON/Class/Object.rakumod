@@ -100,9 +100,34 @@ method !json-lazy(JSON::Class::Attr:D $json-attr) is raw {
     }
 }
 
+method !json-has-lazy(JSON::Class::Attr:D $json-attr) is raw {
+    $!json-lazies-lock.protect: {
+        ? ($!json-lazies andthen .EXISTS-KEY(my $key = $json-attr.name))
+    }
+}
+
+method !json-use-builder(JSON::Class::Attr:D $descr --> Mu) is raw {
+    $descr.build
+        andthen (do {
+            when Str:D {
+                return self."$_"($descr)
+            }
+            when Code:D {
+                return $_.($descr)
+            }
+        })
+        orelse ($descr ~~ JSON::Class::Attr::Scalar ?? Nil !! Empty)
+}
+
 method json-build-attr(::?CLASS:D: Str:D :$attribute! --> Mu) is raw {
     self.json-lazy-deserialize-context:
-        { self.json-deserialize-attr(self.json-class.^json-get-attr($attribute)) },
+        {
+            given self.json-class.^json-get-attr($attribute) {
+                self!json-has-lazy($_)
+                    ?? self.json-deserialize-attr($_)
+                    !! self!json-use-builder($_)
+            }
+        },
         finalize => { $!json-lazies-lock.protect: { $!json-lazies := Nil; } }
 }
 

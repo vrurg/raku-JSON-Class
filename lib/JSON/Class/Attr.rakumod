@@ -23,6 +23,7 @@ has Bool $!skip-null is built(:bind);
 has Str:D $.json-name is mooish(:lazy);
 
 has Bool $.lazy is mooish(:lazy);
+has JSONHelper $.build; # Either method name or a Code object
 
 has Mu $.value-type is mooish(:lazy, :no-init);
 has Mu $.nominal-type is mooish(:lazy, :no-init);

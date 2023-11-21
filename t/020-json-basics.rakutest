@@ -2,9 +2,10 @@ use v6.e.PREVIEW;
 use Test::Async;
 use JSON::Class:auth<zef:vrurg>;
 use JSON::Class::Config:auth<zef:vrurg>;
+use JSON::Class::Attr:auth<zef:vrurg>;
 use JSON::Fast;
 
-plan 9;
+plan 10;
 
 subtest "Plain Types" => {
     plan 6;
@@ -315,6 +316,63 @@ subtest "Attribute Aliasing" => {
     }
 
     cmp-deeply Foo.new(foo-attr => "OK!"), Foo.new(:attr("OK!")), "attribute name aliasing is supported";
+}
+
+subtest "Lazy build" => -> $subtest {
+    plan 20;
+
+    my class LazyRec is json(:!skip-null, :lazy) {
+        has $.attr1 is json(:build);
+        has $.attr2 is json(:build<build-attr1>);
+        has $.attr3 is json(:build(-> \descr { $subtest.pass: "code object invoked"; 42.666 }));
+        has @.vals is json(:build);
+        has %.maps is json(:build);
+        # Make sure attributes without builders doesn't cause us any trouble
+        has $.attr;
+        has @.pos;
+        has %.assoc;
+        has $.skipped-but-lazy is json(:skip, :build(-> $ { -13 }));
+
+        method build-attr1(JSON::Class::Attr:D $json-attr) {
+            $subtest.pass: "method invoked for " ~ $json-attr.name;
+            "for " ~ $json-attr.name
+        }
+
+        method build-vals($) {
+            ("a", 10, "z", -1, -12)
+        }
+
+        method build-maps($) {
+            :k1(pi), :k2(e), :k3("something")
+        }
+
+        method build-sbl {
+            -666
+        }
+    }
+
+    my $lr = LazyRec.new;
+    nok $lr.json-has-attr1, "attribute unset until accessed";
+    is $lr.attr1, q<for $!attr1>, ":build";
+    ok $lr.json-has-attr1, "attribute is set when read from";
+    is $lr.attr2, q<for $!attr2>, ":build<method-name>";
+    is $lr.attr3, 42.666, ":build(\&code)";
+    cmp-deeply $lr.vals, ("a", 10, "z", -1, -12), "positional attribute is built";
+    cmp-deeply $lr.maps, %( :k1(pi), :k2(e), :k3("something") ), "associative attribute is built";
+    nok $lr.attr.defined, "no builder - no value";
+
+    is $lr.skipped-but-lazy, -13, "an attribute can be skipped but lazily built";
+
+    $lr = LazyRec.new;
+
+    my $expected = q<{"assoc":{},"attr":null,"attr1":"for $!attr1","attr2":"for $!attr2","attr3":42.666,"maps":{"k1":3.141592653589793e0,"k2":2.718281828459045e0,"k3":"something"},"pos":[],"vals":["a",10,"z",-1,-12]}>;
+    # Along the lines this test also makes sure that `is json(:build)` doesn't force the parent to be explicit.
+    is $lr.to-json(:!pretty, :sorted-keys), $expected, "serialized";
+
+    my $json = q<{"attr":"from JSON","attr1":"for $!attr1","attr2":"for $!attr2","attr3":42.666,"maps":{"k1":3.141592653589793e0,"k2":2.718281828459045e0,"k3":"something"},"pos":[1.2,"nonsense"],"vals":["a",10,"z",-1,-12]}>;
+    my $deserialized = LazyRec.from-json($json);
+    my $lr-expect = LazyRec.new(:attr("from JSON"), :pos(1.2, "nonsense"));
+    cmp-deeply $deserialized, $lr-expect, "deserialized";
 }
 
 done-testing;

@@ -7,7 +7,7 @@ use JSON::Fast;
 
 plan 4;
 
-subtest "Version" => -> \subtest {
+subtest "Version" => -> $subtest {
     plan 3;
     my class VFoo is json {
         has Version:D $.ver is required;
@@ -22,7 +22,7 @@ subtest "Version" => -> \subtest {
     {
         CONTROL {
             when CX::Warn {
-                subtest.like: .message, /Version .* implicit .* JSONification/, "we're warned about Version JSONification";
+                $subtest.like: .message, /Version .* implicit .* JSONification/, "we're warned about Version JSONification";
             }
         }
         JSON::Class::Config.jsonify(Version).new("12.13.14").to-json;

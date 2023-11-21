@@ -12,6 +12,7 @@ use JSON::Class::Attr::Positional;
 use JSON::Class::Attr::Scalar;
 use JSON::Class::HOW::Laziness;
 use JSON::Class::Internals;
+use JSON::Class::Types;
 use JSON::Class::Utils;
 
 also does JSON::Class::HOW::Laziness;
@@ -118,6 +119,7 @@ method jsonify-attribute( Mu \pkg,
                                   Bool :skip-null($),
                                   Str :name($),
                                   Bool :lazy($),
+                                  JSONBuilHelper :$build,
                                   :alias(:$aliases),
                                   :to-json(:$serializer), # (SerializerKind $?, *% where *.values.all ~~ SerializerKind),
                                   :from-json(:$deserializer), # (SerializerKind $?, *% where *.values.all ~~ SerializerKind),
@@ -160,6 +162,16 @@ method jsonify-attribute( Mu \pkg,
     %adv<json-name> = $_ with %adv<name>:delete;
 
     my $sigil = $attr.name.substr(0,1);
+    my $base-name = $attr.name.substr(2);
+
+    if $build ~~ Bool:D {
+        if $build {
+            %adv<build> := 'build-' ~ $base-name;
+        }
+        else {
+            %adv<build>:delete;
+        }
+    }
 
     my $json-attr = ATTR-TYPES.{$sigil}.new(:$attr, :declarant(pkg), |%adv);
     self.json-attr-register: pkg, $json-attr;

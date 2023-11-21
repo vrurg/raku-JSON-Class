@@ -3,7 +3,7 @@ unit module JSON::Class::Internals:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBU
 
 use JSON::Class::Attr;
 
-sub verify-named-args(%adv?, :@unique, :%extra, Str:D :$what, Str:D :$source, Int:D :$offset = 0 --> Nil) is export {
+sub verify-named-args(%adv?, :@unique, :%extra, Str:D :$what, Str:D :$source, Int:D :$offset = 0 --> Nil) is export is hidden-from-backtrace {
     my @nogo = %adv{@unique}.grep({ .defined && .value }).map(":" ~ *.key);
     my @unexpected = %extra.keys.map(":" ~ *);
 
