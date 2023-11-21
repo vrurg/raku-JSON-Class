@@ -148,13 +148,13 @@ proto method json-deserialize-value(Mu, Mu) {*}
 
 multi method json-deserialize-value( Mu \dest-type,
                                      Mu:D \from-value,
-                                     JSON::Class::Config :$config = self.json-config
+                                     JSON::Class::Config :$config is copy,
                                      --> Mu )
     is raw
 {
     return from-value if from-value ~~ dest-type;
 
-    my proto sub j2v(|) {*}
+    my proto sub j2v(| --> Mu) {*}
 
     multi sub j2v(JSON::Class::Jsonish \final-type, \value --> Mu) is raw is default {
         final-type.json-deserialize(value, :$config)
@@ -173,19 +173,21 @@ multi method json-deserialize-value( Mu \dest-type,
         value.map({ j2v(keyof-type, .key) => j2v(of-type, .value) }).eager
     }
 
-    multi sub j2v(Enumeration \final-type, \value) is raw {
+    multi sub j2v(Enumeration \final-type, \value --> Mu) is raw {
         $config.enums-as-value ?? final-type.(value) !! final-type.WHO{value}
     }
 
     multi sub j2v(JSONBasicType, Any:D \value) is raw is default { value }
 
-    multi sub j2v(Mu \final-type, Any:D \value) is raw {
+    multi sub j2v(Mu \final-type, Any:D \value --> Mu) is raw {
         my &fallback = { $config.jsonify(final-type).json-deserialize(value, :$config) };
         with self.json-helper(final-type, 'from-json') {
             return self.json-try-deserializer($_, value)
         }
         &fallback()
     }
+
+    $config //= self.json-config;
 
     j2v( $config.type-from(dest-type), from-value )
 }
@@ -210,7 +212,7 @@ multi method json-serialize-value(Mu, JSON::Class::Jsonish:D \value, JSON::Class
     value.json-serialize(config => ($config //self.json-config))
 }
 
-multi method json-serialize-value(Enumeration, \evalue, JSON::Class::Config :$config) {
+multi method json-serialize-value(Enumeration, Enumeration:D \evalue, JSON::Class::Config :$config) {
     ($config // self.json-config).enums-as-value ?? evalue.value !! evalue.key
 }
 
