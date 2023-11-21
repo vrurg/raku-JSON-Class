@@ -22,6 +22,6 @@ subset JSONBasicType is export of Mu where {
 subset JSONScalarType is export of Cool where Numeric | Stringy | Bool;
 
 subset JSONHelper is export of Any where Str:D | Code:D | Any:U;
-subset JSONBuilHelper is export of Any where Str:D | Code:D | Bool:D | Any:U;
+subset JSONBuildHelper is export of Any where Str:D | Code:D | Bool:D | Any:U;
 
 enum JSONStages is export (JSSerialize => 'to-json', JSDeserialize => 'from-json', JSMatch => 'match');
