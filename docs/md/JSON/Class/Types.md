@@ -34,6 +34,12 @@ The last two are checked for exact match. I.e. a [`Failure`](https://docs.raku.o
 
 This subset matches only conrete string, or code, or an undefined `Any`.
 
+# had2
+
+`subset JSONBuildHelper`
+
+This subset is like `JSONHelper` but also allows [`Bool:D`](https://docs.raku.org/type/Bool) values.
+
 ## `enum JSONStages`
 
 Enumerate marshalling stages. Elements are:

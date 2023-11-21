@@ -420,6 +420,10 @@ li > .pod-block-code { margin-top: 16px; }
 <p>The last two are checked for exact match. I.e. a <a href="https://docs.raku.org/type/Failure"><code>Failure</code></a> is not a basic type.</p>
 <h2 id="subset_JSONHelper"><a class="u" href="#___top" title="go to top of document"><code>subset JSONHelper</code></a></h2>
 <p>This subset matches only conrete string, or code, or an undefined <code>Any</code>.</p>
+<section><h1>had2</h1>
+<p><code>subset JSONBuildHelper</code></p>
+</section>
+<p>This subset is like <code>JSONHelper</code> but also allows <a href="https://docs.raku.org/type/Bool"><code>Bool:D</code></a> values.</p>
 <h2 id="enum_JSONStages"><a class="u" href="#___top" title="go to top of document"><code>enum JSONStages</code></a></h2>
 <p>Enumerate marshalling stages. Elements are:</p>
 <ul><li><p><code>JSSerialize</code> =&gt; <em>'to-json'</em></p>

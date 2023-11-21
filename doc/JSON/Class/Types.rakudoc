@@ -33,6 +33,10 @@ The last two are checked for exact match. I.e. a L<C<Failure>|https://docs.raku.
 
 This subset matches only conrete string, or code, or an undefined C<Any>.
 
+=had2 C<subset JSONBuildHelper>
+
+This subset is like C<JSONHelper> but also allows L<C<Bool:D>|https://docs.raku.org/type/Bool> values.
+
 =head2 C<enum JSONStages>
 
 Enumerate marshalling stages. Elements are:

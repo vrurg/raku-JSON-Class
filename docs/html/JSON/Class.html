@@ -408,14 +408,15 @@ li > .pod-block-code { margin-top: 16px; }
 <tr class="toc-level-2"><td class="toc-number">6.1</td><td class="toc-text"><a href="#Explicit/Implicit">Explicit/Implicit</a></td></tr>
 <tr class="toc-level-2"><td class="toc-number">6.2</td><td class="toc-text"><a href="#Inheritance_And_Role">Inheritance And Role</a></td></tr>
 <tr class="toc-level-2"><td class="toc-number">6.3</td><td class="toc-text"><a href="#Incorporation">Incorporation</a></td></tr>
-<tr class="toc-level-2"><td class="toc-number">6.4</td><td class="toc-text"><a href="#Laziness">Laziness</a></td></tr>
-<tr class="toc-level-2"><td class="toc-number">6.5</td><td class="toc-text"><a href="#Config_Defaults">Config Defaults</a></td></tr>
-<tr class="toc-level-2"><td class="toc-number">6.6</td><td class="toc-text"><a href="#Sequence">Sequence</a></td></tr>
-<tr class="toc-level-2"><td class="toc-number">6.7</td><td class="toc-text"><a href="#Dictionary">Dictionary</a></td></tr>
-<tr class="toc-level-2"><td class="toc-number">6.8</td><td class="toc-text"><a href="#Array_Attributes">Array Attributes</a></td></tr>
-<tr class="toc-level-2"><td class="toc-number">6.9</td><td class="toc-text"><a href="#Using_Configuration_And_Type_Mapping">Using Configuration And Type Mapping</a></td></tr>
-<tr class="toc-level-2"><td class="toc-number">6.10</td><td class="toc-text"><a href="#Custom_Serialziers_And_Deserializers">Custom Serialziers And Deserializers</a></td></tr>
-<tr class="toc-level-2"><td class="toc-number">6.11</td><td class="toc-text"><a href="#Skipping_Custom_Marshalling">Skipping Custom Marshalling</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.4</td><td class="toc-text"><a href="#Lazy_Deserialization">Lazy Deserialization</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.5</td><td class="toc-text"><a href="#Lazy_Attribute_Build">Lazy Attribute Build</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.6</td><td class="toc-text"><a href="#Config_Defaults">Config Defaults</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.7</td><td class="toc-text"><a href="#Sequence">Sequence</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.8</td><td class="toc-text"><a href="#Dictionary">Dictionary</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.9</td><td class="toc-text"><a href="#Array_Attributes">Array Attributes</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.10</td><td class="toc-text"><a href="#Using_Configuration_And_Type_Mapping">Using Configuration And Type Mapping</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.11</td><td class="toc-text"><a href="#Custom_Serialziers_And_Deserializers">Custom Serialziers And Deserializers</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.12</td><td class="toc-text"><a href="#Skipping_Custom_Marshalling">Skipping Custom Marshalling</a></td></tr>
 <tr class="toc-level-1"><td class="toc-number">7</td><td class="toc-text"><a href="#METHODS">METHODS</a></td></tr>
 <tr class="toc-level-2"><td class="toc-number">7.1</td><td class="toc-text"><a href="#JSONified_Class">JSONified Class</a></td></tr>
 <tr class="toc-level-1"><td class="toc-number">8</td><td class="toc-text"><a href="#SEE_ALSO">SEE ALSO</a></td></tr>
@@ -579,6 +580,23 @@ Attribute : The Answer
         value =&gt; { $^from.EVAL } ));
 </pre>
 <p>See 'Custom Marshallers' in <a href="Class/Details.html"><code>JSON::Class::Details</code></a>.</p>
+</li>
+<li><p><code>Bool:D | Str:D | Code:D</code> <strong><code>:build(...)</code></strong></p>
+<p>Lazily build attribute value upon read unless it's been initialized already from other sources like a constructor argument, or a value from JSON structure. Unless you're familiar with <a href="https://raku.land/?q=AttrX::Mooish"><code>AttrX::Mooish</code></a>, then think of this adverb as a kind of <a href="https://docs.raku.org/type/Attribute#Trait_is_default"><code>is default</code></a> trait but with some specifics.</p>
+<p>Depending on adverb format different ways of building attribute's value are used:</p>
+<ul><li><p><strong><code>:build</code></strong></p>
+<p>Attribute base name is taken (i.e. with no sigil or twigil), prepended with <em>'build-'</em> prefix and the result is taken as the method name. For example, for <code>$.foo</code> the method name would be <em>"build-foo"</em>.</p>
+<p><code>:!build</code> is a <a href="https://en.wikipedia.org/wiki/NOP_(code)">NOP</a>.</p>
+</li>
+<li><p><strong><code>:build("method-name")</code></strong></p>
+<p>An explicit method name to use.</p>
+</li>
+<li><p><strong><code>:build(&amp;code)</code></strong></p>
+<p>Particular code object (routine, block, etc.).</p>
+</li>
+</ul>
+<p>Value returned by either of the above variant is used to initialize the attribute.</p>
+<p>See <a href="../../../examples/lazy-build.raku"><em>examples/lazy-build.raku</em></a> and subtest "Lazy Build" in <a href="../../../t/020-json-basics.rakutest"><em>t/020-json-basics.rakutest</em></a>.</p>
 </li>
 </ul>
 <h3 id="Collections"><a class="u" href="#___top" title="go to top of document">Collections</a></h3>
@@ -805,7 +823,7 @@ say $obj.to-json(:pretty, :sorted-keys);
 </pre>
 </li>
 </ul>
-<h2 id="Laziness"><a class="u" href="#___top" title="go to top of document">Laziness</a></h2>
+<h2 id="Lazy_Deserialization"><a class="u" href="#___top" title="go to top of document">Lazy Deserialization</a></h2>
 <ul><li><p>From <a href="../../../examples/decl-lazy.raku">examples/decl-lazy.raku</a></p>
 <pre class="pod-block-code">class Item {
     has $.something;
@@ -854,6 +872,37 @@ say "    .item2 lazy    : ", Baz.^json-get-key("item2").lazy;
     .baz lazy      : False
     .item lazy     : False
     .item2 lazy    : True
+</pre>
+</li>
+</ul>
+<h2 id="Lazy_Attribute_Build"><a class="u" href="#___top" title="go to top of document">Lazy Attribute Build</a></h2>
+<ul><li><p>From <a href="../../../examples/lazy-build.raku">examples/lazy-build.raku</a></p>
+<pre class="pod-block-code">class LazyRec is json(:lazy) {
+    has $.attr1 is json(:build);
+    has $.attr2 is json(:build&lt;build-attr1&gt;);
+    has @.attr3 is json(:build(-&gt; $ { "π", pi, "the answer", 42 }));
+    has %.attr4 is json(:build&lt;new-map&gt;);
+
+    method build-attr1(JSON::Class::Attr:D $descr) {
+        say "Builder for attr1 for ", $descr.json-name;
+        "for " ~ $descr.name
+    }
+    method new-map($) { :key&lt;value&gt;, :!flag }
+}
+
+my $lr = LazyRec.new;
+say "- attr1: ", $lr.attr1;
+say "- attr2: ", $lr.attr2;
+say "- attr3: ", $lr.attr3;
+say "- attr4: ", $lr.attr4;
+</pre>
+<p>Sample output:</p>
+<pre class="pod-block-code">Builder for attr1 for attr1
+- attr1: for $!attr1
+Builder for attr1 for attr2
+- attr2: for $!attr2
+- attr3: [π 3.141592653589793 the answer 42]
+- attr4: {flag =&gt; False, key =&gt; value}
 </pre>
 </li>
 </ul>

@@ -230,6 +230,30 @@ Parameters set via `is json` trait for attributes are normally overriding these 
     
     See 'Custom Marshallers' in [`JSON::Class::Details`](Class/Details.md).
 
+  - `Bool:D | Str:D | Code:D` **`:build(...)`**
+    
+    Lazily build attribute value upon read unless it's been initialized already from other sources like a constructor argument, or a value from JSON structure. Unless you're familiar with [`AttrX::Mooish`](https://raku.land/?q=AttrX::Mooish), then think of this adverb as a kind of [`is default`](https://docs.raku.org/type/Attribute#Trait_is_default) trait but with some specifics.
+    
+    Depending on adverb format different ways of building attribute's value are used:
+    
+      - **`:build`**
+        
+        Attribute base name is taken (i.e. with no sigil or twigil), prepended with *'build-'* prefix and the result is taken as the method name. For example, for `$.foo` the method name would be *"build-foo"*.
+        
+        `:!build` is a [NOP](https://en.wikipedia.org/wiki/NOP_\(code\)).
+    
+      - **`:build("method-name")`**
+        
+        An explicit method name to use.
+    
+      - **`:build(&code)`**
+        
+        Particular code object (routine, block, etc.).
+    
+    Value returned by either of the above variant is used to initialize the attribute.
+    
+    See [*examples/lazy-build.raku*](../../../examples/lazy-build.raku) and subtest "Lazy Build" in [*t/020-json-basics.rakutest*](../../../t/020-json-basics.rakutest).
+
 ### Collections
 
 A class is declared as a JSON collection with `:sequence` or `:dictionary` (also aliased as `:dict`) adverbs of the `is json` trait. The adverbs are expected to be a list of declarations where each item of the list either specify a type constraint or a default value. For dictionaries it is possible to type constrain their keys.
@@ -529,7 +553,7 @@ Notice that except for `C3`, all other classes and roles are not JSONified. Only
     }
     ```
 
-## Laziness
+## Lazy Deserialization
 
   - From [examples/decl-lazy.raku](../../../examples/decl-lazy.raku)
     
@@ -584,6 +608,42 @@ Notice that except for `C3`, all other classes and roles are not JSONified. Only
         .baz lazy      : False
         .item lazy     : False
         .item2 lazy    : True
+    ```
+
+## Lazy Attribute Build
+
+  - From [examples/lazy-build.raku](../../../examples/lazy-build.raku)
+    
+    ``` raku
+    class LazyRec is json(:lazy) {
+        has $.attr1 is json(:build);
+        has $.attr2 is json(:build<build-attr1>);
+        has @.attr3 is json(:build(-> $ { "π", pi, "the answer", 42 }));
+        has %.attr4 is json(:build<new-map>);
+    
+        method build-attr1(JSON::Class::Attr:D $descr) {
+            say "Builder for attr1 for ", $descr.json-name;
+            "for " ~ $descr.name
+        }
+        method new-map($) { :key<value>, :!flag }
+    }
+    
+    my $lr = LazyRec.new;
+    say "- attr1: ", $lr.attr1;
+    say "- attr2: ", $lr.attr2;
+    say "- attr3: ", $lr.attr3;
+    say "- attr4: ", $lr.attr4;
+    ```
+    
+    Sample output:
+    
+    ``` 
+    Builder for attr1 for attr1
+    - attr1: for $!attr1
+    Builder for attr1 for attr2
+    - attr2: for $!attr2
+    - attr3: [π 3.141592653589793 the answer 42]
+    - attr4: {flag => False, key => value}
     ```
 
 ## Config Defaults
@@ -1208,4 +1268,4 @@ Here we use custom marshallers too, this time for array values. But there is a t
 
 Artistic License 2.0
 
-See the [*LICENSE*](../../../LICENSE) file in this distribution.
+See the [*LICENSE*](../../../LICENSE) file in this distributio

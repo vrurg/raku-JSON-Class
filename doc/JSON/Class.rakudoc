@@ -310,6 +310,42 @@ has %.assoc is json(
 See 'Custom Marshallers' in L<C<JSON::Class::Details>|rakudoc:JSON::Class::Details>.
 =end item
 
+=begin item
+C<Bool:D | Str:D | Code:D> B<C<:build(...)>>
+
+Lazily build attribute value upon read unless it's been initialized already from other sources like a constructor
+argument, or a value from JSON structure. Unless you're familiar with L<C<AttrX::Mooish>|rakudoc:AttrX::Mooish>, then think of this adverb as
+a kind of L<C<is default>|https://docs.raku.org/type/Attribute#Trait_is_default> trait but with some specifics.
+
+Depending on adverb format different ways of building attribute's value are used:
+
+=begin item
+B<C<:build>>
+
+Attribute base name is taken (i.e. with no sigil or twigil), prepended with I<'build-'> prefix and the result is taken
+as the method name. For example, for C<$.foo> the method name would be I<"build-foo">.
+
+C<:!build> is a L<NOP|https://en.wikipedia.org/wiki/NOP_(code)>.
+=end item
+
+=begin item
+B<C<:build("method-name")>>
+
+An explicit method name to use.
+=end item
+
+=begin item
+B<C<:build(&code)>>
+
+Particular code object (routine, block, etc.).
+=end item
+
+Value returned by either of the above variant is used to initialize the attribute.
+
+See L<I<examples/lazy-build.raku>|file:examples/lazy-build.raku> and subtest "Lazy Build" in
+L<I<t/020-json-basics.rakutest>|file:t/020-json-basics.rakutest>.
+=end item
+
 =head3 Collections
 
 A class is declared as a JSON collection with C<:sequence> or C<:dictionary> (also aliased as C<:dict>) adverbs of the
@@ -652,7 +688,7 @@ Sample output:
 
 =end item
 
-=head2 Laziness
+=head2 Lazy Deserialization
 
 =begin item :example("examples/decl-lazy.raku") :mtime(1699754677)
 From L<examples/decl-lazy.raku|file:examples/decl-lazy.raku>
@@ -708,6 +744,45 @@ Sample output:
     .baz lazy      : False
     .item lazy     : False
     .item2 lazy    : True
+=end output
+
+=end item
+
+=head2 Lazy Attribute Build
+
+=begin item :example("examples/lazy-build.raku") :mtime(1700537950)
+From L«examples/lazy-build.raku|file:examples/lazy-build.raku»
+
+=begin code :example :lang("raku")
+class LazyRec is json(:lazy) {
+    has $.attr1 is json(:build);
+    has $.attr2 is json(:build<build-attr1>);
+    has @.attr3 is json(:build(-> $ { "π", pi, "the answer", 42 }));
+    has %.attr4 is json(:build<new-map>);
+
+    method build-attr1(JSON::Class::Attr:D $descr) {
+        say "Builder for attr1 for ", $descr.json-name;
+        "for " ~ $descr.name
+    }
+    method new-map($) { :key<value>, :!flag }
+}
+
+my $lr = LazyRec.new;
+say "- attr1: ", $lr.attr1;
+say "- attr2: ", $lr.attr2;
+say "- attr3: ", $lr.attr3;
+say "- attr4: ", $lr.attr4;
+=end code
+
+Sample output:
+
+=begin output :example
+Builder for attr1 for attr1
+- attr1: for $!attr1
+Builder for attr1 for attr2
+- attr2: for $!attr2
+- attr3: [π 3.141592653589793 the answer 42]
+- attr4: {flag => False, key => value}
 =end output
 
 =end item

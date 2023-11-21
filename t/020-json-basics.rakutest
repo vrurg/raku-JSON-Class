@@ -318,7 +318,7 @@ subtest "Attribute Aliasing" => {
     cmp-deeply Foo.new(foo-attr => "OK!"), Foo.new(:attr("OK!")), "attribute name aliasing is supported";
 }
 
-subtest "Lazy build" => -> $subtest {
+subtest "Lazy Build" => -> $subtest {
     plan 20;
 
     my class LazyRec is json(:!skip-null, :lazy) {
