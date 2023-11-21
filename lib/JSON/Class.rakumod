@@ -177,8 +177,9 @@ BEGIN {
         }
 
         # Make a class explicit by default if the trait is used with an attribute.
-        pkg.^json-set-explicit(True);
-        pkg.^jsonify-attribute($attr, |trait-capture($json));
+        my \tc = trait-capture($json);
+        pkg.^json-set-explicit(True) unless tc.keys && (tc.keys ⊆ <skip build>);
+        pkg.^jsonify-attribute($attr, |tc);
     }
 
     multi sub trait_mod:<is>(Mu:U \type, Mu :$json-wrap! is raw) is export {
