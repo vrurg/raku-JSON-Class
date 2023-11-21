@@ -124,7 +124,7 @@ multi method json-deserialize-attr(JSON::Class::Attr::Positional:D $json-attr, M
                         self.json-try-deserializer:
                             'value', $json-attr, item,
                             { self.json-deserialize-value($json-attr.value-type, item, :$config) }
-                    })
+                    }).eager
         }
 }
 
@@ -145,7 +145,7 @@ multi method json-deserialize-attr(JSON::Class::Attr::Associative:D $json-attr, 
                             self.json-try-deserializer(
                                 'value', $json-attr, $value,
                                 { self.json-deserialize-value($json-attr.value-type, $value, :$config) } )
-                    })
+                    }).eager
         }
 }
 
@@ -180,7 +180,6 @@ multi method json-deserialize(%from, JSON::Class::Config :$config is copy) {
             else {
                 %profile{$attr-name.substr(2)} :=
                     self.json-deserialize-attr($json-attr, from-value);
-                    # self.json-deserialize-value($json-attr.value-type, from-value, :$config);
             }
         }
         else {
