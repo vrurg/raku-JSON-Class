@@ -1,0 +1,4 @@
+{
+    "production": false,
+    "ignore-provides": [".fez"]
+}
