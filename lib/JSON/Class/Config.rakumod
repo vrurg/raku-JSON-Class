@@ -28,7 +28,7 @@ has Bool $!enums-as-value is built = False;
 has Bool $!allow-jsonc is built = False;
 has UInt $!spacing is built = 2;
 
-has %!helpers{Mu:U};
+has %!helpers;
 has Lock $!helpers-lock .= new;
 
 has Mu:U %!type-map{Mu:U};
@@ -199,7 +199,7 @@ multi method set-helpers( ::?CLASS:D:
     $!helpers-lock.lock;
     LEAVE $!helpers-lock.unlock;
 
-    my Mu \nominal-what = nominalize-type($what);
+    my \nominal-what := nominalize-type($what).WHICH;
     %!helpers{nominal-what}{JSSerialize} := $_ with $serializer<>;
     %!helpers{nominal-what}{JSDeserialize} := $_ with $deserializer<>;
     %!helpers{nominal-what}{JSMatch} := $_ with $matcher<>;
@@ -213,7 +213,7 @@ multi method serializer(::?CLASS:D: Mu $what) {
     $!helpers-lock.lock;
     LEAVE $!helpers-lock.unlock;
 
-    %!helpers{nominalize-type($what)}{JSSerialize} // Nil
+    %!helpers{nominalize-type($what).WHICH}{JSSerialize} // Nil
 }
 
 proto method deserializer(|) {*}
@@ -221,7 +221,7 @@ multi method deserializer(::?CLASS:U: |c) { self.global.deserializer(|c) }
 multi method deserializer(::?CLASS:D: Mu $what is raw) {
     $!helpers-lock.lock;
     LEAVE $!helpers-lock.unlock;
-    %!helpers{nominalize-type($what)}{JSDeserialize} // Nil
+    %!helpers{nominalize-type($what).WHICH}{JSDeserialize} // Nil
 }
 
 proto method matcher(|) {*}
@@ -229,7 +229,7 @@ multi method matcher(::?CLASS:U: |c) { self.global.matcher(|c) }
 multi method matcher(::?CLASS:D: Mu $what is raw) {
     $!helpers-lock.lock;
     LEAVE $!helpers-lock.unlock;
-    %!helpers{nominalize-type($what)}{JSMatch} // Nil
+    %!helpers{nominalize-type($what).WHICH}{JSMatch} // Nil
 }
 
 my constant %STAGE-MAP = serializer => JSSerialize, deserializer => JSDeserialize;
@@ -239,7 +239,7 @@ multi method helper(::?CLASS:U: |c) { self.global.helper(|c) }
 multi method helper(::?CLASS:D: Mu $what is raw, Str:D $stage) {
     $!helpers-lock.lock;
     LEAVE $!helpers-lock.unlock;
-    %!helpers{nominalize-type($what)}{%STAGE-MAP{$stage} // $stage} // Nil
+    %!helpers{nominalize-type($what).WHICH}{%STAGE-MAP{$stage} // $stage} // Nil
  }
 
 proto method map-type(|) {*}
