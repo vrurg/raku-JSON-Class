@@ -13,6 +13,10 @@
       - Fix some issues with serializing enumerations
     
       - Fix some issues with deserializing parameterized positionals and associatives
+    
+      - Work around a bug where use of an iterable type object as a hash key triggers a bug deep in Rakudo CORE
+    
+      - Fix deserialization of typed (parameterized) positionals and associatives
 
   - **v0.0.3**
     
