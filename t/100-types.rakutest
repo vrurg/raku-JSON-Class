@@ -5,7 +5,7 @@ use JSON::Class::X:auth<zef:vrurg>;
 use JSON::Class::Config:auth<zef:vrurg>;
 use JSON::Fast;
 
-plan 4;
+plan 5;
 
 subtest "Version" => -> $subtest {
     plan 3;
@@ -88,6 +88,34 @@ subtest "Prohibited JSONifications" => {
             :message(*.contains: "cannot be implicitly JSONified"),
             typeobj.^name ~ " cannot be implicitly JSONified";
     }
+}
+subtest "Complex Hashes And Arrays" => {
+    plan 1;
+    my class Rec is json {
+        has Int:D $.id is required;
+        has Str:D $.payload is required;
+        multi method new(Int:D $id, Str:D $payload) is raw {
+            self.new: :$id, :$payload
+        }
+    }
+    my class Cmplx is json(:implicit) {
+        has Array[Rec:D] %.codes;
+        has Hash[Rec:D, Int:D()] @.code-idx;
+    }
+
+    my $expected =
+        Cmplx.new:
+            codes =>
+                ( "c1" => (my @ is Array[Rec:D] = Rec.new(11, "rec1"), Rec.new(21, "rec2")),
+                "c2" => (my @ is Array[Rec:D] = Rec.new(12, "s1"), Rec.new(22, "s2")) ),
+            code-idx =>
+                ( (my % is Hash[Rec:D, Int:D()] = 331 => Rec.new(331, "rec100"), 32 => Rec.new(32, "rec101")),
+                (my % is Hash[Rec:D, Int:D()] = 41 => Rec.new(41, "rec200"), 42 => Rec.new(42, "rec201")) )
+            ;
+
+    my $json = q<{"code-idx":[{"331":{"id":331,"payload":"rec100"},"32":{"id":32,"payload":"rec101"}},{"41":{"id":41,"payload":"rec200"},"42":{"id":42,"payload":"rec201"}}],"codes":{"c1":[{"id":11,"payload":"rec1"},{"id":21,"payload":"rec2"}],"c2":[{"id":12,"payload":"s1"},{"id":22,"payload":"s2"}]}}>;
+    my $deserialized = Cmplx.from-json($json);
+    cmp-deeply $deserialized, $expected, "deserialized";
 }
 
 done-testing;
