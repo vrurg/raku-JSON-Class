@@ -162,7 +162,9 @@ There is a consequence to this rule: implicit JSONification of attributes skips 
 
   - `Bool` **`:implicit`**
     
-    Set typeobject explicit/implicit mode. Omitting this argument assumes that the typeoject is implicit unless at least one attribute marked explicitly in which case the entire typeobject becomes explicit. See [*examples/decl-implicit.raku*](examples/decl-implicit.raku)
+    Set typeobject explicit/implicit mode. Omitting this argument assumes that the typeoject is implicit unless at least one attribute has an explicit [`is json` declaration](#Attribute).
+    
+    See [*examples/decl-implicit.raku*](examples/decl-implicit.raku).
 
   - `Bool` **`:lazy`**
     
@@ -194,7 +196,9 @@ There is a consequence to this rule: implicit JSONification of attributes skips 
 
 ### Attribute
 
-Parameters set via `is json` trait for attributes are normally overriding these set by its declarant.
+Parameters set via `is json` trait for attributes are normally overriding these set by its declarant. Moreover, unless the declarant is using `:implicit` or `:!implicit` argument with its `is json` trait then declaring an attribute as JSON-marshallable turns its typeobject into an explicit one.
+
+There is an exception though: adverbs `:skip`, `:build`, and `:aliases`, used in any combination, but with no other arguments, doesn't affect the status of attribute's declarant.
 
   - `Bool` **`:skip`**
     
@@ -204,9 +208,13 @@ Parameters set via `is json` trait for attributes are normally overriding these 
     
     Set `skip-null` parameter individually for this attribute, no matter what is set for the declarant.
 
-  - Str **`:name`**
+  - `Str` **`:name`**
     
     Normally key name of a JSON object to which an attribute serializes is given after attribute's name, omitting its sigil and twigil. With `:name` this value can be altered to something different.
+
+  - `Array[Str:D]` **`:alias`** or `B<:aliases>`
+    
+    This adverb has the same meaning as its counterpart in [`AttrX::Mooish`](https://raku.land/?q=AttrX::Mooish): it allows an attribute to have more than one name. **Note** though that this adverb doesn't affect marshalling where only one JSON key name is allowed.
 
   - `Bool` **`:lazy`**
     
@@ -481,7 +489,7 @@ This section contains a series of working code examples demonstrating different 
      has 'bar2' key: True
     ```
 
-## Inheritance And Role
+## Inheritance And Role Consumption
 
   - From [examples/simple-inherit.raku](examples/simple-inherit.raku)
     

@@ -11,6 +11,8 @@
       - Fix `JSON::Class::X::ReMooify` exception when used with uncomposed yet types
     
       - Fix some issues with serializing enumerations
+    
+      - Fix some issues with deserializing parameterized positionals and associatives
 
   - **v0.0.3**
     

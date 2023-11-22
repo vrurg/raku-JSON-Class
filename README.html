@@ -406,7 +406,7 @@ li > .pod-block-code { margin-top: 16px; }
 <tr class="toc-level-1"><td class="toc-number">5</td><td class="toc-text"><a href="#DYNAMIC_VARIABLES">DYNAMIC VARIABLES</a></td></tr>
 <tr class="toc-level-1"><td class="toc-number">6</td><td class="toc-text"><a href="#QUICK_INTRO_BY_EXAMPLE">QUICK INTRO BY EXAMPLE</a></td></tr>
 <tr class="toc-level-2"><td class="toc-number">6.1</td><td class="toc-text"><a href="#Explicit/Implicit">Explicit/Implicit</a></td></tr>
-<tr class="toc-level-2"><td class="toc-number">6.2</td><td class="toc-text"><a href="#Inheritance_And_Role">Inheritance And Role</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">6.2</td><td class="toc-text"><a href="#Inheritance_And_Role_Consumption">Inheritance And Role Consumption</a></td></tr>
 <tr class="toc-level-2"><td class="toc-number">6.3</td><td class="toc-text"><a href="#Incorporation">Incorporation</a></td></tr>
 <tr class="toc-level-2"><td class="toc-number">6.4</td><td class="toc-text"><a href="#Lazy_Deserialization">Lazy Deserialization</a></td></tr>
 <tr class="toc-level-2"><td class="toc-number">6.5</td><td class="toc-text"><a href="#Lazy_Attribute_Build">Lazy Attribute Build</a></td></tr>
@@ -530,7 +530,8 @@ Attribute : The Answer
 <h2 id="Trait_Arguments"><a class="u" href="#___top" title="go to top of document">Trait Arguments</a></h2>
 <h3 id="Common_For_Classes_And_Roles"><a class="u" href="#___top" title="go to top of document">Common For Classes And Roles</a></h3>
 <ul><li><p><code>Bool</code> <strong><code>:implicit</code></strong></p>
-<p>Set typeobject explicit/implicit mode. Omitting this argument assumes that the typeoject is implicit unless at least one attribute marked explicitly in which case the entire typeobject becomes explicit. See <a href="examples/decl-implicit.raku"><em>examples/decl-implicit.raku</em></a></p>
+<p>Set typeobject explicit/implicit mode. Omitting this argument assumes that the typeoject is implicit unless at least one attribute has an explicit <a href="#Attribute"><code>is json</code> declaration</a>.</p>
+<p>See <a href="examples/decl-implicit.raku"><em>examples/decl-implicit.raku</em></a>.</p>
 </li>
 <li><p><code>Bool</code> <strong><code>:lazy</code></strong></p>
 <p>Set typeobject lazyness. When the argument is omitted attributes are set to <em>non-lazy</em> if they have a <em>basic type</em>, and set to <em>lazy</em> otherwise.</p>
@@ -555,15 +556,19 @@ Attribute : The Answer
 </li>
 </ul>
 <h3 id="Attribute"><a class="u" href="#___top" title="go to top of document">Attribute</a></h3>
-<p>Parameters set via <code>is json</code> trait for attributes are normally overriding these set by its declarant.</p>
+<p>Parameters set via <code>is json</code> trait for attributes are normally overriding these set by its declarant. Moreover, unless the declarant is using <code>:implicit</code> or <code>:!implicit</code> argument with its <code>is json</code> trait then declaring an attribute as JSON-marshallable turns its typeobject into an explicit one.</p>
+<p>There is an exception though: adverbs <code>:skip</code>, <code>:build</code>, and <code>:aliases</code>, used in any combination, but with no other arguments, doesn't affect the status of attribute's declarant.</p>
 <ul><li><p><code>Bool</code> <strong><code>:skip</code></strong></p>
 <p>Don't ever marshalize this attribute. Mostly useful for <code>:implicit</code> typeobjects when one or more attributes are to be ignored. Negation of this argument makes no sense.</p>
 </li>
 <li><p><code>Bool</code> <strong><code>:skip-null</code></strong></p>
 <p>Set <code>skip-null</code> parameter individually for this attribute, no matter what is set for the declarant.</p>
 </li>
-<li><p>Str <strong><code>:name</code></strong></p>
+<li><p><code>Str</code> <strong><code>:name</code></strong></p>
 <p>Normally key name of a JSON object to which an attribute serializes is given after attribute's name, omitting its sigil and twigil. With <code>:name</code> this value can be altered to something different.</p>
+</li>
+<li><p><code>Array[Str:D]</code> <strong><code>:alias</code></strong> or <code>B&lt;:aliases&gt;</code></p>
+<p>This adverb has the same meaning as its counterpart in <a href="https://raku.land/?q=AttrX::Mooish"><code>AttrX::Mooish</code></a>: it allows an attribute to have more than one name. <strong>Note</strong> though that this adverb doesn't affect marshalling where only one JSON key name is allowed.</p>
 </li>
 <li><p><code>Bool</code> <strong><code>:lazy</code></strong></p>
 <p>Force laziness mode of this attribute.</p>
@@ -762,7 +767,7 @@ Bar is explicit: True
 </pre>
 </li>
 </ul>
-<h2 id="Inheritance_And_Role"><a class="u" href="#___top" title="go to top of document">Inheritance And Role</a></h2>
+<h2 id="Inheritance_And_Role_Consumption"><a class="u" href="#___top" title="go to top of document">Inheritance And Role Consumption</a></h2>
 <ul><li><p>From <a href="examples/simple-inherit.raku">examples/simple-inherit.raku</a></p>
 <pre class="pod-block-code">role R is json {
     has Bool $.flag;

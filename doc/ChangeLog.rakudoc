@@ -13,6 +13,7 @@ I<Note> that using the trait without any adverb is still de-implicifying.
 =item Fix incorrect C<.elems> on a fully deserialized dictionary
 =item Fix C<JSON::Class::X::ReMooify> exception when used with uncomposed yet types
 =item Fix some issues with serializing enumerations
+=item Fix some issues with deserializing parameterized positionals and associatives
 =end item
 
 =begin item

@@ -206,8 +206,9 @@ Attribute : The Answer
 C<Bool> B<C<:implicit>>
 
 Set typeobject explicit/implicit mode. Omitting this argument assumes that the typeoject is implicit unless at least one
-attribute marked explicitly in which case the entire typeobject becomes explicit.  See
-L<I<examples/decl-implicit.raku>|file:examples/decl-implicit.raku>
+attribute has an explicit L<C<is json> declaration|#Attribute>.
+
+See L<I<examples/decl-implicit.raku>|file:examples/decl-implicit.raku>.
 =end item
 
 =begin item
@@ -260,7 +261,12 @@ that dynamic variable C<$*JSON-CLASS-CONFIG> is not set.
 
 =head3 Attribute
 
-Parameters set via C<is json> trait for attributes are normally overriding these set by its declarant.
+Parameters set via C<is json> trait for attributes are normally overriding these set by its declarant. Moreover, unless
+the declarant is using C<:implicit> or C<:!implicit> argument with its C<is json> trait then declaring an attribute as
+JSON-marshallable turns its typeobject into an explicit one.
+
+There is an exception though: adverbs C<:skip>, C<:build>, and C<:aliases>, used in any combination, but with no other
+arguments, doesn't affect the status of attribute's declarant.
 
 =begin item
 C<Bool> B<C<:skip>>
@@ -276,10 +282,18 @@ Set C<skip-null> parameter individually for this attribute, no matter what is se
 =end item
 
 =begin item
-Str B<C<:name>>
+C<Str> B<C<:name>>
 
 Normally key name of a JSON object to which an attribute serializes is given after attribute's name, omitting its
 sigil and twigil. With C<:name> this value can be altered to something different.
+=end item
+
+=begin item
+C<Array[Str:D]> B<C<:alias>> or C<B<:aliases>>
+
+This adverb has the same meaning as its counterpart in L<C<AttrX::Mooish>|rakudoc:AttrX::Mooish>: it allows an attribute
+to have more than one name. B<Note> though that this adverb doesn't affect marshalling where only one JSON key name is
+allowed.
 =end item
 
 =begin item
@@ -609,7 +623,7 @@ Bar is explicit: True
 
 =end item
 
-=head2 Inheritance And Role
+=head2 Inheritance And Role Consumption
 
 =begin item :example("examples/simple-inherit.raku") :mtime(1699754677)
 From L<examples/simple-inherit.raku|file:examples/simple-inherit.raku>
