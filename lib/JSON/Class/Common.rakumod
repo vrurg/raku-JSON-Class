@@ -146,13 +146,14 @@ multi method json-try-deserializer(Str:D $kind, JSON::Class::Descriptor:D $descr
 
 proto method json-deserialize-value(Mu, Mu) {*}
 
-multi method json-deserialize-value( Mu \dest-type,
+multi method json-deserialize-value( ::DT Mu \dest-type,
                                      Mu:D \from-value,
                                      JSON::Class::Config :$config is copy,
                                      --> Mu )
     is raw
 {
-    return from-value if from-value ~~ dest-type;
+    # If dest-type is a coercion then passing from-value through the sub would handle the coercion if necessary.
+    return (sub (--> DT) { from-value }).() if from-value ~~ dest-type;
 
     my proto sub j2v(| --> Mu) {*}
 
@@ -174,10 +175,12 @@ multi method json-deserialize-value( Mu \dest-type,
     }
 
     multi sub j2v(Enumeration \final-type, \value --> Mu) is raw {
-        $config.enums-as-value ?? final-type.(value) !! final-type.WHO{value}
+        $config.enums-as-value
+            ?? nominalize-type(final-type).(value)
+            !! nominalize-type(final-type).WHO{value}
     }
 
-    multi sub j2v(JSONBasicType, Any:D \value) is raw is default { value }
+    multi sub j2v(::T JSONBasicType, Any:D \value --> T) is raw is default { value }
 
     multi sub j2v(Mu \final-type, Any:D \value --> Mu) is raw {
         my &fallback = { $config.jsonify(final-type).json-deserialize(value, :$config) };

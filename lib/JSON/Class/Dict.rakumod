@@ -43,9 +43,19 @@ multi method new(*@items, *%profile) {
     self.bless(|%profile)!STORE-FROM-ITERATOR(@items.iterator)
 }
 
+my role Coercive {
+    my &assign-thunk = ::?CLASS.json-class.^json-compose-assign-thunk;
+    multi method ASSIGN-KEY(::?CLASS:D: Mu \key, Mu \value, |c --> Mu) is raw {
+        nextwith(key, &assign-thunk(value), |c)
+    }
+}
+
 submethod TWEAK(:%json-raw) {
     $!json-raw := %json-raw;
     $!json-items := self.json-new-dict-hash;
+    if self.json-class.^json-has-coercions {
+        self does Coercive;
+    }
     given self.json-key-descriptor {
         # In the most simple case of string keys with no marshallers we may skip mapping from JSON keys into the
         # sequence keys.

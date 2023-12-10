@@ -1,6 +1,13 @@
 use v6.e.PREVIEW;
 unit module JSON::Class:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
 
+BEGIN {
+    if $*RAKU.compiler.version < v2023.11.67.g.28.ebb.7.ac.0 {
+        die "This module version will not work with Rakudo compiler "
+            ~ $*RAKU.compiler.version.gist ~ ", you need to upgrdate at least to v2023.12";
+    }
+}
+
 use AttrX::Mooish;
 use JSON::Fast;
 
@@ -20,6 +27,7 @@ use JSON::Class::Sequence;
 use JSON::Class::SequenceHOW;
 use JSON::Class::Sequential;
 use JSON::Class::Types :NOT-SET, :DEFAULT;
+use JSON::Class::Utils;
 use JSON::Class::X;
 
 INIT {
@@ -66,10 +74,14 @@ BEGIN {
         ).throw
     }
 
-    my sub one-collection-kind($sequence, $dict --> Nil) {
-        $sequence
-        andthen $dict
-        andthen JSON::Class::X::Trait::Argument.new(:why("both :sequence and :dict can't be used")).throw
+    my sub one-collection-kind(Mu $sequence, Mu $dict --> Nil) {
+        $sequence.DEFINITE
+            && $dict.DEFINITE
+            && JSON::Class::X::Trait::Argument.new(:why("both :sequence and :dict can't be used")).throw
+    }
+
+    my sub decl-as-list(Mu $decl is raw) is raw {
+        !$decl.^archetypes.generic && nominalize-type($decl).^is_composed ?? $decl.List !! ($decl,)
     }
 
     my sub jsonify-role( Mu:U \typeobj,
@@ -78,29 +90,30 @@ BEGIN {
                          Bool :$skip-null,
                          :$does = (),
                          :$is = (),
-                         :$sequence = NOT-SET,
-                         :dictionary(:$dict) = NOT-SET,
+                         Mu :$sequence is raw = NOT-SET,
+                         Mu :dictionary(:$dict) is raw = NOT-SET,
                          *%extra )
     {
         verify-named-args(:%extra, :what("trait '" ~ $*JSON-CLASS-TRAIT ~ "'"), :source(typeobj.^name));
-        one-collection-kind($sequence, $dict);
+        one-collection-kind((my Mu $dcseq := $sequence<>), (my Mu $dcdict := $dict<>));
 
-        if $sequence !=== NOT-SET {
+        if $dcseq !=:= NOT-SET {
             no-redeclare(typeobj, JSON::Class::HOW::SequentialRole, "role");
 
             typeobj.HOW does JSON::Class::HOW::SequentialRole;
-            typeobj.^json-set-item-declarations($sequence.List);
+            typeobj.^json-set-item-declarations(decl-as-list($dcseq));
         }
-        elsif $dict !=== NOT-SET {
+        elsif $dcdict !=:= NOT-SET {
             no-redeclare(typeobj, JSON::Class::HOW::DictionaryRole, "role");
 
             typeobj.HOW does JSON::Class::HOW::DictionaryRole;
-            typeobj.^json-set-item-declarations($dict.List);
+            typeobj.^json-set-item-declarations(decl-as-list($dcdict));
         }
         else {
             no-redeclare(typeobj, JSON::Class::RoleHOW, "role");
 
             typeobj.HOW does JSON::Class::RoleHOW;
+
             typeobj.^json-set-explicit(!$_) with $implicit;
             typeobj.^json-set-skip-null($skip-null);
             typeobj.^json-configure-typeobject( :$lazy, is => is2list($is), does => does2list($does) )
@@ -115,26 +128,26 @@ BEGIN {
                           Bool :$skip-null,
                           :$does = (),
                           :$is = (),
-                          :$sequence = NOT-SET,
-                          :dictionary(:$dict) = NOT-SET,
+                          Mu :$sequence is raw = NOT-SET,
+                          Mu :dictionary(:$dict) is raw = NOT-SET,
                           *%extra )
     {
         verify-named-args(:%extra, :what("trait 'json'"), :source(typeobj.^name));
-        one-collection-kind($sequence, $dict);
+        one-collection-kind((my Mu $dcseq := $sequence<>), (my Mu $dcdict := $dict<>));
 
-        if $sequence !=== NOT-SET {
+        if $dcseq !=:= NOT-SET {
             no-redeclare(typeobj, JSON::Class::SequenceHOW, "class");
 
             typeobj.HOW does JSON::Class::SequenceHOW;
-            typeobj.^add_role(JSON::Class::Sequential);
-            typeobj.^json-set-item-declarations($sequence.List);
+            typeobj.^add_parent(JSON::Class::Sequence);
+            typeobj.^json-set-item-declarations(decl-as-list($dcseq));
         }
-        elsif $dict !=== NOT-SET {
+        elsif $dcdict !=:= NOT-SET {
             no-redeclare(typeobj, JSON::Class::DictHOW, "class");
 
             typeobj.HOW does JSON::Class::DictHOW;
-            typeobj.^add_role(JSON::Class::Dictionary);
-            typeobj.^json-set-item-declarations($dict.List);
+            # typeobj.^add_parent(JSON::Class::Dict);
+            typeobj.^json-set-item-declarations(decl-as-list($dcdict));
         }
         else {
             no-redeclare(typeobj, JSON::Class::ClassHOW, "class");

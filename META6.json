@@ -39,6 +39,7 @@
         "JSON::Class::HOW::DictionaryRole": "lib/JSON/Class/HOW/DictionaryRole.rakumod",
         "JSON::Class::HOW::Explicit": "lib/JSON/Class/HOW/Explicit.rakumod",
         "JSON::Class::HOW::Imply": "lib/JSON/Class/HOW/Imply.rakumod",
+        "JSON::Class::HOW::Instantiation": "lib/JSON/Class/HOW/Instantiation.rakumod",
         "JSON::Class::HOW::JSONified": "lib/JSON/Class/HOW/JSONified.rakumod",
         "JSON::Class::HOW::Jsonish": "lib/JSON/Class/HOW/Jsonish.rakumod",
         "JSON::Class::HOW::Laziness": "lib/JSON/Class/HOW/Laziness.rakumod",

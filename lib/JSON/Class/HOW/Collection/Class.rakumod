@@ -1,5 +1,6 @@
 use v6.e.PREVIEW;
 unit role JSON::Class::HOW::Collection::Class:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
+use MONKEY-SEE-NO-EVAL;
 
 use JSON::Class::HOW::Collection;
 use JSON::Class::ItemDescriptor;
@@ -10,15 +11,18 @@ use JSON::Class::Utils;
 has $!json-mro-descriptors;
 
 has $!json-descr-by-cond;
+has $!json-has-coercions;
 
-method json-build-from-mro(Mu \obj) {
-    return with $!json-mro-descriptors;
+method json-build-collection-type(Mu,@) {...}
+
+method json-build-from-mro(Mu \obj, :$force --> Nil) {
+    return if !$force && $!json-mro-descriptors.DEFINITE;
 
     my @descriptors;
     my @non-basics;
     my $guessed-default := NOT-SET;
 
-    for |self.json-roles(obj), |obj.^mro.grep({ .HOW ~~ JSON::Class::HOW::Collection }) -> \typeobj {
+    for |self.json-roles(obj), |obj.^mro(:unhidden).grep({ .HOW ~~ JSON::Class::HOW::Collection }) -> \typeobj {
         my \typeobj-how = typeobj.HOW;
         if typeobj-how ~~ ::?ROLE && typeobj-how.json-kind ne self.json-kind {
             self.json-add-warning:
@@ -36,6 +40,7 @@ method json-build-from-mro(Mu \obj) {
     }
 
     $!json-mro-descriptors := @descriptors;
+    $!json-descr-by-cond = Nil if $force;
 
     self.json-set-item-default(obj, $guessed-default) unless $guessed-default =:= NOT-SET;
 
@@ -72,7 +77,7 @@ method json-item-descriptors(Mu \obj, Bool :$local, Bool :$class, Bool :$with-ma
         @descr-list := $!json-mro-descriptors;
     }
 
-    with $class {
+    if $class {
         @descr-list := @descr-list.grep({ is-a-class-type(.type) }).eager.List;
     }
 
@@ -86,4 +91,32 @@ method json-item-descriptors(Mu \obj, Bool :$local, Bool :$class, Bool :$with-ma
 
     # Cache and return the result.
     $!json-descr-by-cond[$idx] := @descr-list
+}
+
+method json-has-coercions(Mu \obj) {
+    $!json-has-coercions := self.json-item-descriptors(obj).first(*.type.^archetypes.coercive, :k).defined
+}
+
+# Produces a code object which takes a source value and coerces it if necessary. The code is a multi-dispatch routine
+# where candidates are added in the order of our descriptors.
+has $!json-assign-thunk;
+method json-compose-assign-thunk(Mu \obj) {
+    without $!json-assign-thunk {
+        if $!json-has-coercions {
+            my $sub-name = "_assign_" ~ (S:g/\W/_/ given self.name(obj));
+            my &proto = $!json-assign-thunk := ('proto sub ' ~ $sub-name ~ '(Mu) {*}').EVAL;
+
+            my sub new-cand(::T) { my sub (T \v) is raw { my T $ = v } }
+
+            for self.json-item-descriptors(obj) -> \descr {
+                &proto.add_dispatchee: new-cand(descr.type);
+            }
+
+            &proto.add_dispatchee: my sub (Mu \v) is raw { v };
+        }
+        else {
+            $!json-assign-thunk := sub (Mu \v) is raw { v };
+        }
+    }
+    $!json-assign-thunk
 }

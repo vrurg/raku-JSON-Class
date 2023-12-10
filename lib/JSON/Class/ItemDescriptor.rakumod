@@ -9,14 +9,23 @@ use JSON::Class::Utils;
 
 also does JSON::Class::Descriptor;
 
-has Mu $.type is built(:bind) is required;
+has Mu $.type is required;
 has Mu $.nominal-type is mooish(:lazy);
 
-has Str $.name;
+has Str:D $.name is mooish(:lazy, :clearer);
+has Str:D $.kind is required;
 
 method build-nominal-type is raw { nominalize-type($!type) }
 
+method build-name { $.kind ~ " " ~ self.type.^name }
+
 method value-type { $!type }
+
+multi method INSTANTIATE-GENERIC(::?CLASS:D: TypeEnv:D $typeenv) {
+    self.is-generic
+        ?? self.clone(type => $typeenv.instantiate(self.type), :instantiated)
+        !! self
+}
 
 method set-serializer($serializer?) {
     self.register-helper(JSSerialize, 'item', $_) with $serializer;

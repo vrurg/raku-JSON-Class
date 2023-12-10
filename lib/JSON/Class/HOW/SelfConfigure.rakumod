@@ -30,7 +30,8 @@ method json-configure-typeobject( Mu \obj,
                                   Bool :$pretty,
                                   Bool :$sorted-keys,
                                   :does(:@roles),
-                                  :is(:@parents) )
+                                  :is(:@parents)
+                                  --> Nil )
 {
     self.json-incorporate-roles(obj, obj, @roles);
     self.add_role(obj, $_) for @roles;
@@ -54,4 +55,8 @@ method json-configure-typeobject( Mu \obj,
     }
 
     self.json-configure-defaults(obj, :$pretty, :$sorted-keys, :$eager);
+}
+
+method json-post-compose(Mu \obj --> Nil) {
+    obj.WALK(:name<JSON-POSTCOMPOSE>, :submethods, :!methods, :roles).invoke()
 }

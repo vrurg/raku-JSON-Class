@@ -30,12 +30,18 @@ has $!json-mro-key-set;
 # If this type object wants undefined attributes to be skipped from serialization
 has $!json-skip-null;
 
-method json-attr-register(Mu, JSON::Class::Attr::Jsonish:D $json-attr) {
+has $!json-is-generic;
+
+method json-is-generic { ? $!json-is-generic }
+
+method json-attr-register(Mu \obj, JSON::Class::Attr::Jsonish:D $json-attr) {
+    use nqp;
     $!json-attrs := (|($!json-attrs // ()), $json-attr.name => $json-attr).Map;
     $!json-attr-lookup := Nil;
     $!json-local-keys := Nil;
     $!json-mro-keys := Nil;
     $!json-mro-key-set := Nil;
+    $!json-is-generic ||= $json-attr.is-generic;
 }
 
 my sub hash-by-adv( Associative:D \registry, %adv, Str:D :$what, Str:D :$source) {

@@ -5,11 +5,13 @@ use JSON::Class:auth<zef:vrurg>;
 plan 7;
 
 subtest "Basics" => {
-    plan 25;
+    plan 26;
 
     my class JDict is json( :dictionary( default => Num, Num(Rat), Str:D ) ) {}
 
     my $jdict = JDict.new("pi", π, "the-answer", 42.0, "foo" => "bar", "baz" => 12e0, "nullish" => Nil, "undefy" => Num);
+
+    isa-ok $jdict<the-answer>, Num, "coercive item";
 
     throws-like {
             $jdict<bad> = 13;
@@ -28,7 +30,7 @@ subtest "Basics" => {
         "assignment of an undef type";
 
     my $json = $jdict.to-json(:!pretty, :sorted-keys);
-    my $expected = q<{"baz":12e0,"foo":"bar","nullish":null,"pi":3.141592653589793e0,"the-answer":42.0,"undefy":null}>;
+    my $expected = q<{"baz":12e0,"foo":"bar","nullish":null,"pi":3.141592653589793e0,"the-answer":42e0,"undefy":null}>;
 
     is $json, $expected, "serialized dictionary";
 
@@ -156,7 +158,8 @@ subtest "Key Marshalling" => {
         my class JKDict
             is json(
                 :dictionary(
-                    default => Num, Num(Numeric), Str:D,
+                    Num(Numeric), Str:D,
+                    default => Num,
                     :keyof( to-json => { "FOO:" ~ $^key },
                             from-json => {
                                 $^json-key.starts-with("FOO:")
@@ -170,10 +173,10 @@ subtest "Key Marshalling" => {
         is-deeply %jdict.kv[0,2...*].sort, %jdict.keys.sort, "keys from .kv are the same as in .keys";
         is (%jdict.kv[1,3...*] (-) %jdict.values).elems, 0, "values from .kv are the same as in .values";
 
-        my $expected = q<{"FOO:k1":1,"FOO:k2":"second"}>;
+        my $expected = q<{"FOO:k1":1e0,"FOO:k2":"second"}>;
 
         is-deeply %jdict.keys.List.sort, <k1 k2>, "keys are unmodified for the user";
-        is-deeply %jdict<k1 k2>, (1, "second"), "values are visible through the keys";
+        is-deeply %jdict<k1 k2>, (1e0, "second"), "values are visible through the keys";
         is %jdict.to-json(:!pretty, :sorted-keys), $expected,
            "but serialized modified by the :to-json/:serializer code";
 
@@ -190,7 +193,7 @@ subtest "Key Marshalling" => {
     }
 
     subtest "Coercive Key Type" => {
-        plan 5;
+        plan 6;
 
         my class JKDict
             is json(
@@ -205,6 +208,9 @@ subtest "Key Marshalling" => {
         my $expected = q<{"1.00000":false,"2.12346":"questionable","2.71828":true,"3.14159":true}>;
 
         is %jdict.to-json(:!pretty, :sorted-keys), $expected, "user serializer modifies keys";
+
+        %jdict{"12.24"} = "coerced?";
+        is %jdict{12.24}, "coerced?", "key gets coerced on assignment";
 
         my %deserialized is JKDict .= from-json($expected);
         # We can't test for roundtripping here because user serializer loses precission.

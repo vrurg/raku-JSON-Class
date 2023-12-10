@@ -19,9 +19,15 @@ has Mu $!declarant is built(:bind) is required;
 has %!helpers;
 has Lock:D $!helpers-lock .= new;
 
+# Descriptor type is a class, not a basic type
 has Bool:D $.is-a-class is mooish(:lazy);
+has Bool:D $.instantiated = False;
 
 method build-is-a-class { is-a-class-type(self.type) }
+
+proto method is-generic(|) {*}
+multi method is-generic(::?CLASS:U:) { False }
+multi method is-generic(::?CLASS:D:) { ? self.type.^archetypes.generic }
 
 method register-helper(::?CLASS:D: Str:D $stage, Str:D $kind, JSONHelper:D $helper --> Nil) {
     $!helpers-lock.protect: {
@@ -65,3 +71,5 @@ multi method kind-type(Str:D $kind) {
 # 'match' would map info JSMatch by ItemDescriptor, but so far all JSSerialize map into itself, no matter what kind is
 # requested.
 method kind-stage(Str:D $stage, Str:D) is pure { $stage }
+
+multi method gist(::?CLASS:D:) { self.name }

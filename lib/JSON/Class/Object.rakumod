@@ -216,7 +216,7 @@ multi method json-deserialize(%from, JSON::Class::Config :$config is copy) {
     %profile<json-lazies> := %lazies;
     %profile<json-lazy-config> := $config if %lazies;
 
-    $config.type-from(self.WHAT).json-create: |%profile
+    $config.type-from(self.WHAT, :nominal).json-create: |%profile
 }
 
 multi method json-deserialize(@from, JSON::Class::Config :$config) {

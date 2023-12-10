@@ -291,14 +291,40 @@ multi method map-types(::?CLASS:D: *@pos) {
 
 proto method type-from(|) {*}
 multi method type-from(::?CLASS:U: |c --> Mu) is raw { self.global.type-from(|c) }
-multi method type-from(::?CLASS:D: Mu:U \from --> Mu) is raw {
+multi method type-from(::?CLASS:D: Mu:U \from, Bool :$nominal --> Mu) is raw {
     $!type-map-lock.lock;
     LEAVE $!type-map-lock.unlock;
 
-    # See if nominalization is a product of jsonificaton and work on the original type
-    my Mu \nominalization = nominalize-type(from);
-    my Mu \from-type = nominalization.HOW ~~ JSON::Class::HOW::JSONified ?? nominalization.^json-FROM !! nominalization;
-    %!type-map.EXISTS-KEY(from-type) ?? %!type-map.AT-KEY(from-type) !! nominalization
+    proto sub reconstruct(|) {*}
+    multi sub reconstruct(Metamodel::DefiniteHOW, Mu \type --> Mu) is raw {
+        my Mu \base-type = type.^base_type;
+        Metamodel::DefiniteHOW.new_type:
+            base_type => reconstruct(base-type.HOW, base-type),
+            definite => type.^definite
+    }
+    multi sub reconstruct(Metamodel::CoercionHOW, Mu \type --> Mu) is raw {
+        my Mu \target = type.^target_type;
+        my Mu \constraint = type.^constraint_type;
+        Metamodel::CoercionHOW.new_type:
+            reconstruct(target.HOW, target),
+            reconstruct(constraint.HOW, constraint)
+    }
+    multi sub reconstruct(Metamodel::SubsetHOW, Mu \type --> Mu) is raw {
+        my Mu \refinee = type.^refinee;
+        Metamodel::SubsetHOW.new: reconstruct(refinee.HOW, refinee), type.^refinement
+    }
+    multi sub reconstruct(Mu, Mu \nominalization --> Mu) is raw {
+        # See if nominalization is a product of jsonificaton and work on the original type
+        my Mu \from-type =
+            nominalization.HOW ~~ JSON::Class::HOW::JSONified
+                ?? nominalization.^json-FROM
+                !! nominalization;
+        %!type-map.EXISTS-KEY(from-type) ?? %!type-map.AT-KEY(from-type) !! nominalization
+    }
+
+    $nominal
+        ?? reconstruct((my \nominal = nominalize-type(from)).HOW, nominal)
+        !! reconstruct(from.HOW, from)
 }
 
 method !map-severity(%adv) is hidden-from-backtrace {

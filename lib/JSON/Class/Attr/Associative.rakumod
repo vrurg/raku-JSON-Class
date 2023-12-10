@@ -12,12 +12,12 @@ use JSON::Class::Utils;
 also does JSON::Class::Attr;
 also does JSON::Class::Attr::Collection;
 
-has Mu $.key-type is mooish(:lazy);
+has Mu $.key-type is mooish(:lazy, :predicate);
 has Mu $.nominal-keytype is mooish(:lazy);
 
-method build-value-type is raw { $!attr.type.of }
+method build-value-type(--> Mu) is raw { $!attr.type.of }
 
-method build-key-type is raw { $!attr.type.keyof }
+method build-key-type(--> Mu) is raw { $!attr.type.keyof }
 
 method build-nominal-keytype is raw { nominalize-type($!attr.type.keyof) }
 
@@ -37,3 +37,9 @@ method set-deserializer($deserializer?, :$value, :$key, *%extra) {
 
 multi method kind-type('value') is pure { self.value-type }
 multi method kind-type('key')   is pure { self.key-type   }
+
+# Preserve critical attributes.
+method clone(*%twiddles) is raw {
+    %twiddles<key-type> := $!key-type if self.has-lazy && !(%twiddles<key-type>:exists);
+    ::?CLASS.^post-clone: self, callwith(|%twiddles), %twiddles
+}

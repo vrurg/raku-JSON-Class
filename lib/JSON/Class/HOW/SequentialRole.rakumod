@@ -16,4 +16,9 @@ method compose(|) is raw {
     obj
 }
 
+method specialize_with(|c --> Mu) is raw {
+    self.json-specialize-with(|c);
+    nextsame
+}
+
 method json-kind { 'sequential role' }

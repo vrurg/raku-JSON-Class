@@ -1,11 +1,12 @@
 use v6.e.PREVIEW;
 use Test::Async;
-use JSON::Class:auth<zef:vrurg>;
-use JSON::Class::X:auth<zef:vrurg>;
 use JSON::Class::Config:auth<zef:vrurg>;
+use JSON::Class::Utils:auth<zef:vrurg>;
+use JSON::Class::X:auth<zef:vrurg>;
+use JSON::Class:auth<zef:vrurg>;
 use JSON::Fast;
 
-plan 5;
+plan 6;
 
 subtest "Version" => -> $subtest {
     plan 3;
@@ -116,6 +117,134 @@ subtest "Complex Hashes And Arrays" => {
     my $json = q<{"code-idx":[{"331":{"id":331,"payload":"rec100"},"32":{"id":32,"payload":"rec101"}},{"41":{"id":41,"payload":"rec200"},"42":{"id":42,"payload":"rec201"}}],"codes":{"c1":[{"id":11,"payload":"rec1"},{"id":21,"payload":"rec2"}],"c2":[{"id":12,"payload":"s1"},{"id":22,"payload":"s2"}]}}>;
     my $deserialized = Cmplx.from-json($json);
     cmp-deeply $deserialized, $expected, "deserialized";
+}
+
+subtest "Generics" => {
+    plan 3;
+
+    subtest "sequence itself as argument" => {
+        plan 4;
+
+        my role R[::T] is json {
+            has @.items is T;
+        }
+
+        my role R is json {
+            has Str:D $.id is required;
+        }
+
+        my class JSeq is json(:sequence(Num:D())) {}
+
+        my class CInt is json does R[JSeq] does R {}
+
+        my $c = CInt.from-json(q<{"items":[3,4,1],"id":"ABCD-EF-18"}>);
+
+        isa-ok $c.items, JSeq, "the positional attribute type is the sequence";
+        isa-ok $c.items.List[1], Num, "sequence item has correct type";
+        is $c.items[1], 4e0, "item value";
+        is $c.id, "ABCD-EF-18", "both candidates of the role are active";
+    }
+
+    subtest "sequence item type as argument" => {
+        plan 3;
+
+        my class ItemRec is json {
+            has Str:D $.id is required;
+            has Str:D $.name is required;
+        }
+
+        my \r = my role R[::T] is json {
+            # This package here is only to create tougher conditions for the test itself. No functional meaning here.
+            my package S {
+                class RJSeq is json(:sequence(T, default => T)) {}
+            }
+
+            has @.items is S::RJSeq;
+
+            method seq-type { S::RJSeq }
+        }
+
+        my class CS does R[Str:D()] {}
+        my class CN does R[Num:D()] {}
+
+        my $role-attr = r.^get_attribute_for_usage('@!items');
+
+        ok $role-attr.type.^archetypes.generic, "role attribute's type is generic";
+
+        my sub is-non-generic(Mu \class-type, Mu \data-type) is test-assertion {
+            subtest "Class " ~ class-type.^name => {
+                plan 6;
+                my $attr = class-type.^get_attribute_for_usage('@!items');
+                nok $attr.type.^json-item-descriptors.map(*.is-generic).any, "no generic descriptor slips in";
+                nok $attr.type.^json-item-default.^archetypes.generic, "default value is not generic";
+                nok class-type.^archetypes.generic, "class itself is not generic";
+                isa-ok class-type.seq-type, $role-attr.type, "instantiated class is a subclass of the role's generic one";
+                isa-ok class-type.seq-type.^json-item-default, nominalize-type(data-type), "default value type";
+
+                my $json = q<{"items":[7,4,8,3]}>;
+                my $obj = class-type.from-json($json);
+
+                ok $obj.items.List.all ~~ nominalize-type(data-type), "JSON values deserialized into correct data type";
+            }
+        }
+
+        is-non-generic(CS, Str:D());
+        is-non-generic(CN, Num:D());
+    }
+
+    subtest "dictionary item and key types as arguments" => {
+
+        my class ItemRec is json {
+            has Str:D $.id is required;
+            has Str:D $.name is required;
+        }
+
+        my \r = my role R[::VT, ::KT] is json {
+            # This package here is only to create tougher conditions for the test itself. No functional meaning here.
+            my package S {
+                class RJDict is json(:dict(default => VT, VT, :keyof(KT))) {}
+            }
+
+            has %.items is S::RJDict;
+
+            method dict-type { S::RJDict }
+        }
+
+        my $role-attr = r.^get_attribute_for_usage('%!items');
+
+        ok $role-attr.type.^archetypes.generic, "role attribute's type is generic";
+
+        my sub is-non-generic(Mu \class-type, Mu \data-type, Mu \key-type) is test-assertion {
+            subtest "Class " ~ class-type.^name => {
+                plan 8;
+                my $attr = class-type.^get_attribute_for_usage('%!items');
+                nok $attr.type.^json-item-descriptors.map(*.is-generic).any, "no generic descriptor slips in";
+                nok $attr.type.^json-key-descriptor.is-generic, "key descriptor is not generic";
+                nok $attr.type.^json-item-default.^archetypes.generic, "default value is not generic";
+                nok class-type.^archetypes.generic, "class itself is not generic";
+                isa-ok class-type.dict-type, $role-attr.type, "instantiated class is a subclass of the role's generic one";
+                isa-ok class-type.dict-type.^json-item-default, nominalize-type(data-type), "default value type";
+
+                my $json = q<{"items":{"1.1":"42","2.2":"3.1415926"}}>;
+                my $obj = class-type.from-json($json);
+
+                CATCH {
+                    note "!!! ", .^name, " ", .message, "\n", .backtrace.full.Str;
+                }
+
+                ok $obj.items.values.all ~~ nominalize-type(data-type), "JSON values deserialized into correct data type";
+                diag "KEYS WHAT: ", $obj.items.keys.map(*.^name);
+                diag "KEY WHAT : ", key-type.^name;
+                ok $obj.items.keys.all ~~ nominalize-type(key-type), "JSON keys deserialized into correct data type";
+            }
+        }
+
+        my class DS does R[Str:D(),Int:D()] {}
+        my class DN does R[Num:D(),Rat:D()] {}
+
+        is-non-generic(DS, Str:D(), Int:D());
+        is-non-generic(DN, Num:D(), Rat:D());
+    }
 }
 
 done-testing;

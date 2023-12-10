@@ -3,8 +3,9 @@ unit role JSON::Class::HOW::RoleContainer:ver($?DISTRIBUTION.meta<ver>):auth($?D
 
 has $!json-roles;
 
-method json-register-role(Mu \obj, Mu \typeobj) {
-    ($!json-roles // ($!json-roles := Array[Mu].new)).push: typeobj;
+method json-register-role(Mu \obj, Mu \typeobj --> Nil) {
+    .BIND-POS(.elems, typeobj)
+        given ($!json-roles // ($!json-roles := my @))
 }
 
 method json-roles(Mu \obj) is raw { $!json-roles // () }

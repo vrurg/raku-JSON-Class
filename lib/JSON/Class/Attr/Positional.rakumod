@@ -9,7 +9,9 @@ use JSON::Class::Types;
 also does JSON::Class::Attr;
 also does JSON::Class::Attr::Collection;
 
-method build-value-type { $!attr.type.of }
+method build-value-type(--> Mu) is raw {
+    $!attr.type.of
+}
 
 method set-serializer($serializer?, :$value, *%extra) {
     verify-named-args(:%extra, :what(":serializer argument of trait 'json'"), :source($!declarant.^name));

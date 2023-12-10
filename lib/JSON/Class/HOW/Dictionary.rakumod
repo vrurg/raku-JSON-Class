@@ -15,9 +15,12 @@ my class DefParser does JSON::Class::HOW::Collection::DefParser['dictionary'] {
     multi method parse-trait-def(List(Mu) :$keyof! is raw (Mu:U \type = Str:D(), *%c)) {
         self.parse-trait-def(type, |%c, :kind<keyof>);
     }
+    multi method parse-trait-def(Mu :$keyof! where *.^archetypes.generic) {
+        self.parse-trait-def(:keyof($keyof,));
+    }
 
     multi method handle-definition('keyof', JSON::Class::Descriptor:D $descr) {
-        self.json-class.^json-set-key-descriptor($descr);
+        self.json-type.^json-set-key-descriptor($descr);
     }
 }
 
@@ -31,7 +34,7 @@ method json-key-descriptor(Mu \obj, Bool :$peek) is raw {
         ($peek
             ?? Nil
             !! ($!json-key-descriptor :=
-                JSON::Class::ItemDescriptor.new(:declarant(obj.WHAT), :type(Str()), :name("keyof Str"))))
+                JSON::Class::ItemDescriptor.new(:declarant(obj.WHAT), :type(Str()), :name("keyof Str"), :kind<keyof>)))
 }
 
 method json-keyof(Mu \obj --> Mu) is raw { self.json-key-descriptor(obj).type }
@@ -39,7 +42,7 @@ method json-keyof(Mu \obj --> Mu) is raw { self.json-key-descriptor(obj).type }
 method json-setup-dictionary(Mu \obj) {
     self.json-set-item-default(obj, NOT-SET, :force);
 
-    my $def-parser = DefParser.new(json-class => obj.WHAT);
+    my $def-parser = DefParser.new(json-type => obj.WHAT);
     my $trait-name = $*JSON-CLASS-TRAIT // self.json-trait-name(obj);
     {
         my $*JSON-CLASS-TRAIT := $trait-name;
@@ -49,4 +52,14 @@ method json-setup-dictionary(Mu \obj) {
     }
 
     self.json-set-item-default(obj, nominalize-type( self.json-item-descriptors(obj).head.type ));
+}
+
+method json-instantiate-dictionary(Mu \obj, TypeEnv:D \typeenv --> Mu) is raw {
+    self.json-instantiate-collection(obj, typeenv);
+
+    if $!json-key-descriptor andthen .is-generic {
+        $!json-key-descriptor := typeenv.instantiate($!json-key-descriptor);
+    }
+
+    obj
 }

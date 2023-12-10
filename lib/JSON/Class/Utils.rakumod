@@ -16,9 +16,11 @@ sub is-basic-type(Mu \type) is raw is pure is export {
 sub is-a-class-type(Mu \type) is raw is pure is export {
     my \nominal-type = (type.^archetypes.nominalizable ?? type.^nominalize !! type);
 
-    ? ( nominal-type.HOW ~~ Metamodel::ClassHOW
-        && (nominal-type !~~ JSONBasicType
-            || nominal-type.^attributes.first({ .has_accessor || .is_built }) ))
+    # Rat needs to be handled individually because it does have public attributes from the Rational role.
+    !(nominal-type === Rat)
+      && ?( nominal-type.HOW ~~ Metamodel::ClassHOW
+            && (nominal-type !~~ JSONBasicType
+                || nominal-type.^attributes.first({ .has_accessor || .is_built }) ))
 }
 
 sub type-or-instance(Mu \what) is export {

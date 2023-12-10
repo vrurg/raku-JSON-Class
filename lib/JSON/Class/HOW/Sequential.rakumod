@@ -14,7 +14,7 @@ my class DefParser does JSON::Class::HOW::Collection::DefParser['sequence'] {}
 method json-setup-sequence(Mu \obj) {
     self.json-set-item-default(obj, NOT-SET, :force);
 
-    my $def-parser = DefParser.new(json-class => obj);
+    my $def-parser = DefParser.new(json-type => obj);
     my $trait-name = $*JSON-CLASS-TRAIT // self.json-trait-name(obj);
     {
         my $*JSON-CLASS-TRAIT := $trait-name;

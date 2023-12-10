@@ -4,6 +4,7 @@ unit role JSON::Class::HOW::Jsonish:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIB
 has $!json-warnings;
 
 method json-kind {...}
+method json-is-generic {...}
 
 method json-add-warning(Mu \obj, \warning) {
     ($!json-warnings // ($!json-warnings := Array.new)).push: warning;

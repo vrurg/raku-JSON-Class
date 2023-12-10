@@ -15,10 +15,13 @@ method compose(|) is raw {
     obj
 }
 
-method specialize(Mu \obj, Mu \target-class) is raw {
-    self.json-role-specialize(obj, target-class);
+method specialize_with(Mu \obj, Mu \conc, Mu \typeenv, Mu \pos-args --> Mu) is raw {
+    self.json-specialize-with(obj, conc, typeenv, pos-args);
 
-    target-class.^json-set-key-descriptor($_, :offer) with self.json-key-descriptor(obj, :peek);
+    with self.json-key-descriptor(obj, :peek) {
+        # my \target-class = pos-args[0];
+        pos-args[0].^json-set-key-descriptor($_, :offer)
+    }
 
     nextsame
 }

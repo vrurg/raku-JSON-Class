@@ -116,9 +116,10 @@ method json-deserialize-item(::?CLASS:D: Int:D $idx, Mu $json-value is raw --> M
                             { self.json-deserialize-value($descr.value-type, $json-value) } ));
         }
         else {
-            $rc := JSON::Class::X::Deserialize::SeqItem.new(
-                :type(self.WHAT), :$idx, :what($json-value),
-                :why("cannot determine the target type, no matching descriptor found") ).Failure
+            $rc :=
+                JSON::Class::X::Deserialize::SeqItem.new(
+                    :type(self.WHAT), :$idx, :what($json-value),
+                    :why("cannot determine the target type, no matching descriptor found") ).Failure
         }
     }
     else {

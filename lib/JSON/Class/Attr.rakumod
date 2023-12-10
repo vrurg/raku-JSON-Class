@@ -20,9 +20,9 @@ has Bool $.skip is built(:bind);
 has Bool $!skip-null is built(:bind);
 
 # What name to use as JSON key
-has Str:D $.json-name is mooish(:lazy);
+has Str:D $.json-name is mooish(:lazy, :predicate);
 
-has Bool $.lazy is mooish(:lazy);
+has Bool $.lazy is mooish(:lazy, :predicate);
 has JSONHelper $.build; # Either method name or a Code object
 
 has Mu $.value-type is mooish(:lazy, :no-init);
@@ -59,6 +59,10 @@ method build-lazy(::?CLASS:D:) {
     ? ($declarant-lazy && (attr-type ~~ JSON::Class::Jsonish || !(attr-type ~~ JSONBasicType | Map | List)))
 }
 
+# JSON::Class::ClassHOW replaces descriptors with clones bound to attributes from the class itself. These will already
+# have been instantiated.
+multi method INSTANTIATE-GENERIC(::?CLASS:D: TypeEnv) { self }
+
 method sigil { $!attr.name.substr(0,1) }
 
 method skip-null is raw {
@@ -79,8 +83,11 @@ method mooify(::?CLASS:D: Mu \obj, :$aliases) {
     &trait_mod:<is>($!attr, :mooish(@profile));
 }
 
-multi method kind-type('attribute') is pure { $!attr.type }
+# Preserve critical attributes.
+method clone(*%twiddles) is raw {
+    %twiddles<lazy> //= $!lazy if self.has-lazy;
+    %twiddles<json-name> //= $!json-name if self.has-json-name;
+    ::?CLASS.^post-clone: self, callwith(|%twiddles), %twiddles
+}
 
-# Prevent AttrX::Mooish from installing its version of the 'clone' method with fixups because we know that all lazies
-# here are purely immutable.
-method clone { nextsame }
+multi method kind-type('attribute') is pure { $!attr.type }

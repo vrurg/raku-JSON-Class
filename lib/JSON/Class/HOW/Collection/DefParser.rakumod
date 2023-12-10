@@ -1,24 +1,23 @@
 use v6.e.PREVIEW;
 unit role JSON::Class::HOW::Collection::DefParser:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>) [Str:D $collection-kind];
 
+use JSON::Class::HOW::Instantiation;
 use JSON::Class::Internals;
 use JSON::Class::ItemDescriptor;
 use JSON::Class::Types :NOT-SET;
 use JSON::Class::Utils;
 use JSON::Class::X;
 
-has Mu $.json-class is built(:bind) is required;
+has Mu $.json-type is built(:bind) is required;
 
 proto method parse-trait-def(|) {*}
 multi method parse-trait-def( Mu:U \typeobj,
                               Str:D :$kind = 'item',
                               *%c ( :to-json(:$serializer), :from-json(:$deserializer), :$matcher, *%extra) )
 {
-    verify-named-args(:%extra, :what($collection-kind ~ " $kind declaration for " ~ typeobj.^name), :source($!json-class.^name));
+    verify-named-args(:%extra, :what($collection-kind ~ " $kind declaration for " ~ typeobj.^name), :source($!json-type.^name));
 
-    my $descr := JSON::Class::ItemDescriptor.new( :declarant($!json-class),
-                                                  :type(typeobj),
-                                                  :name($kind ~ " " ~ typeobj.^name));
+    my $descr := JSON::Class::ItemDescriptor.new( :declarant($!json-type), :type(typeobj), :$kind );
     $descr.set-serializer($_) with $serializer;
     $descr.set-deserializer($_) with $deserializer;
     $descr.set-matcher($_) with $matcher;
@@ -46,10 +45,15 @@ multi method parse-trait-def(*%c) {
 
 proto method handle-definition(|) {*}
 multi method handle-definition('item', JSON::Class::Descriptor:D $descr --> Nil) {
-    my Mu \dtype = $descr.type;
-    $!json-class.^json-set-item-default(dtype) if dtype.^archetypes.nominal;
-    $!json-class.^json-add-item-descriptor($descr);
+    my \json-type = $!json-type;
+    my $ins-descr =
+        ( (json-type.HOW ~~ JSON::Class::HOW::Instantiation)
+          && (json-type.^json-typeenv andthen .instantiate($descr)) )
+        || $descr;
+    my Mu \dtype = $ins-descr.type;
+    json-type.^json-set-item-default(dtype) if dtype.^archetypes.nominal;
+    json-type.^json-add-item-descriptor($ins-descr);
 }
 multi method handle-definition('default', Mu $default is raw --> Nil) {
-    $!json-class.^json-set-item-default($default<>, :force);
+    $!json-type.^json-set-item-default($default<>, :force);
 }

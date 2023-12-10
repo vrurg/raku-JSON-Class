@@ -26,6 +26,12 @@ also does JSON::Class::HOW::SelfConfigure;
 
 has $!json-composed;
 
+method compose(Mu \obj, |c --> Mu) is raw {
+    my Mu \composed = callsame();
+    self.json-post-compose(obj);
+    composed
+}
+
 method compose_attributes(Mu \obj, |) {
     nextsame() if $!json-composed;
 
@@ -38,7 +44,7 @@ method compose_attributes(Mu \obj, |) {
 
         # Move attribute descriptors from roles to class local registry and re-bind them to class' attribute instances.
         for self.json-roles(obj) -> Mu \jsony-role {
-            for jsony-role.^json-attrs.values -> JSON::Class::Attr:D $json-attr {
+            for jsony-role.^json-attrs(:local, :v) -> JSON::Class::Attr:D $json-attr {
                 my Attribute:D $my-attr := self.get_attribute_for_usage(obj, $json-attr.name);
                 self.json-attr-register(obj, $json-attr.clone(:attr($my-attr)));
             }
@@ -55,7 +61,7 @@ method compose_attributes(Mu \obj, |) {
         }
     }
 
-    nextsame();
+    nextsame
 }
 
 method json-incorporate-attributes(Mu \obj --> Nil) {

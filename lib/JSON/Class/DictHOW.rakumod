@@ -3,9 +3,12 @@ unit role JSON::Class::DictHOW:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION
 
 use experimental :will-complain;
 
+use JSON::Class::Dictionary;
+use JSON::Class::Dict;
 use JSON::Class::HOW::Collection::Class;
 use JSON::Class::HOW::Configurable;
 use JSON::Class::HOW::Dictionary;
+use JSON::Class::HOW::Instantiation;
 use JSON::Class::HOW::Laziness;
 use JSON::Class::HOW::RoleContainer;
 use JSON::Class::HOW::SelfConfigure;
@@ -17,17 +20,28 @@ use JSON::Class::X;
 
 also does JSON::Class::HOW::Collection::Class;
 also does JSON::Class::HOW::Configurable;
-also does JSON::Class::HOW::RoleContainer;
-also does JSON::Class::HOW::Laziness;
 also does JSON::Class::HOW::Dictionary;
+also does JSON::Class::HOW::Instantiation;
+also does JSON::Class::HOW::Laziness;
+also does JSON::Class::HOW::RoleContainer;
 also does JSON::Class::HOW::SelfConfigure;
 
 has $!json-hash-type;
 
-method compose(Mu --> Mu) is raw {
-    my Mu \obj = callsame();
-    obj.^json-init-dictionary;
-    obj
+method compose(Mu \obj, |c --> Mu) is raw {
+    unless self.is_composed(obj) {
+        self.json-instantiation-prepare(obj);
+        self.add_parent(obj, JSON::Class::Dict);
+        self.add_role(obj, JSON::Class::Dictionary);
+    }
+    my \composed = callsame();
+    self.json-post-compose(obj);
+    composed
+}
+
+method publish_type_cache(Mu \obj) is raw {
+    self.json-init-dictionary(obj);
+    nextsame
 }
 
 method json-init-dictionary(|c) {

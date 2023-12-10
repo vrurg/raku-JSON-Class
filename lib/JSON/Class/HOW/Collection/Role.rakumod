@@ -3,8 +3,12 @@ unit role JSON::Class::HOW::Collection::Role:ver($?DISTRIBUTION.meta<ver>):auth(
     [::HOW-ROLE Mu, ::CLASS-ROLE Mu];
 
 use JSON::Class::HOW::Jsonish;
+use JSON::Class::HOW::Collection;
 
-method json-role-specialize(Mu \obj, Mu \target-class, |) is raw {
+my role ConcCollRoleHOW does JSON::Class::HOW::Collection {}
+
+method json-specialize-with(Mu \obj, Mu \conc, TypeEnv:D \typeenv, Mu \pos-args --> Mu) is raw {
+    my Mu \target-class = pos-args[0];
     my Mu \target-how = target-class.HOW;
 
     if target-how ~~ JSON::Class::HOW::Jsonish && target-how !~~ HOW-ROLE {
@@ -19,7 +23,14 @@ method json-role-specialize(Mu \obj, Mu \target-class, |) is raw {
         target-class.^add_role(CLASS-ROLE);
     }
 
-    target-class.^json-register-role(obj);
+    my Mu $chow := conc.HOW;
+    $chow does ConcCollRoleHOW unless $chow ~~ ConcCollRoleHOW;
+
+    for self.json-local-item-descriptors(obj) -> $descr {
+        conc.^json-add-item-descriptor: typeenv.instantiate($descr);
+    }
+
+    target-class.^json-register-role(conc);
 }
 
 method json-item-descriptors(Mu \obj) {
