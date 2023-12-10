@@ -388,9 +388,23 @@ li > .pod-block-code { margin-top: 16px; }
     <div class="pod-body">
     <h1 id="CHANGELOG"><a class="u" href="#___top" title="go to top of document">CHANGELOG</a></h1>
 <ul><li><p><strong>v0.0.4</strong></p>
-<ul><li><p>Implemented lazy attribute build with <code>:build</code> adverb of <code>is json</code> trait for attributes; see <a href="examples/lazy-build.raku"><em>examples/lazy-build.raku</em></a></p>
+<ul><li><p>Implement support for generic instantiations</p>
+<p>For example, the following is now supported:</p>
+<pre class="pod-block-code">role R[::ValT, ::KeyT] is json {
+    my class JDict is json(:dict(default =&gt; ValT, ValT, :keyof(KeyT))) {}
+    has %.items is JDict;
+}
+class Rec does R[Int:D, Str:D()] {}
+</pre>
+<p>This change requires Rakudo compiler builds starting with <a href="https://github.com/rakudo/rakudo/commit/28ebb7ac0f5057c1a836f6bdda15fdcf76eedfd9">the commit 28ebb7ac0f5057c1a836f6bdda15fdcf76eedfd9</a>, or starting v2023.12 releasem, when it's available.</p>
+</li>
+<li><p>Implemented lazy attribute build with <code>:build</code> adverb of <code>is json</code> trait for attributes; see <a href="examples/lazy-build.raku"><em>examples/lazy-build.raku</em></a></p>
 </li>
 <li><p>Don't mark type-declarator as <em>explicit</em> if attribute's <code>is json</code> declaration only uses <code>:skip</code> and <code>:build</code> adverbs. <em>Note</em> that using the trait without any adverb is still de-implicifying.</p>
+</li>
+<li><p>Added support for coercions as dictionary or sequences value types</p>
+</li>
+<li><p>Type mapping now works with nominalizables</p>
 </li>
 <li><p>Fix incorrect <code>.elems</code> on a fully deserialized dictionary</p>
 </li>
@@ -403,6 +417,12 @@ li > .pod-block-code { margin-top: 16px; }
 <li><p>Work around a bug where use of an iterable type object as a hash key triggers a bug deep in Rakudo CORE</p>
 </li>
 <li><p>Fix deserialization of typed (parameterized) positionals and associatives</p>
+</li>
+<li><p>Fixed <a href="https://docs.raku.org/type/Rat"><code>Rat</code></a> not considered as a basic type</p>
+</li>
+<li><p>Fixed mixins into a JSONified class</p>
+</li>
+<li><p>Some more under the hood fixes</p>
 </li>
 </ul>
 </li>

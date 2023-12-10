@@ -2,9 +2,27 @@
 
   - **v0.0.4**
     
+      - Implement support for generic instantiations
+        
+        For example, the following is now supported:
+        
+        ``` raku
+        role R[::ValT, ::KeyT] is json {
+            my class JDict is json(:dict(default => ValT, ValT, :keyof(KeyT))) {}
+            has %.items is JDict;
+        }
+        class Rec does R[Int:D, Str:D()] {}
+        ```
+        
+        This change requires Rakudo compiler builds starting with [the commit 28ebb7ac0f5057c1a836f6bdda15fdcf76eedfd9](https://github.com/rakudo/rakudo/commit/28ebb7ac0f5057c1a836f6bdda15fdcf76eedfd9), or starting v2023.12 releasem, when it's available.
+    
       - Implemented lazy attribute build with `:build` adverb of `is json` trait for attributes; see [*examples/lazy-build.raku*](examples/lazy-build.raku)
     
       - Don't mark type-declarator as *explicit* if attribute's `is json` declaration only uses `:skip` and `:build` adverbs. *Note* that using the trait without any adverb is still de-implicifying.
+    
+      - Added support for coercions as dictionary or sequences value types
+    
+      - Type mapping now works with nominalizables
     
       - Fix incorrect `.elems` on a fully deserialized dictionary
     
@@ -17,6 +35,12 @@
       - Work around a bug where use of an iterable type object as a hash key triggers a bug deep in Rakudo CORE
     
       - Fix deserialization of typed (parameterized) positionals and associatives
+    
+      - Fixed [`Rat`](https://docs.raku.org/type/Rat) not considered as a basic type
+    
+      - Fixed mixins into a JSONified class
+    
+      - Some more under the hood fixes
 
   - **v0.0.3**
     

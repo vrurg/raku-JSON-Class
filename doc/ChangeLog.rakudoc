@@ -5,17 +5,39 @@
 =begin item
 B<v0.0.4>
 
+=begin item
+Implement support for generic instantiations
+
+For example, the following is now supported:
+
+=begin code :lang<raku>
+role R[::ValT, ::KeyT] is json {
+    my class JDict is json(:dict(default => ValT, ValT, :keyof(KeyT))) {}
+    has %.items is JDict;
+}
+class Rec does R[Int:D, Str:D()] {}
+=end code
+
+This change requires Rakudo compiler builds starting with
+L<the commit 28ebb7ac0f5057c1a836f6bdda15fdcf76eedfd9|https://github.com/rakudo/rakudo/commit/28ebb7ac0f5057c1a836f6bdda15fdcf76eedfd9>, or
+starting v2023.12 releasem, when it's available.
+=end item
 =item Implemented lazy attribute build with C<:build> adverb of C<is json> trait for attributes; see L<I<examples/lazy-build.raku>|file:examples/lazy-build.raku>
 =begin item
 Don't mark type-declarator as I<explicit> if attribute's C<is json> declaration only uses C<:skip> and C<:build> adverbs.
 I<Note> that using the trait without any adverb is still de-implicifying.
 =end item
+=item Added support for coercions as dictionary or sequences value types
+=item Type mapping now works with nominalizables
 =item Fix incorrect C<.elems> on a fully deserialized dictionary
 =item Fix C<JSON::Class::X::ReMooify> exception when used with uncomposed yet types
 =item Fix some issues with serializing enumerations
 =item Fix some issues with deserializing parameterized positionals and associatives
 =item Work around a bug where use of an iterable type object as a hash key triggers a bug deep in Rakudo CORE
 =item Fix deserialization of typed (parameterized) positionals and associatives
+=item Fixed L<C<Rat>|https://docs.raku.org/type/Rat> not considered as a basic type
+=item Fixed mixins into a JSONified class
+=item Some more under the hood fixes
 
 =end item
 
