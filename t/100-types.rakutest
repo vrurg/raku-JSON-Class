@@ -228,13 +228,7 @@ subtest "Generics" => {
                 my $json = q<{"items":{"1.1":"42","2.2":"3.1415926"}}>;
                 my $obj = class-type.from-json($json);
 
-                CATCH {
-                    note "!!! ", .^name, " ", .message, "\n", .backtrace.full.Str;
-                }
-
                 ok $obj.items.values.all ~~ nominalize-type(data-type), "JSON values deserialized into correct data type";
-                diag "KEYS WHAT: ", $obj.items.keys.map(*.^name);
-                diag "KEY WHAT : ", key-type.^name;
                 ok $obj.items.keys.all ~~ nominalize-type(key-type), "JSON keys deserialized into correct data type";
             }
         }
