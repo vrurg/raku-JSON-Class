@@ -34,8 +34,7 @@ has $!json-is-generic;
 
 method json-is-generic { ? $!json-is-generic }
 
-method json-attr-register(Mu \obj, JSON::Class::Attr::Jsonish:D $json-attr) {
-    use nqp;
+method json-attr-register(Mu \obj, JSON::Class::Attr::Jsonish:D $json-attr --> Nil) {
     $!json-attrs := (|($!json-attrs // ()), $json-attr.name => $json-attr).Map;
     $!json-attr-lookup := Nil;
     $!json-local-keys := Nil;
