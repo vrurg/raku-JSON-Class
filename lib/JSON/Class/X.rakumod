@@ -128,6 +128,14 @@ my class Deserialize::Impossible does Deserialize {
     }
 }
 
+my class Deserialize::Fatal does Deserialize does X::Wrapper {
+    has Str:D $.what is required; # What was being deserialized when the exception happened
+    method message {
+        "Deserialization of " ~ self.type.^name ~ " died" ~ self!exception-name-message
+        ~ " while trying to " ~ $.what ~ self!wrappee-message(:details)
+    }
+}
+
 my class Deserialize::SeqItem does Deserialize {
     has Mu $.what is required;
     has Int:D $.idx is required;

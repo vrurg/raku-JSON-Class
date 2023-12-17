@@ -197,6 +197,15 @@ multi method json-deserialize(%from, JSON::Class::Config :$config is copy) {
     for %from.keys -> $json-name {
         my \from-value = %from{$json-name}<>;
 
+        CATCH {
+            default {
+                JSON::Class::X::Deserialize::Fatal.new(
+                    :exception($_),
+                    :type(self.WHAT),
+                    :what("deserialize JSON key '$json-name'") ).throw
+            }
+        }
+
         with json-class.^json-get-key($json-name, :!local) -> JSON::Class::Attr:D $json-attr {
             my $attr-name = $json-attr.name;
             if !$force-eager && $json-attr.lazy {
