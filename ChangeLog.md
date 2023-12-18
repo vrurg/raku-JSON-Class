@@ -1,5 +1,7 @@
 # CHANGELOG
 
+  - **v0.0.5**
+
   - **v0.0.4**
     
       - Implement support for generic instantiations
