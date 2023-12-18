@@ -158,7 +158,7 @@ multi method json-deserialize-value( ::DT Mu \dest-type,
     my proto sub j2v(| --> Mu) {*}
 
     multi sub j2v(JSON::Class::Jsonish \final-type, \value --> Mu) is raw is default {
-        final-type.json-deserialize(value, :$config)
+        nominalize-type(final-type).json-deserialize(value, :$config)
     }
 
     multi sub j2v(Positional \final-type, \value) is raw {
