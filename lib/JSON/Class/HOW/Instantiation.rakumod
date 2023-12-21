@@ -2,11 +2,12 @@ use v6.e.PREVIEW;
 unit role JSON::Class::HOW::Instantiation:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
 
 use nqp;
+use JSON::Class::Types;
 
 # This must be set to a half-baked, pre-composed HOW. Normally, it'd be a clone of pre-composed class HOW.
-has $!json-orig;
-has $!json-how-template;
-has $!json-typeenv;
+has $!json-orig is json-meta(:mixin-skip);
+has $!json-how-template is json-meta(:mixin-skip);
+has $!json-typeenv is json-meta(:mixin-skip);
 
 my sub clone-HOW(Mu \how --> Mu) is raw {
     my Mu \how-clone := nqp::clone(how);

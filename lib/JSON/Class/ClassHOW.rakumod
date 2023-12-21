@@ -14,6 +14,7 @@ use JSON::Class::HOW::Imply;
 use JSON::Class::HOW::SelfConfigure;
 use JSON::Class::HOW::Jsonish;
 use JSON::Class::Internals;
+use JSON::Class::Types;
 use JSON::Class::Utils;
 
 also does JSON::Class::HOW::Jsonish;
@@ -24,7 +25,7 @@ also does JSON::Class::HOW::Explicit;
 also does JSON::Class::HOW::Imply;
 also does JSON::Class::HOW::SelfConfigure;
 
-has $!json-composed;
+has $!json-composed is json-meta(:mixin-skip);
 
 method compose(Mu \obj, |c --> Mu) is raw {
     my Mu \composed = callsame();

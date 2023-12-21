@@ -18,7 +18,7 @@ subtest "Basics" => {
         },
         X::TypeCheck::Assignment,
         :got(13),
-        :expected(JDict.of),
+        :expected($jdict.of),
         "assignment of a wrong value type";
 
     throws-like {
@@ -26,7 +26,7 @@ subtest "Basics" => {
         },
         X::TypeCheck::Assignment,
         :got(Str),
-        :expected(JDict.of),
+        :expected($jdict.of),
         "assignment of an undef type";
 
     my $json = $jdict.to-json(:!pretty, :sorted-keys);

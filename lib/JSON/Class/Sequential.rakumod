@@ -2,15 +2,16 @@ use v6.e.PREVIEW;
 unit role JSON::Class::Sequential:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
 use nqp;
 
+use JSON::Class::HOW::Jsonish;
 use JSON::Class::Internals;
-use JSON::Class::Types :NOT-SET;
 use JSON::Class::Sequence;
+use JSON::Class::Types :NOT-SET;
 
 my Mu $JSON-CLASS := ::?CLASS;
 
 submethod JSON-POSTCOMPOSE {
     # See JSON::Class::Representation
-    $JSON-CLASS := ::?CLASS.^mro.first(!*.^is_mixin);
+    $JSON-CLASS := self.^mro.first({ .HOW ~~ JSON::Class::HOW::Jsonish });
 }
 
 method json-class is raw { $JSON-CLASS }

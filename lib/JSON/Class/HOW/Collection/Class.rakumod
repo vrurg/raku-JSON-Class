@@ -4,14 +4,14 @@ use MONKEY-SEE-NO-EVAL;
 
 use JSON::Class::HOW::Collection;
 use JSON::Class::ItemDescriptor;
-use JSON::Class::Types :NOT-SET;
+use JSON::Class::Types :NOT-SET, :DEFAULT;
 use JSON::Class::Utils;
 
 # Item descriptors collected from parents and roles
-has $!json-mro-descriptors;
+has $!json-mro-descriptors is json-meta(:mixin-skip);
 
-has $!json-descr-by-cond;
-has $!json-has-coercions;
+has $!json-descr-by-cond is json-meta(:mixin-skip);
+has $!json-has-coercions is json-meta(:mixin-skip);
 
 method json-build-collection-type(Mu,@) {...}
 
@@ -99,12 +99,12 @@ method json-has-coercions(Mu \obj) {
 
 # Produces a code object which takes a source value and coerces it if necessary. The code is a multi-dispatch routine
 # where candidates are added in the order of our descriptors.
-has $!json-assign-thunk;
+has $!json-assign-thunk is json-meta(:mixin-skip);
 method json-compose-assign-thunk(Mu \obj) {
     without $!json-assign-thunk {
-        if $!json-has-coercions {
+        if self.json-has-coercions(obj) {
             my $sub-name = "_assign_" ~ (S:g/\W/_/ given self.name(obj));
-            my &proto = $!json-assign-thunk := ('proto sub ' ~ $sub-name ~ '(Mu) {*}').EVAL;
+            my &proto = $!json-assign-thunk := ('my proto sub ' ~ $sub-name ~ '(Mu) {*}').EVAL;
 
             my sub new-cand(::T) { my sub (T \v) is raw { my T $ = v } }
 

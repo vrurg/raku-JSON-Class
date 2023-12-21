@@ -2,10 +2,14 @@ use v6.e.PREVIEW;
 use Test::Async;
 use JSON::Class:auth<zef:vrurg>;
 
+plan 2;
+
 subtest "Incorporating roles" => {
     # By default attributes from roles, consumed by a class, are not included into serialization, unless the roles
     # themselves are `is json`. But incorporating a role via `:does` argument of the `json` trait will make its content
     # serializable.
+
+    plan 2;
 
     my role Base {
         has Str $.comment;
@@ -55,6 +59,33 @@ subtest "Incorporating roles" => {
 
     is $rec.to-json(:sorted-keys), $expected, "incorporated role attributes are all serialized";
     cmp-deeply Record.from-json($expected), $rec, "incorporated role attributes are all deserialized";
+}
+
+subtest "Mixins" => {
+    plan 6;
+    my class Foo is json {
+        has Str $.name;
+    }
+
+    my role Modifier is json {
+        has Int $.count;
+        has Numeric $.amount;
+    }
+
+    my \foo-mixin = Foo but Modifier;
+
+    isa-ok foo-mixin, Foo, "mixin is the base class";
+    isa-ok foo-mixin, Modifier, "mixin does the mixin role";
+    isa-ok foo-mixin.json-class, foo-mixin, "mixin class is reported as JSON class";
+
+    cmp-deeply foo-mixin.^json-attrs-by-key(:k).sort.List, <amount count name>, "mixin includes all JSON keys";
+
+    my $expected = q<{"amount":1.2,"count":42,"name":"the answer"}>;
+    my $foo-m = foo-mixin.new(:name('the answer'), :count(42), :amount(1.2));
+    is $foo-m.to-json(:sorted-keys, :!pretty), $expected, "mixin serializes in full";
+
+    my $deserialized = foo-mixin.from-json($expected);
+    cmp-deeply $deserialized, $foo-m, "mixin deserializes";
 }
 
 done-testing;

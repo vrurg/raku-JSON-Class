@@ -25,3 +25,17 @@ subset JSONHelper is export of Any where Str:D | Code:D | Any:U;
 subset JSONBuildHelper is export of Any where Str:D | Code:D | Bool:D | Any:U;
 
 enum JSONStages is export (JSSerialize => 'to-json', JSDeserialize => 'from-json', JSMatch => 'match');
+
+my class AttrMeta {
+    has Bool $.mixin-skip;
+    multi method COERCE(%profile) { self.new: |%profile }
+    multi method COERCE(Any:D \profile) { self.new: |profile.Hash }
+}
+
+role JSONAttr {
+    has AttrMeta:D() $.json-meta is required;
+}
+
+multi sub trait_mod:<is>(Attribute:D \attr, Any:D :$json-meta!) is export {
+    attr does JSONAttr( $json-meta )
+}

@@ -20,15 +20,15 @@ also does JSON::Class::HOW::Laziness;
 # Local attributes which are to de-/serialized
 has $!json-attrs;
 # All serializable attributes, including parent classes
-has $!json-attr-lookup;
+has $!json-attr-lookup is json-meta(:mixin-skip);
 # Local serializable attribute desriptors by their JSON names
-has $!json-local-keys;
+has $!json-local-keys is json-meta(:mixin-skip);
 # All serializable attributes by their JSON names
-has $!json-mro-keys;
+has $!json-mro-keys is json-meta(:mixin-skip);
 # A Set of JSON key names of all JSON attributes of this class
-has $!json-mro-key-set;
+has $!json-mro-key-set is json-meta(:mixin-skip);
 # If this type object wants undefined attributes to be skipped from serialization
-has $!json-skip-null;
+has $!json-skip-null is json-meta(:mixin-skip);
 
 has $!json-is-generic;
 

@@ -2,13 +2,14 @@ use v6.e.PREVIEW;
 unit role JSON::Class::Dictionary:ver($?DISTRIBUTION.meta<ver>):auth($?DISTRIBUTION.meta<auth>):api($?DISTRIBUTION.meta<api>);
 use nqp;
 
+use JSON::Class::HOW::Jsonish;
 use JSON::Class::Types :NOT-SET;
 
-my Mu $JSON-CLASS := ::?CLASS;
+my Mu $JSON-CLASS = ::?CLASS;
 
 submethod JSON-POSTCOMPOSE {
     # See JSON::Class::Representation
-    $JSON-CLASS := ::?CLASS.^mro.first(!*.^is_mixin);
+    $JSON-CLASS := self.^mro.first({ .HOW ~~ JSON::Class::HOW::Jsonish });
 }
 
 method json-class is raw is pure { $JSON-CLASS }
@@ -80,5 +81,5 @@ multi method INSTANTIATE-GENERIC( ::?CLASS:D:
                                   --> ::?ROLE:D )
     is raw
 {
-    ($instantiation // ::?CLASS.INSTANTIATE-GENERIC($typeenv)).STORE(self)
+    ($instantiation // $JSON-CLASS.INSTANTIATE-GENERIC($typeenv)).STORE(self)
 }

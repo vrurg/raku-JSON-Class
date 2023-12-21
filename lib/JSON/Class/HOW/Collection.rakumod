@@ -5,19 +5,19 @@ use experimental :will-complain;
 
 use JSON::Class::HOW::Jsonish;
 use JSON::Class::ItemDescriptor;
-use JSON::Class::Types :NOT-SET;
+use JSON::Class::Types :NOT-SET, :DEFAULT;
 use JSON::Class::Utils;
 
 also does JSON::Class::HOW::Jsonish;
 
-has $!json-item-descriptors;
+has $!json-item-descriptors is json-meta(:mixin-skip);
 # What would serve as default value for array elements when Nil is assigned.
 has Mu $!json-item-default;
 
-has $!json-item-declarations;
-has $!json-trait-name;
+has $!json-item-declarations is json-meta(:mixin-skip);
+has $!json-trait-name is json-meta(:mixin-skip);
 
-has $!json-is-generic;
+has $!json-is-generic is json-meta(:mixin-skip);
 
 method json-is-generic(Mu) { ? $!json-is-generic }
 

@@ -4,9 +4,10 @@ unit role JSON::Class::HOW::SelfConfigure:ver($?DISTRIBUTION.meta<ver>):auth($?D
 use JSON::Class::Config;
 use JSON::Class::Jsonish;
 use JSON::Class::Internals;
+use JSON::Class::Types;
 use JSON::Class::Utils;
 
-has $!json-incorporated-roles;
+has $!json-incorporated-roles is json-meta(:mixin-skip);
 
 method json-incorporated-roles(Mu \obj) is raw { $!json-incorporated-roles // () }
 

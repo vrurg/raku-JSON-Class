@@ -16,8 +16,8 @@ also does JSON::Class::Attr::Jsonish;
 
 has Attribute:D $.attr handles <type name has_accessor is_built get_value package> is required;
 
-has Bool $.skip is built(:bind);
-has Bool $!skip-null is built(:bind);
+has Bool $.skip;
+has Bool $!skip-null is built;
 
 # What name to use as JSON key
 has Str:D $.json-name is mooish(:lazy, :predicate);

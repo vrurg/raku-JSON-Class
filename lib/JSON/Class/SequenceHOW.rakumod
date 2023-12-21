@@ -14,7 +14,7 @@ use JSON::Class::ItemDescriptor;
 use JSON::Class::Jsonish;
 use JSON::Class::Sequence;
 use JSON::Class::Sequential;
-use JSON::Class::Types :NOT-SET;
+use JSON::Class::Types :NOT-SET, :DEFAULT;
 use JSON::Class::Utils;
 use JSON::Class::X;
 
@@ -26,7 +26,7 @@ also does JSON::Class::HOW::Sequential;
 also does JSON::Class::HOW::SelfConfigure;
 also does JSON::Class::HOW::RoleContainer;
 
-has $!json-array-type;
+has $!json-array-type is json-meta(:mixin-skip);
 
 method compose(Mu \obj, | --> Mu) is raw {
     unless self.is_composed(obj) {

@@ -44,18 +44,21 @@ multi method new(*@items, *%profile) {
 }
 
 my role Coercive {
-    my &assign-thunk = ::?CLASS.json-class.^json-compose-assign-thunk;
+    my &assign-thunk;
+    submethod JSON-POSTCOMPOSE {
+        &assign-thunk = self.json-class.^json-compose-assign-thunk;
+    }
     multi method ASSIGN-KEY(::?CLASS:D: Mu \key, Mu \value, |c --> Mu) is raw {
         nextwith(key, &assign-thunk(value), |c)
     }
 }
 
 submethod TWEAK(:%json-raw) {
-    $!json-raw := %json-raw;
-    $!json-items := self.json-new-dict-hash;
     if self.json-class.^json-has-coercions {
         self does Coercive;
     }
+    $!json-raw := %json-raw;
+    $!json-items := self.json-new-dict-hash;
     given self.json-key-descriptor {
         # In the most simple case of string keys with no marshallers we may skip mapping from JSON keys into the
         # sequence keys.
@@ -215,7 +218,7 @@ method json-deserialize-item(::?CLASS:D: Mu $key is raw, $json-value is raw --> 
     my Mu $rc;
 
     with $json-value {
-        with self.json-guess-descriptor(:$json-value, :$key) -> JSON::Class::ItemDescriptor:D $descr {
+        with self.json-guess-descriptor(:$json-value, :$key) -> JSON::Class::ItemDescriptor $descr {
             $rc := self.json-deserialize-dict-value($descr, $json-value);
         }
         else {

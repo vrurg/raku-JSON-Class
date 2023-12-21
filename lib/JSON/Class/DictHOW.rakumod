@@ -14,7 +14,7 @@ use JSON::Class::HOW::RoleContainer;
 use JSON::Class::HOW::SelfConfigure;
 use JSON::Class::ItemDescriptor;
 use JSON::Class::Jsonish;
-use JSON::Class::Types :NOT-SET;
+use JSON::Class::Types :NOT-SET, :DEFAULT;
 use JSON::Class::Utils;
 use JSON::Class::X;
 
@@ -26,7 +26,7 @@ also does JSON::Class::HOW::Laziness;
 also does JSON::Class::HOW::RoleContainer;
 also does JSON::Class::HOW::SelfConfigure;
 
-has $!json-hash-type;
+has $!json-hash-type is json-meta(:mixin-skip);
 
 method compose(Mu \obj, |c --> Mu) is raw {
     unless self.is_composed(obj) {
