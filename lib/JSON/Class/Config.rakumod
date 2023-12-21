@@ -407,13 +407,17 @@ multi method from-json(::?CLASS:D: $json, *%c) {
 }
 
 method !PRESET-HELPERS {
+    my proto sub value2str(|) {*}
+    multi sub value2str(Mu:U) is raw { Nil }
+    multi sub value2str(Mu:D $_) is raw { .Str }
+
     self.set-helpers: DateTime,
-                      :to-json<Str>,
+                      :to-json(&value2str),
                       :from-json<new>,
                       matcher => -> Str:D $from { ? try { DateTime.new($from) } };
 
     self.set-helpers: Version,
-                      :to-json<Str>,
+                      :to-json(&value2str),
                       :from-json<new>,
                       matcher => -> Str:D $from { ? try { Version.new($from) } };
 
