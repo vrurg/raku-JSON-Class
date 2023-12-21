@@ -122,10 +122,16 @@ method !json-use-builder(JSON::Class::Attr:D $descr --> Mu) is raw {
 method json-build-attr(::?CLASS:D: Str:D :$attribute! --> Mu) is raw {
     self.json-lazy-deserialize-context:
         {
-            given self.json-class.^json-get-attr($attribute) {
+            with self.json-class.^json-get-attr($attribute) {
                 self!json-has-lazy($_)
                     ?? self.json-deserialize-attr($_)
                     !! self!json-use-builder($_)
+            }
+            else {
+                JSON::Class::X::Deserialize::Impossible.new(
+                    :type(self.WHAT),
+                    :why("no descriptor found for attribute " ~ $attribute)
+                )
             }
         },
         finalize => { $!json-lazies-lock.protect: { $!json-lazies := Nil; } }
