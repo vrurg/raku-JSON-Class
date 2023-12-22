@@ -1,6 +1,12 @@
 # CHANGELOG
 
   - **v0.0.5**
+    
+      - Support for marshalling of undefined `DateTime` and `Version` values with `:using-defaults`
+    
+      - Implement support for mixins
+    
+      - Fix config derivation from upstream configuration
 
   - **v0.0.4**
     

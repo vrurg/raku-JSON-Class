@@ -5,7 +5,9 @@
 =begin item
 B<v0.0.5>
 
-
+=item Support for marshalling of undefined C<DateTime> and C<Version> values with C<:using-defaults>
+=item Implement support for mixins
+=item Fix config derivation from upstream configuration
 =end item
 
 =begin item
