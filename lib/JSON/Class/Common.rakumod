@@ -268,7 +268,7 @@ method json-lazy-deserialize-context(&code, :&finalize --> Mu) is raw {
 proto method json-config-context(|) {*}
 
 multi method json-config-context(&code, JSON::Class::Config:D :$config, *%twiddles) is raw {
-    &code( my $*JSON-CLASS-CONFIG := %twiddles ?? $config.clone(|%twiddles) !! $config )
+    &code( my $*JSON-CLASS-CONFIG := %twiddles ?? $config.dup(|%twiddles) !! $config )
 }
 
 multi method json-config-context(&code, :$config, *%twiddles) is raw {
@@ -276,7 +276,7 @@ multi method json-config-context(&code, :$config, *%twiddles) is raw {
     my %defaults = %config ?? Empty !! self.json-config-defaults;
     my JSON::Class::Config:D $json-config :=
         ($*JSON-CLASS-CONFIG
-            andthen (%config || %twiddles ??  .clone(|%config, |%twiddles) !! $_)
+            andthen (%config || %twiddles ??  .dup(|%config, |%twiddles) !! $_)
             orelse (%config
                 ?? self.json-config-class.new(|%config, |%twiddles)
                 !! ( (%twiddles || %defaults)
