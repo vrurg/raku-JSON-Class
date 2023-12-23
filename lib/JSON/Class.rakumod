@@ -88,6 +88,7 @@ BEGIN {
                          Bool :$implicit,
                          Bool :$lazy,
                          Bool :$skip-null,
+                         :$config,
                          :$does = (),
                          :$is = (),
                          Mu :$sequence is raw = NOT-SET,
@@ -96,6 +97,8 @@ BEGIN {
     {
         verify-named-args(:%extra, :what("trait '" ~ $*JSON-CLASS-TRAIT ~ "'"), :source(typeobj.^name));
         one-collection-kind((my Mu $dcseq := $sequence<>), (my Mu $dcdict := $dict<>));
+
+        my %config = .Hash with $config;
 
         if $dcseq !=:= NOT-SET {
             no-redeclare(typeobj, JSON::Class::HOW::SequentialRole, "role");
@@ -116,7 +119,7 @@ BEGIN {
 
             typeobj.^json-set-explicit(!$_) with $implicit;
             typeobj.^json-set-skip-null($skip-null);
-            typeobj.^json-configure-typeobject( :$lazy, is => is2list($is), does => does2list($does) )
+            typeobj.^json-configure-typeobject( :%config, :$lazy, is => is2list($is), does => does2list($does) )
         }
     }
 
@@ -126,6 +129,7 @@ BEGIN {
                           Bool :$pretty,
                           Bool :$sorted-keys,
                           Bool :$skip-null,
+                          :$config,
                           :$does = (),
                           :$is = (),
                           Mu :$sequence is raw = NOT-SET,
@@ -134,6 +138,8 @@ BEGIN {
     {
         verify-named-args(:%extra, :what("trait 'json'"), :source(typeobj.^name));
         one-collection-kind((my Mu $dcseq := $sequence<>), (my Mu $dcdict := $dict<>));
+
+        my %config = .Hash with $config;
 
         if $dcseq !=:= NOT-SET {
             no-redeclare(typeobj, JSON::Class::SequenceHOW, "class");
@@ -158,7 +164,10 @@ BEGIN {
             typeobj.^json-set-skip-null($skip-null);
         }
 
-        typeobj.^json-configure-typeobject( :$lazy, :$pretty, :$sorted-keys, is => is2list($is), does => does2list($does) );
+        typeobj.^json-configure-typeobject:
+            :$lazy, :$pretty, :$sorted-keys, :%config,
+            is => is2list($is),
+            does => does2list($does);
     }
 
     my sub trait-capture(Mu \trait-arg) is raw {

@@ -4,7 +4,7 @@ use JSON::Class:auth<zef:vrurg>;
 use JSON::Class::Config:auth<zef:vrurg>;
 use JSON::Class::Types:auth<zef:vrurg>;
 
-plan 6;
+plan 7;
 
 subtest "Global defaults" => {
     plan 11;
@@ -145,17 +145,34 @@ subtest "Severity" => -> $subtest {
 }
 
 subtest "Enums" => {
-    plan 2;
+    plan 4;
 
     my enum FOO <f1 f2>;
+    # By default enums serialized as symbols
     my class Bar is json {
         has FOO @.e;
     }
+    # This is explicit declaration of the default behavior
+    my class BarAsKey is json(:config(:!enums-as-value)) {
+        has FOO @.e;
+    }
+    # Quite opposite...
+    my class BarAsVal is json(:config(:enums-as-value)) {
+        has FOO @.e;
+    }
+
+    my $expect-as-key = q<{"e":["f2","f1"]}>;
+    my $expect-as-val = q<{"e":[1,0]}>;
 
     my $bar = Bar.new(e => [f2, f1]);
-    is $bar.to-json, q<{"e":["f2","f1"]}>, "default enum serialization";
+    is $bar.to-json, $expect-as-key, "default enum serialization";
     my $config = JSON::Class::Config.new(:enums-as-value);
-    is $bar.to-json(:$config), q<{"e":[1,0]}>, "setting enums-as-value in config";
+    is $bar.to-json(:$config), $expect-as-val, "setting enums-as-value in config";
+
+    my $bar-key = BarAsKey.new(e => [f2, f1]);
+    is $bar-key.to-json, $expect-as-key, "class with config defaults set to :!enums-as-value";
+    my $bar-val = BarAsVal.new(e => [f2, f1]);
+    is $bar-val.to-json, $expect-as-val, "class with config defaults set to :enums-as-value";
 }
 
 subtest "Global de-/serializers" => -> $subtest {
@@ -277,6 +294,31 @@ subtest "Deep JSONificication" => {
     is $obj.to-json(:sorted-keys),
        q<{"c1":"some C1","c2":2,"c3":false,"c4":3.141592653589793e0}>,
        "JSONified class serialization";
+}
+
+subtest "Config Defaults" => {
+    plan 3;
+
+    my class Foo1 is json(:config(:pretty, :sorted-keys)) {
+        has Bool $.flag = True;
+    }
+    my class Foo2 is json(:!pretty, :config(:pretty, :sorted-keys)) {
+        has Bool $.flag = True;
+    }
+    my class Foo3 is json(:config(:bad-option, :strict)) {
+        has Bool $.flag = True;
+    }
+
+    my $foo1 = Foo1.new;
+    my $foo2 = Foo2.new;
+
+    is $foo1.to-json, "\{\n  \"flag\": true\n}", ":pretty from config defaults is respected";
+    is $foo2.to-json, q<{"flag":true}>, "trait-level :pretty takes over config defaults";
+    throws-like
+        { Foo3.new.to-json; },
+        JSON::Class::X::Config::UnknownOptions,
+        :message(/"'bad-option'"/),
+        "attempt to serialize with an unknown default config option";
 }
 
 done-testing;

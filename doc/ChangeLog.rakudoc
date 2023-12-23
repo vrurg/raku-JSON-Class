@@ -7,6 +7,7 @@ B<v0.0.5>
 
 =item Support for marshalling of undefined C<DateTime> and C<Version> values with C<:using-defaults>
 =item Implement support for mixins
+=item Support for C<:config> argument of C<is json> trait to define any default configuration value for typeobject
 =item Fix config derivation from upstream configuration
 =end item
 

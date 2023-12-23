@@ -6,6 +6,8 @@
     
       - Implement support for mixins
     
+      - Support for `:config` argument of `is json` trait to define any default configuration value for typeobject
+    
       - Fix config derivation from upstream configuration
 
   - **v0.0.4**

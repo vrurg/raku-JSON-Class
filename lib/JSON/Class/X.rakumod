@@ -100,6 +100,14 @@ my class Config::NonWrapperType does Config does Typed {
     }
 }
 
+my class Config::UnknownOptions does Config {
+    has @.options is required;
+    method message {
+        my $sfx = @.options > 1 ?? "s" !! "";
+        "Unknown configuration option$sfx " ~ @!options.map({ "'$_'" }).join(", ")
+    }
+}
+
 class ReMooify does Base does Typed {
     has Attribute:D $.attr is required;
     method message {

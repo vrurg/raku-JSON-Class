@@ -176,6 +176,12 @@ There is a consequence to this rule: implicit JSONification of attributes skips 
     
     If *True* then attributes of this typeobject are not serialized if their value is undefined. When omitted then value of this parameter is obtained from the configuration object. See [*t/020-json-basics.rakutest*](../../../t/020-json-basics.rakutest), subtest "Undefineds".
 
+  - `Hash()` **`:config`**
+    
+    This argument lets to specify default configuration options for a typeobject. See [*t/060-config.rakutest*](../../../t/060-config.rakutest), subtest "Config Defaults".
+    
+    *Note* that for options, directly supported by the trait (like `:pretty`, for example), values in `:config` has lower priority. I.e. for `is json(:pretty, :config(:!pretty))` the final value would be `:pretty`.
+
   - **`:sequence(...)`**
     
     This type object is a sequence. See the [Sequences](#Sequences) section.

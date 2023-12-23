@@ -540,6 +540,10 @@ Attribute : The Answer
 <li><p><code>Bool</code> <strong><code>:skip-null</code></strong></p>
 <p>If <em>True</em> then attributes of this typeobject are not serialized if their value is undefined. When omitted then value of this parameter is obtained from the configuration object. See <a href="../../../t/020-json-basics.rakutest"><em>t/020-json-basics.rakutest</em></a>, subtest "Undefineds".</p>
 </li>
+<li><p><code>Hash()</code> <strong><code>:config</code></strong></p>
+<p>This argument lets to specify default configuration options for a typeobject. See <a href="../../../t/060-config.rakutest"><em>t/060-config.rakutest</em></a>, subtest "Config Defaults".</p>
+<p><em>Note</em> that for options, directly supported by the trait (like <code>:pretty</code>, for example), values in <code>:config</code> has lower priority. I.e. for <code>is json(:pretty, :config(:!pretty))</code> the final value would be <code>:pretty</code>.</p>
+</li>
 <li><p><strong><code>:sequence(...)</code></strong></p>
 <p>This type object is a sequence. See the <a href="#Sequences">Sequences</a> section.</p>
 </li>

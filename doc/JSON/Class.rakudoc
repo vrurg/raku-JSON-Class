@@ -230,6 +230,16 @@ L<I<t/020-json-basics.rakutest>|file:t/020-json-basics.rakutest>, subtest "Undef
 =end item
 
 =begin item
+C<Hash()> B<C<:config>>
+
+This argument lets to specify default configuration options for a typeobject.
+See L<I<t/060-config.rakutest>|file:t/060-config.rakutest>, subtest "Config Defaults".
+
+I<Note> that for options, directly supported by the trait (like C<:pretty>, for example), values in C<:config> has lower
+priority. I.e. for C<is json(:pretty, :config(:!pretty))> the final value would be C<:pretty>.
+=end item
+
+=begin item
 B<C<:sequence(...)>>
 
 This type object is a sequence. See the L<Sequences|#Sequences> section.

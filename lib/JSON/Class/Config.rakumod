@@ -67,11 +67,20 @@ method json-module { JSON::Fast }
 method to-json-routine { &JSON::Fast::to-json }
 method from-json-routine { &JSON::Fast::from-json }
 
-submethod TWEAK(Bool :defaults($!using-defaults) = True, Bool :$easy, Bool :$warn, Bool :$strict) {
+submethod TWEAK(Bool :defaults($!using-defaults) = True, Bool :$easy, Bool :$warn, Bool :$strict, *%options) {
     if $!using-defaults {
         self!PRESET-HELPERS;
     }
     self.set-severity(:$easy, :$warn, :$strict);
+    self!check-options(%options);
+}
+
+method !check-options(%options) {
+    my $known-opts = self.^attributes(:!local).grep({ .has_accessor || .is_built }).map(*.name.substr(2)).Set;
+    my $submitted-opts = %options.keys.Set;
+    if ($submitted-opts (-) $known-opts) -> $unknown-opts {
+        self.alert: JSON::Class::X::Config::UnknownOptions.new(options => $unknown-opts.keys)
+    }
 }
 
 method global(*%c) {
@@ -359,7 +368,7 @@ multi method severity(::?CLASS:D:) { $!severity.key.lc }
 
 proto method alert(|) {*}
 multi method alert(::?CLASS:U: |c) is hidden-from-backtrace { self.global.alert(|c) }
-multi method alert(::?CLASS:D: Exception:D $ex --> Nil) {
+multi method alert(::?CLASS:D: Exception:D $ex --> Nil) is hidden-from-backtrace {
     my $severity = $*JSON-CLASS-SEVERITY // $!severity;
     return if $severity == EASY;
     if $severity == WARN {

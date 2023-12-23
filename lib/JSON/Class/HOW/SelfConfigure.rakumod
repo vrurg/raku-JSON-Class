@@ -30,6 +30,7 @@ method json-configure-typeobject( Mu \obj,
                                   Bool :$lazy,
                                   Bool :$pretty,
                                   Bool :$sorted-keys,
+                                  :%config,
                                   :does(:@roles),
                                   :is(:@parents)
                                   --> Nil )
@@ -49,13 +50,15 @@ method json-configure-typeobject( Mu \obj,
         self.add_parent: obj, jpclass;
     }
 
-    my $eager;
     with $lazy {
         self.json-set-lazy(obj, $_);
-        $eager = !$_;
+        %config<eager> = !$_;
     }
 
-    self.json-configure-defaults(obj, :$pretty, :$sorted-keys, :$eager);
+    %config<pretty> = $_ with $pretty;
+    %config<sorted-keys> = $_ with $sorted-keys;
+
+    self.json-configure-defaults(obj, |%config);
 }
 
 method json-post-compose(Mu \obj --> Nil) {
