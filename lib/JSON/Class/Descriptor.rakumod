@@ -20,7 +20,7 @@ has %!helpers;
 has Lock:D $!helpers-lock .= new;
 
 # Descriptor type is a class, not a basic type
-has Bool:D $.is-a-class is mooish(:lazy);
+has Bool:D $.is-a-class is mooish(:lazy, :no-init);
 has Bool:D $.instantiated = False;
 
 method build-is-a-class { is-a-class-type(self.type) }
