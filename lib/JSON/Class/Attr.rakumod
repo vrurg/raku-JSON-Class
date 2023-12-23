@@ -27,7 +27,6 @@ has JSONHelper $.build; # Either method name or a Code object
 
 has Mu $.value-type is mooish(:lazy, :no-init);
 has Mu $.nominal-type is mooish(:lazy, :no-init);
-# has Bool:D $.is-coercive is mooish(:lazy, :no-init);
 
 method build-value-type {...}
 method set-serializer {...}

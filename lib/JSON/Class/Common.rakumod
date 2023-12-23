@@ -236,10 +236,15 @@ multi method json-serialize-value(Associative, \hash, *%c) {
 
 multi method json-serialize-value(Mu, JSONBasicType \value) { value }
 
+multi method json-serialize-value(Mu, Positional:D \list, |c) {
+    self.json-serialize-value(Positional, list, |c)
+}
+multi method json-serialize-value(Mu, Associative:D \hash, |c) {
+    self.json-serialize-value(Associative, hash, |c)
+}
+
 multi method json-serialize-value(Mu, Mu:D \value, JSON::Class::Config :$config = self.json-config, *%c) is raw {
-    my &fallback = {
-        $config.jsonify(value).json-serialize(:$config)
-    };
+    my &fallback = { $config.jsonify(value).json-serialize(:$config) };
     with self.json-helper(value.WHAT, 'to-json') {
         return self.json-try-serializer($_, \(value), &fallback)
     }
