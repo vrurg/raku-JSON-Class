@@ -51,6 +51,14 @@ class NoMethod does Base does Typed {
     }
 }
 
+class NoAttribute does Base does Typed {
+    has Str:D $.attribute is required;
+    has Str:D $.op is required;
+    method message {
+        "No attribute '$.attribute' found on " ~ self.type.^name ~ " for " ~ $.op;
+    }
+}
+
 role Trait does Base {
     has Str:D $.trait-name = $*JSON-CLASS-TRAIT;
 

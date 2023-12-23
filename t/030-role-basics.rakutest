@@ -149,7 +149,7 @@ subtest "Lazyness" => {
     }
 
     my role LazyRec is json {
-        has Rec $.lrec;
+        has Rec $.lrec is json(:predicate);
     }
 
     my role EagerRec is json(:!lazy) {

@@ -137,6 +137,25 @@ method json-build-attr(::?CLASS:D: Str:D :$attribute! --> Mu) is raw {
         finalize => { $!json-lazies-lock.protect: { $!json-lazies := Nil; } }
 }
 
+proto method json-clear-attr(::?CLASS:D: |) {*}
+multi method json-clear-attr(::?CLASS:D: Str:D $attribute --> Nil) {
+    with self.json-class.^json-get-attr($attribute) -> JSON::Class::Attr:D $json-attr {
+        $!json-lazies-lock.protect: {
+            $!json-lazies andthen .DELETE-KEY($json-attr.name);
+            $json-attr.attr.clear-attr(self);
+        }
+    }
+    else {
+        JSON::Class::X::NoAttribute.new( :type(self.WHAT), :op<clearing>, :$attribute ).throw
+    }
+}
+multi method json-clear-attr(::?CLASS:D: JSON::Class::Attr:D $json-attr --> Nil) {
+    $!json-lazies-lock.protect: {
+        $!json-lazies andthen .DELETE-KEY($json-attr.name);
+        $json-attr.attr.clear-attr;
+    }
+}
+
 proto method json-deserialize-attr(|) {*}
 
 multi method json-deserialize-attr(::?CLASS:D: JSON::Class::Attr::Positional:D $json-attr --> Mu) is raw {

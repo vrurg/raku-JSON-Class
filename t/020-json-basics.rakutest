@@ -5,7 +5,7 @@ use JSON::Class::Config:auth<zef:vrurg>;
 use JSON::Class::Attr:auth<zef:vrurg>;
 use JSON::Fast;
 
-plan 10;
+plan 11;
 
 subtest "Plain Types" => {
     plan 6;
@@ -182,15 +182,15 @@ subtest "Laziness" => {
     my class Item is json(:implicit) {
         has Str:D $.code is required;
         has Counter:D $.count is required;
-        has Bool:D $.available is required is json(:lazy);
+        has Bool:D $.available is required is json(:lazy, :predicate);
     }
 
     my %lazies;
 
     my class Reference is json(:implicit) {
-        has Item $.item1;
-        has Item $.item2 is json(:name<replacement>);
-        has Str:D @.locations;
+        has Item $.item1 is json(:predicate);
+        has Item $.item2 is json(:name<replacement>, :predicate);
+        has Str:D @.locations is json(:predicate);
 
         method json-build-attr(Str:D :$attribute, |c) {
             %lazies{$attribute} = True;
@@ -322,7 +322,7 @@ subtest "Lazy Build" => -> $subtest {
     plan 20;
 
     my class LazyRec is json(:!skip-null, :lazy) {
-        has $.attr1 is json(:build);
+        has $.attr1 is json(:build, :predicate);
         has $.attr2 is json(:build<build-attr1>);
         has $.attr3 is json(:build(-> \descr { $subtest.pass: "code object invoked"; 42.666 }));
         has @.vals is json(:build);
@@ -373,6 +373,63 @@ subtest "Lazy Build" => -> $subtest {
     my $deserialized = LazyRec.from-json($json);
     my $lr-expect = LazyRec.new(:attr("from JSON"), :pos(1.2, "nonsense"));
     cmp-deeply $deserialized, $lr-expect, "deserialized";
+}
+
+subtest "Clearers" => {
+    plan 4;
+    my class ClearRec is json(:lazy) {
+        has Str:D $.text is json(:build, :clearer, :predicate<text-is-there>);
+
+        method build-text($) { "the default" }
+    }
+
+    ok ClearRec.^can('text-is-there'), "predicate helper is installed";
+
+    my $json = q<{"text":"from JSON"}>;
+
+    subtest "deserialize then clear" => {
+        plan 7;
+
+        my $crec = ClearRec.from-json($json);
+
+        nok $crec.text-is-there, "lazy, not deserialized yet";
+        is $crec.text, "from JSON", "got its value from JSON";
+        ok $crec.text-is-there, "deserialized, has a value now";
+
+        lives-ok { $crec.json-clear-text }, "clear the attribute";
+        $crec.json-clear-text;
+        nok $crec.text-is-there, "no value after clear";
+        is $crec.text, "the default", "got its value from builder";
+        ok $crec.text-is-there, "deserialized, has a value now";
+    }
+
+    subtest "clear before deserializing" => {
+        plan 5;
+
+        my $crec = ClearRec.from-json($json);
+
+        lives-ok { $crec.json-clear-text }, "clear the attribute";
+        nok $crec.text-is-there, "no value after clear";
+        nok $crec.json-lazies.EXISTS-KEY('text'), "clearing removes existing unclaimed key";
+        is $crec.text, "the default", "got its value from builder";
+        ok $crec.text-is-there, "deserialized, has a value now";
+    }
+
+    subtest "no builder" => {
+        plan 2;
+        my class CR is json(:lazy) {
+            has Str:D $.text is json(:clearer);
+        }
+
+        # First of all, make sure we make no mistake and deserialization happens under normal circumstances
+        my $cr = CR.from-json($json);
+        is $cr.text, "from JSON", "control: deserialized from JSON";
+
+        # Then clear early, before deserialization takes place
+        $cr = CR.from-json($json);
+        $cr.json-clear-text;
+        throws-like { $cr.text }, X::TypeCheck::Assignment, "nothing to deserialize from and no builder/default";
+    }
 }
 
 done-testing;

@@ -68,12 +68,26 @@ method skip-null is raw {
     $!skip-null // self.declarant.^json-skip-null
 }
 
-method mooify(::?CLASS:D: Mu \obj, :$aliases) {
+method !install-clearer(Mu \obj, JSONCoreHelper $clearer --> Nil) {
+    my $cname = $clearer ~~ Str ?? $clearer !! 'json-clear-' ~ $.json-name;
+    my $attr-name := $!attr.name;
+    my \meth = anon method () is hidden-from-backtrace {
+        self.json-clear-attr($attr-name)
+    }
+    meth.set_name($cname);
+    obj.^add_method($cname, meth);
+}
+
+method mooify(::?CLASS:D: Mu \obj, JSONCoreHelper :$clearer, JSONCoreHelper :$predicate, :$aliases) {
     JSON::Class::X::ReMooify.new(:$!attr, :type(obj)).throw if $.attr ~~ AttrX::Mooish::Attribute;
     my $*PACKAGE := obj;
     my @profile;
     if $.lazy {
-        @profile.append: "lazy" => 'json-build-attr', "predicate" => 'json-has-' ~ $.json-name;
+        @profile.push: "lazy" => 'json-build-attr';
+        if $predicate {
+            @profile.push: "predicate" => $predicate ~~ Str ?? $predicate !! 'json-has-' ~ $.json-name;
+        }
+        self!install-clearer(obj, $clearer) if $clearer;
     }
     if $aliases {
         @profile.append: (:$aliases);

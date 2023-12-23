@@ -120,11 +120,13 @@ my subset SerializerKind of Any where Str:D | Code:D | Any:U;
 
 method jsonify-attribute( Mu \pkg,
                           Attribute:D $attr,
+                          JSONCoreHelper :$clearer,
+                          JSONCoreHelper :$predicate = False,
                           *%adv ( Bool :skip($),
                                   Bool :skip-null($),
                                   Str :name($),
                                   Bool :lazy($),
-                                  JSONBuildHelper :$build,
+                                  JSONUserHelper :$build,
                                   :alias(:$aliases),
                                   :to-json(:$serializer), # (SerializerKind $?, *% where *.values.all ~~ SerializerKind),
                                   :from-json(:$deserializer), # (SerializerKind $?, *% where *.values.all ~~ SerializerKind),
@@ -180,5 +182,5 @@ method jsonify-attribute( Mu \pkg,
 
     my $json-attr = ATTR-TYPES.{$sigil}.new(:$attr, :declarant(pkg), |%adv);
     self.json-attr-register: pkg, $json-attr;
-    $json-attr.mooify(pkg, :$aliases);
+    $json-attr.mooify(pkg, :$clearer, :$predicate, :$aliases);
 }

@@ -3,7 +3,7 @@ use JSON::Class:auth<zef:vrurg>;
 
 #?example start
 class Foo is json {
-    has $.foo;
+    has $.foo is json(:predicate);
 }
 
 say "Foo is explicit: ", Foo.^json-is-explicit, "\n",

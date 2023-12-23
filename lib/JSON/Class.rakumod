@@ -200,7 +200,7 @@ BEGIN {
 
         # Make a class explicit by default if the trait is used with an attribute.
         my \tc = trait-capture($json);
-        pkg.^json-set-explicit(True) unless tc.keys && (tc.keys ⊆ <skip build alias>);
+        pkg.^json-set-explicit(True) unless tc.keys && (tc.keys ⊆ <skip build alias clearer predicate>);
         pkg.^jsonify-attribute($attr, |tc);
     }
 

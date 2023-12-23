@@ -268,6 +268,18 @@ There is an exception though: adverbs `:skip`, `:build`, and `:aliases`, used in
     
     See [*examples/lazy-build.raku*](examples/lazy-build.raku) and subtest "Lazy Build" in [*t/020-json-basics.rakutest*](t/020-json-basics.rakutest).
 
+  - `Bool:D | Str:D` **`:clearer(...)`**
+    
+    Similar to [`AttrX::Mooish`](https://raku.land/?q=AttrX::Mooish) trait argument of the same name. Clears a lazy attribute and turns it back into uninitialized state. If there is a pending record for lazy deserialization then it is removed too.
+    
+    When clearer value is a string (`:clearer<wipe-it>`) then it is treated as helper method name.
+    
+    See [*t/020-json-basics.rakutest*](t/020-json-basics.rakutest), subtest "Clearers".
+
+  - `Bool:D | Str:D` **`:predicate(...)`**
+    
+    Similar to [`AttrX::Mooish`](https://raku.land/?q=AttrX::Mooish)\> trait argument of the same name. In its string form it defines predicate helper method name (`:predicate<we-got-it>`). Otherwise `json-has-key-name` name is used, where the *key-name* part is attribute's JSON key.
+
 ### Collections
 
 A class is declared as a JSON collection with `:sequence` or `:dictionary` (also aliased as `:dict`) adverbs of the `is json` trait. The adverbs are expected to be a list of declarations where each item of the list either specify a type constraint or a default value. For dictionaries it is possible to type constrain their keys.
@@ -469,7 +481,7 @@ This section contains a series of working code examples demonstrating different 
     
     ``` raku
     class Foo is json {
-        has $.foo;
+        has $.foo is json(:predicate);
     }
     
     say "Foo is explicit: ", Foo.^json-is-explicit, "\n",
@@ -857,8 +869,8 @@ Apparently, this example doesn't cover all of `JSON::Class` sequence features.
     }
     
     class Struct is json(:implicit) {
-        has Array:D[Real:D] @.matrix;
-        has Rec:D %.rec is json(:name<records>);
+        has Array:D[Real:D] @.matrix is json(:predicate);
+        has Rec:D %.rec is json(:name<records>, :predicate);
     }
     
     my $struct =

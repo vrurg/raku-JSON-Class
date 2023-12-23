@@ -4,6 +4,12 @@
     
       - Support for marshalling of undefined `DateTime` and `Version` values with `:using-defaults`
     
+      - Support for attribute clearers
+    
+      - Allow the use of custom predicate name
+    
+      - No predicate helper method installed unless `:predicate` attribute trait argument is used
+    
       - Implement support for mixins
     
       - Support for `:config` argument of `is json` trait to define any default configuration value for typeobject

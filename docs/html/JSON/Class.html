@@ -607,6 +607,14 @@ Attribute : The Answer
 <p>Value returned by either of the above variant is used to initialize the attribute.</p>
 <p>See <a href="../../../examples/lazy-build.raku"><em>examples/lazy-build.raku</em></a> and subtest "Lazy Build" in <a href="../../../t/020-json-basics.rakutest"><em>t/020-json-basics.rakutest</em></a>.</p>
 </li>
+<li><p><code>Bool:D | Str:D</code> <strong><code>:clearer(...)</code></strong></p>
+<p>Similar to <a href="https://raku.land/?q=AttrX::Mooish"><code>AttrX::Mooish</code></a> trait argument of the same name. Clears a lazy attribute and turns it back into uninitialized state. If there is a pending record for lazy deserialization then it is removed too.</p>
+<p>When clearer value is a string (<code>:clearer&lt;wipe-it&gt;</code>) then it is treated as helper method name.</p>
+<p>See <a href="../../../t/020-json-basics.rakutest"><em>t/020-json-basics.rakutest</em></a>, subtest "Clearers".</p>
+</li>
+<li><p><code>Bool:D | Str:D</code> <strong><code>:predicate(...)</code></strong></p>
+<p>Similar to <a href="https://raku.land/?q=AttrX::Mooish"><code>AttrX::Mooish</code></a>&gt; trait argument of the same name. In its string form it defines predicate helper method name (<code>:predicate&lt;we-got-it&gt;</code>). Otherwise <code>json-has-key-name</code> name is used, where the <em>key-name</em> part is attribute's JSON key.</p>
+</li>
 </ul>
 <h3 id="Collections"><a class="u" href="#___top" title="go to top of document">Collections</a></h3>
 <p>A class is declared as a JSON collection with <code>:sequence</code> or <code>:dictionary</code> (also aliased as <code>:dict</code>) adverbs of the <code>is json</code> trait. The adverbs are expected to be a list of declarations where each item of the list either specify a type constraint or a default value. For dictionaries it is possible to type constrain their keys.</p>
@@ -747,7 +755,7 @@ Article.new(id =&gt; "2006-04-01:the-pop-one", name =&gt; "What's the programmer
 <h2 id="Explicit/Implicit"><a class="u" href="#___top" title="go to top of document">Explicit/Implicit</a></h2>
 <ul><li><p>From <a href="../../../examples/decl-implicit.raku">examples/decl-implicit.raku</a></p>
 <pre class="pod-block-code">class Foo is json {
-    has $.foo;
+    has $.foo is json(:predicate);
 }
 
 say "Foo is explicit: ", Foo.^json-is-explicit, "\n",
@@ -1092,8 +1100,8 @@ Deserialized after accessing? True
 }
 
 class Struct is json(:implicit) {
-    has Array:D[Real:D] @.matrix;
-    has Rec:D %.rec is json(:name&lt;records&gt;);
+    has Array:D[Real:D] @.matrix is json(:predicate);
+    has Rec:D %.rec is json(:name&lt;records&gt;, :predicate);
 }
 
 my $struct =

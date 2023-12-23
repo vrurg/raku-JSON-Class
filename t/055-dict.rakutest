@@ -403,7 +403,7 @@ subtest "Vivification" => {
 
     subtest "%-Attribute" => {
         my class Rec is json {
-            has %.jdict is JDict;
+            has %.jdict is JDict is json(:predicate);
         }
 
         my $r = Rec.from-json: q<{"jdict":{"a":1,"b":2}}>;

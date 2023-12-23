@@ -370,6 +370,26 @@ See L<I<examples/lazy-build.raku>|file:examples/lazy-build.raku> and subtest "La
 L<I<t/020-json-basics.rakutest>|file:t/020-json-basics.rakutest>.
 =end item
 
+=begin item
+C<Bool:D | Str:D> B<C<:clearer(...)>>
+
+Similar to L<C<AttrX::Mooish>|rakudoc:AttrX::Mooish> trait argument of the same name. Clears a lazy attribute and turns
+it back into uninitialized state. If there is a pending record for lazy deserialization then it is removed too.
+
+When clearer value is a string (C<:clearer<wipe-it>>) then it is treated as helper method name.
+
+See L<I<t/020-json-basics.rakutest>|file:t/020-json-basics.rakutest>, subtest "Clearers".
+=end item
+
+=begin item
+C<Bool:D | Str:D> B<C<:predicate(...)>>
+
+
+Similar to L<C<AttrX::Mooish>|rakudoc:AttrX::Mooish>> trait argument of the same name. In its string form it defines
+predicate helper method name (C<:predicate<we-got-it>>). Otherwise C<json-has-key-name> name is used, where the
+I<key-name> part is attribute's JSON key.
+=end item
+
 =head3 Collections
 
 A class is declared as a JSON collection with C<:sequence> or C<:dictionary> (also aliased as C<:dict>) adverbs of the
@@ -600,12 +620,12 @@ be found under I<examples/> subdirectory of the distribution.
 
 =head2 Explicit/Implicit
 
-=begin item :example("examples/decl-implicit.raku") :mtime(1699754677)
+=begin item :example("examples/decl-implicit.raku") :mtime(1703346626)
 From L<examples/decl-implicit.raku|file:examples/decl-implicit.raku>
 
 =begin code :example :lang("raku")
 class Foo is json {
-    has $.foo;
+    has $.foo is json(:predicate);
 }
 
 say "Foo is explicit: ", Foo.^json-is-explicit, "\n",
@@ -1017,7 +1037,7 @@ Deserialized after accessing? True
 
 =head2 Array Attributes
 
-=begin item :example("examples/typed-array.raku") :mtime(1699754677)
+=begin item :example("examples/typed-array.raku") :mtime(1703346656)
 From L<examples/typed-array.raku|file:examples/typed-array.raku>
 
 =begin code :example :lang("raku")
@@ -1026,8 +1046,8 @@ class Rec {
 }
 
 class Struct is json(:implicit) {
-    has Array:D[Real:D] @.matrix;
-    has Rec:D %.rec is json(:name<records>);
+    has Array:D[Real:D] @.matrix is json(:predicate);
+    has Rec:D %.rec is json(:name<records>, :predicate);
 }
 
 my $struct =
