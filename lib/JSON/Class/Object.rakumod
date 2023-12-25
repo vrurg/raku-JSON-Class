@@ -46,7 +46,16 @@ method json-all-set(::?CLASS:D:) {
     }
 }
 
-proto method json-serialize-attr(::?CLASS:D: JSON::Class::Attr:D, Mu, |) {*}
+proto method json-serialize-attr(::?CLASS:D: JSON::Class::Attr:D $json-attr, Mu, |) {
+    CATCH {
+        default {
+            JSON::Class::X::Serialize::Fatal.new(
+                :exception($_), :type(self.WHAT), :what("process attribute " ~ $json-attr.name)
+            ).throw
+        }
+    }
+    {*}
+}
 multi method json-serialize-attr(::?CLASS:D: JSON::Class::Attr:D $json-attr, JSON::Class::Jsonish:D \value) is default {
     self.json-try-serializer: 'attribute', $json-attr, value, { value.json-serialize }
 }
@@ -159,12 +168,12 @@ multi method json-clear-attr(::?CLASS:D: JSON::Class::Attr:D $json-attr --> Nil)
     }
 }
 
-proto method json-deserialize-attr(JSON::Class::Attr:D $attr, | --> Mu) is raw {
+proto method json-deserialize-attr(JSON::Class::Attr:D $json-attr, | --> Mu) is raw {
     CATCH {
         when JSON::Class::X::Deserialize::Fatal { .rethrow }
         default {
             JSON::Class::X::Deserialize::Fatal.new(
-                :exception($_), :type(self.WHAT), :what("deserialize attribute " ~ $attr.name)
+                :exception($_), :type(self.WHAT), :what("process attribute " ~ $json-attr.name)
             ).throw
         }
     }

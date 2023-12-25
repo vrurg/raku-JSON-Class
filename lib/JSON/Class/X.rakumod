@@ -135,6 +135,14 @@ my class Serialize::Impossible does Serialize {
     }
 }
 
+my class Serialize::Fatal does Serialize does X::Wrapper {
+    has Str:D $.what is required; # What was being deserialized when the exception happened
+    method message {
+        "Serialization of " ~ self.type.^name ~ " died" ~ self!exception-name-message
+        ~ " while trying to " ~ $.what ~ self!wrappee-message(:details)
+    }
+}
+
 role Deserialize does Base does Typed {}
 
 my class Deserialize::Impossible does Deserialize {
