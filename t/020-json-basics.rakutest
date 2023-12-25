@@ -1,5 +1,6 @@
 use v6.e.PREVIEW;
 use Test::Async;
+use AttrX::Mooish::X;
 use JSON::Class:auth<zef:vrurg>;
 use JSON::Class::Config:auth<zef:vrurg>;
 use JSON::Class::Attr:auth<zef:vrurg>;
@@ -428,7 +429,11 @@ subtest "Clearers" => {
         # Then clear early, before deserialization takes place
         $cr = CR.from-json($json);
         $cr.json-clear-text;
-        throws-like { $cr.text }, X::TypeCheck::Assignment, "nothing to deserialize from and no builder/default";
+        throws-like
+            { $cr.text },
+            AttrX::Mooish::X::StoreValue,
+            exception => X::TypeCheck::Assignment,
+            "nothing to deserialize from and no builder/default";
     }
 }
 
