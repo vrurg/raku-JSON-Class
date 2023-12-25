@@ -28,9 +28,9 @@ method clone(*%twiddles) {
         if $attr ~~ AttrX::Mooish::Attribute && $attr.is-set(self) {
             %profile{$attr.base-name} := $attr.get_value(self);
         }
-        %profile<json-lazies> := self.json-lazies; # The method returns a clone and is thread-safe
-        callwith(|%profile, |%twiddles)
     }
+    %profile<json-lazies> := self.json-lazies; # The method returns a clone and is thread-safe
+    callwith(|%profile, |%twiddles)
 }
 
 method json-unused(::?CLASS:D:) { $!json-unused }
