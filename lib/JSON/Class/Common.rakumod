@@ -180,7 +180,7 @@ multi method json-deserialize-value( ::DT Mu \dest-type,
             !! nominalize-type(final-type).WHO{value}
     }
 
-    multi sub j2v(::T JSONBasicType, Any:D \value --> T) is raw is default { value }
+    multi sub j2v(::T JSONBasicType, Any:D \value) is raw is default { value }
 
     multi sub j2v(Mu \final-type, Any:D \value --> Mu) is raw {
         my &fallback = { $config.jsonify(final-type).json-deserialize(value, :$config) };
@@ -201,6 +201,12 @@ multi method json-deserialize-value(Mu \dest-type, Any:U, JSON::Class::Config :$
 
 multi method json-deserialize-value(Mu \dest-type, Nil, JSON::Class::Config :$config) is raw {
     ($config // self.json-config).type-from(dest-type)
+}
+
+proto method json-deserialize-key(Mu, Mu) {*}
+multi method json-deserialize-key(::KT JSONBasicType, KT(Str:D) \value --> KT) { value }
+multi method json-deserialize-key(Mu \type, Str:D \key, JSON::Class::Config:D :$config = self.json-config) {
+    self.json-deserialize-value(type, $config.from-json(key), :$config)
 }
 
 proto method json-serialize-value(|) {*}
@@ -249,6 +255,13 @@ multi method json-serialize-value(Mu, Mu:D \value, JSON::Class::Config :$config 
         return self.json-try-serializer($_, \(value), &fallback)
     }
     &fallback()
+}
+
+proto method json-serialize-key(|) {*}
+multi method json-serialize-key(Mu \key, *%c) { self.json-serialize-key(key.WHAT, key, |%c) }
+multi method json-serialize-key(Str \type, Str:D \key) { key }
+multi method json-serialize-key(Mu \type, Mu \key, *%c) {
+    self.json-config.to-json: self.json-serialize-value(type, key, |%c), :sorted-keys, :!pretty
 }
 
 proto method json-deserialize(|) {*}

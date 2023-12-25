@@ -47,6 +47,9 @@ method json-all-set(::?CLASS:D:) {
 }
 
 proto method json-serialize-attr(::?CLASS:D: JSON::Class::Attr:D, Mu, |) {*}
+multi method json-serialize-attr(::?CLASS:D: JSON::Class::Attr:D $json-attr, JSON::Class::Jsonish:D \value) is default {
+    self.json-try-serializer: 'attribute', $json-attr, value, { value.json-serialize }
+}
 multi method json-serialize-attr(::?CLASS:D: JSON::Class::Attr::Scalar:D $json-attr, Mu \value) {
     self.json-try-serializer:
         'attribute', $json-attr, value,
@@ -69,7 +72,7 @@ multi method json-serialize-attr(::?CLASS:D: JSON::Class::Attr::Associative:D $j
         {
             value.map(-> (Mu :$key is raw, Mu :$value is raw) {
                 self.json-try-serializer( 'key', $json-attr, $key,
-                                          { self.json-serialize-value($json-attr.nominal-keytype, $key) })
+                                          { self.json-serialize-key($json-attr.nominal-keytype, $key) })
                     => self.json-try-serializer( 'value', $json-attr, $value,
                                                  { self.json-serialize-value($json-attr.nominal-type, $value) } )
             }).eager.Hash
@@ -156,7 +159,17 @@ multi method json-clear-attr(::?CLASS:D: JSON::Class::Attr:D $json-attr --> Nil)
     }
 }
 
-proto method json-deserialize-attr(|) {*}
+proto method json-deserialize-attr(JSON::Class::Attr:D $attr, | --> Mu) is raw {
+    CATCH {
+        when JSON::Class::X::Deserialize::Fatal { .rethrow }
+        default {
+            JSON::Class::X::Deserialize::Fatal.new(
+                :exception($_), :type(self.WHAT), :what("deserialize attribute " ~ $attr.name)
+            ).throw
+        }
+    }
+    {*}
+}
 
 multi method json-deserialize-attr(::?CLASS:D: JSON::Class::Attr::Positional:D $json-attr --> Mu) is raw {
     self!json-lazy($json-attr) andthen self.json-deserialize-attr($json-attr, $_)
@@ -191,10 +204,12 @@ multi method json-deserialize-attr(JSON::Class::Attr::Associative:D $json-attr, 
                 ?? self.json-deserialize-value($json-attr.type, value)
                 !! value.pairs.map(
                     -> (:$key is raw, :$value is raw) {
-                        self.json-try-deserializer('key', $json-attr, $key, { $key }) =>
-                            self.json-try-deserializer(
-                                'value', $json-attr, $value,
-                                { self.json-deserialize-value($json-attr.value-type, $value, :$config) } )
+                        self.json-try-deserializer(
+                            'key', $json-attr, $key,
+                            { self.json-deserialize-key($json-attr.key-type, $key, :$config ) }
+                        ) => self.json-try-deserializer(
+                            'value', $json-attr, $value,
+                            { self.json-deserialize-value($json-attr.value-type, $value, :$config) } )
                     }).eager
         }
 }

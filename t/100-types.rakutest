@@ -6,7 +6,7 @@ use JSON::Class::X:auth<zef:vrurg>;
 use JSON::Class:auth<zef:vrurg>;
 use JSON::Fast;
 
-plan 6;
+plan 7;
 
 subtest "Version" => -> $subtest {
     plan 3;
@@ -245,6 +245,43 @@ subtest "Generics" => {
         is-non-generic(DS, Str:D(), Int:D());
         is-non-generic(DN, Num:D(), Rat:D());
     }
+}
+
+subtest "Keyed hash" => {
+    plan 4;
+
+    my class ComplexKey {
+        has Str:D $.pfx is required;
+        has Str:D $.key is required;
+    }
+    my class KHRec is json(:implicit, :lazy) {
+        has %.id2name{Int:D};
+        has %.cmplx{ComplexKey:D};
+    }
+
+    my $khrec;
+
+    $khrec = KHRec.new: id2name => (123 => "name1", 42 => "name 2");
+
+    my $expected = q<{"cmplx":{},"id2name":{"123":"name1","42":"name 2"}}>;
+    is $khrec.to-json(:sorted-keys, :!pretty), $expected, "serialized hash with basic key type";
+
+    my $json = q<{"id2name":{"123": "name1","42":"name 2"}}>;
+    cmp-deeply KHRec.from-json($json), $khrec, "deserialized hash with basic key type";
+
+    $khrec = KHRec.new: cmplx => (
+        ComplexKey.new(:pfx<aa>, :key<kk>) => "value 1",
+        ComplexKey.new(:pfx<bb>, :key<kk>) => "value 2",
+    );
+
+    my $cmplx-expected = q<{"cmplx":{"{\"key\":\"kk\",\"pfx\":\"aa\"}":"value 1","{\"key\":\"kk\",\"pfx\":\"bb\"}":"value 2"},"id2name":{}}>;
+    is $khrec.to-json(:sorted-keys, :!pretty), $cmplx-expected, "serialized hash with complex key";
+
+    my $cmplx-json = q<{"cmplx":{"{\"key\":\"kk\",\"pfx\":\"aa\"}":"value 1","{\"key\":\"kk\",\"pfx\":\"bb\"}":"value 2"}}>;
+    cmp-deeply
+        KHRec.from-json($cmplx-json).cmplx.keys.sort(*.pfx),
+        $khrec.cmplx.keys.sort(*.pfx),
+        "deserialized hash with complex key: keys are the same";
 }
 
 done-testing;
