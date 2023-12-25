@@ -5,7 +5,7 @@
         "Vadim Belman"
     ],
     "depends": [
-        "AttrX::Mooish:auth<zef:vrurg>:ver<1.0.8>",
+        "AttrX::Mooish:auth<zef:vrurg>:api<1.0.6>",
         "JSON::Fast:ver<0.19>:auth<cpan:TIMOTIMO>"
     ],
     "description": "JSON de-/serialization for classes and roles",
