@@ -15,6 +15,8 @@
       - Support for `:config` argument of `is json` trait to define any default configuration value for typeobject
     
       - Fix config derivation from upstream configuration
+    
+      - Fix marshalling of non-string hash key types
 
   - **v0.0.4**
     

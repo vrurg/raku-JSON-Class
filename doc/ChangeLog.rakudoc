@@ -12,6 +12,7 @@ B<v0.0.5>
 =item Implement support for mixins
 =item Support for C<:config> argument of C<is json> trait to define any default configuration value for typeobject
 =item Fix config derivation from upstream configuration
+=item Fix marshalling of non-string hash key types
 =end item
 
 =begin item
