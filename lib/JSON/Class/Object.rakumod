@@ -23,7 +23,7 @@ submethod TWEAK( Associative :$!json-unused, Associative :$!json-lazies ) {}
 
 method clone(*%twiddles) {
     my %profile;
-    for self.json-class.^json-attrs(:!local) -> JSON::Class::Attr:D $json-attr {
+    for self.json-class.^json-attrs(:!local, :v) -> JSON::Class::Attr:D $json-attr {
         my Attribute:D $attr = $json-attr.attr;
         if $attr ~~ AttrX::Mooish::Attribute && $attr.is-set(self) {
             %profile{$attr.base-name} := $attr.get_value(self);
