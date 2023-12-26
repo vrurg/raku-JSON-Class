@@ -247,6 +247,7 @@ multi method json-deserialize(%from, JSON::Class::Config :$config is copy) {
         my \from-value = %from{$json-name}<>;
 
         CATCH {
+            when JSON::Class::X::Deserialize::Fatal { .rethrow }
             default {
                 JSON::Class::X::Deserialize::Fatal.new(
                     :exception($_),

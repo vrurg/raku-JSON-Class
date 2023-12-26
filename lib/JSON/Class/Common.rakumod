@@ -137,7 +137,9 @@ multi method json-try-deserializer(Str:D $kind, JSON::Class::Descriptor:D $descr
     my $*JSON-CLASS-DESCRIPTOR := $descr;
     with self.json-guess-deserializer($kind, $descr) -> &deserializer {
         my \args =
-            &deserializer ~~ Method ?? \(nominalize-type($descr.kind-type($kind)), from-value) !! \(from-value);
+            &deserializer ~~ Method
+                ?? \(self.json-config.type-from($descr.kind-type($kind), :nominal), from-value)
+                !! \(from-value);
         return try-user-code(&deserializer, args, &fallback)
     }
 
@@ -146,15 +148,12 @@ multi method json-try-deserializer(Str:D $kind, JSON::Class::Descriptor:D $descr
 
 proto method json-deserialize-value(Mu, Mu) {*}
 
-multi method json-deserialize-value( ::DT Mu \dest-type,
+multi method json-deserialize-value( Mu \dest-type,
                                      Mu:D \from-value,
                                      JSON::Class::Config :$config is copy,
                                      --> Mu )
     is raw
 {
-    # If dest-type is a coercion then passing from-value through the sub would handle the coercion if necessary.
-    return (sub (--> DT) { from-value }).() if from-value ~~ dest-type;
-
     my proto sub j2v(| --> Mu) {*}
 
     multi sub j2v(JSON::Class::Jsonish \final-type, \value --> Mu) is raw is default {
@@ -180,7 +179,13 @@ multi method json-deserialize-value( ::DT Mu \dest-type,
             !! nominalize-type(final-type).WHO{value}
     }
 
-    multi sub j2v(::T JSONBasicType, Any:D \value) is raw is default { value }
+    multi sub j2v(::T Mu, T \value --> T) is raw {
+        T.^archetypes.coercive ?? T.^coerce(value) !! value
+    }
+
+    multi sub j2v(::T JSONBasicType, Any \value) is raw is default {
+        T.^archetypes.coercive ?? T.^coerce(value) !! value
+    }
 
     multi sub j2v(Mu \final-type, Any:D \value --> Mu) is raw {
         my &fallback = { $config.jsonify(final-type).json-deserialize(value, :$config) };

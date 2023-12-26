@@ -326,7 +326,7 @@ multi method type-from(::?CLASS:D: Mu:U \from, Bool :$nominal --> Mu) is raw {
         my Mu $refinee := reconstruct(orig-refinee.HOW, orig-refinee);
         $refinee =:= orig-refinee
             ?? type
-            !! Metamodel::SubsetHOW.new_type: :$refinee, refinement => type.^refinement
+            !! Metamodel::SubsetHOW.new_type(:$refinee, :refinement(type.^refinement))
     }
     multi sub reconstruct(Mu, Mu \nominalization --> Mu) is raw {
         # See if nominalization is a product of jsonificaton and work on the original type

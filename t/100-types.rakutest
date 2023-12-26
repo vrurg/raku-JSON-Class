@@ -6,7 +6,7 @@ use JSON::Class::X:auth<zef:vrurg>;
 use JSON::Class:auth<zef:vrurg>;
 use JSON::Fast;
 
-plan 7;
+plan 8;
 
 subtest "Version" => -> $subtest {
     plan 3;
@@ -282,6 +282,52 @@ subtest "Keyed hash" => {
         KHRec.from-json($cmplx-json).cmplx.keys.sort(*.pfx),
         $khrec.cmplx.keys.sort(*.pfx),
         "deserialized hash with complex key: keys are the same";
+}
+
+subtest "Coercion Into A JSONish" => {
+    plan 3;
+
+    my subset MyURIStr of Str:D where /^ "mine://" <.wb> /;
+    my class MyURI is json {
+        has Str:D $.orig is required;
+        method COERCE(MyURIStr $orig) {
+            test-suite.pass: "coercion method is involved";
+            self.new: :$orig
+        }
+    }
+
+    my class Locator is json {
+        has MyURI:D(MyURIStr) $.pos is json(:to-json<Str>, :from-json<COERCE>);
+    }
+
+    my $my-uri = "mine://foo/bar/baz";
+
+    subtest "direct" => {
+        plan 3;
+        my $loc;
+        lives-ok { $loc = Locator.from-json(q:s<{"pos":"$my-uri"}>) }, "deserialized via coercion";
+        is $loc.pos.orig, $my-uri, "deserialized via coercion";
+    }
+
+    throws-like
+        { Locator.from-json(q<{"pos":"not-mine://irrelevant"}>, :config(:eager)) },
+        JSON::Class::X::Deserialize::Fatal,
+        exception => JSON::Class::X::Deserialize::Impossible,
+        "deserialization fails if string doesn't match coercions constrain";
+
+    subtest "with type wrapping" => {
+        plan 3;
+        my $config = JSON::Class::Config.new;
+
+        my class WrapURI is json-wrap(MyURI) {}
+        $config.map-type(MyURI, WrapURI);
+
+        is $config.type-from(MyURI), WrapURI, "ok, there is a mapping for " ~ MyURI.WHICH;
+
+        my $loc = Locator.from-json(q:s<{"pos":"$my-uri"}>, :$config);
+
+        isa-ok $loc.pos, WrapURI, "type mapping works when coercion is involved";
+    }
 }
 
 done-testing;
