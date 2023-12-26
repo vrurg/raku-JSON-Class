@@ -306,21 +306,27 @@ multi method type-from(::?CLASS:D: Mu:U \from, Bool :$nominal --> Mu) is raw {
 
     proto sub reconstruct(|) {*}
     multi sub reconstruct(Metamodel::DefiniteHOW, Mu \type --> Mu) is raw {
-        my Mu \base-type = type.^base_type;
-        Metamodel::DefiniteHOW.new_type:
-            base_type => reconstruct(base-type.HOW, base-type),
-            definite => type.^definite
+        my Mu \orig-base = type.^base_type;
+        my Mu $base_type := reconstruct(orig-base.HOW, orig-base);
+        $base_type =:= orig-base
+            ?? type
+            !!  Metamodel::DefiniteHOW.new_type(:$base_type, definite => type.^definite)
     }
     multi sub reconstruct(Metamodel::CoercionHOW, Mu \type --> Mu) is raw {
-        my Mu \target = type.^target_type;
-        my Mu \constraint = type.^constraint_type;
-        Metamodel::CoercionHOW.new_type:
-            reconstruct(target.HOW, target),
-            reconstruct(constraint.HOW, constraint)
+        my Mu \orig-target = type.^target_type;
+        my Mu \orig-constraint = type.^constraint_type;
+        my Mu \target = reconstruct(orig-target.HOW, orig-target);
+        my Mu \constraint = reconstruct(orig-constraint.HOW, orig-constraint);
+        target =:= orig-target && constraint =:= orig-constraint
+            ?? type
+            !! Metamodel::CoercionHOW.new_type(target, constraint)
     }
     multi sub reconstruct(Metamodel::SubsetHOW, Mu \type --> Mu) is raw {
-        my Mu \refinee = type.^refinee;
-        Metamodel::SubsetHOW.new: reconstruct(refinee.HOW, refinee), type.^refinement
+        my Mu \orig-refinee = type.^refinee;
+        my Mu $refinee := reconstruct(orig-refinee.HOW, orig-refinee);
+        $refinee =:= orig-refinee
+            ?? type
+            !! Metamodel::SubsetHOW.new_type: :$refinee, refinement => type.^refinement
     }
     multi sub reconstruct(Mu, Mu \nominalization --> Mu) is raw {
         # See if nominalization is a product of jsonificaton and work on the original type
