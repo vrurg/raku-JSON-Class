@@ -17,6 +17,12 @@
       - Fix config derivation from upstream configuration
     
       - Fix marshalling of non-string hash key types
+    
+      - Fix method `clone` of [`JSON::Class::Object`](docs/md/JSON/Class/Object.md) not actually returning the clone
+    
+      - When type-mapping a nominalizable don't construct a new type if there are no mappings for its nominals
+    
+      - Clarify deserialization of coercive types
 
   - **v0.0.4**
     

@@ -304,6 +304,8 @@ multi method type-from(::?CLASS:D: Mu:U \from, Bool :$nominal --> Mu) is raw {
     $!type-map-lock.lock;
     LEAVE $!type-map-lock.unlock;
 
+    # TODO Cache reconstruction results. Perhaps, use type parameterization for this – similar to what mixins do.
+
     proto sub reconstruct(|) {*}
     multi sub reconstruct(Metamodel::DefiniteHOW, Mu \type --> Mu) is raw {
         my Mu \orig-base = type.^base_type;
