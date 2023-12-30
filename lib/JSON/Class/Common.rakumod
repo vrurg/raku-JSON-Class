@@ -162,14 +162,14 @@ multi method json-deserialize-value( Mu \dest-type,
 
     multi sub j2v(Positional \final-type, \value) is raw {
         my Mu \of-type = $config.type-from(final-type.of);
-        my @p := final-type.new;
+        my @p := nominalize-type(final-type).new;
         @p = value.map(-> \item-val { item-val ~~ of-type ?? item-val !! j2v(of-type, item-val) }).eager
     }
 
     multi sub j2v(Associative \final-type, \value) is raw {
         my Mu \of-type = $config.type-from(final-type.of);
         my Mu \keyof-type = $config.type-from(final-type.keyof);
-        my %h := final-type.new;
+        my %h := nominalize-type(final-type).new;
         %h = value.map({ j2v(keyof-type, .key) => j2v(of-type, .value) }).eager
     }
 

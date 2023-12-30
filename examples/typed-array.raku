@@ -7,7 +7,7 @@ class Rec {
 }
 
 class Struct is json(:implicit) {
-    has Array:D[Real:D] @.matrix is json(:predicate);
+    has Array[Real:D](Array:D) @.matrix is json(:predicate);
     has Rec:D %.rec is json(:name<records>, :predicate);
 }
 
