@@ -14,15 +14,19 @@
     
       - Support for `:config` argument of `is json` trait to define any default configuration value for typeobject
     
+      - When type-mapping a nominalizable don't construct a new type if there are no mappings for its nominals
+    
+      - Clarify deserialization of coercive types
+    
+      - Make attributes with initializers non-lazy by default
+    
       - Fix config derivation from upstream configuration
     
       - Fix marshalling of non-string hash key types
     
       - Fix method `clone` of [`JSON::Class::Object`](docs/md/JSON/Class/Object.md) not actually returning the clone
     
-      - When type-mapping a nominalizable don't construct a new type if there are no mappings for its nominals
-    
-      - Clarify deserialization of coercive types
+      - Fix deserialization of nominalizable positionals and associatives
 
   - **v0.0.4**
     

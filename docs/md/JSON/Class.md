@@ -168,9 +168,7 @@ There is a consequence to this rule: implicit JSONification of attributes skips 
 
   - `Bool` **`:lazy`**
     
-    Set typeobject lazyness. When the argument is omitted attributes are set to *non-lazy* if they have a *basic type*, and set to *lazy* otherwise.
-    
-    When the argument is used all attributes of the typeobject use it as their default, unless their own mode is set manually. See [*examples/decl-lazy.raku*](../../../examples/decl-lazy.raku).
+    Set typeobject lazyness. Depending on its value (or absence of such) attributes with no individually set laziness choose their default mode. See attribute trait `:lazy` argument description below and [*examples/decl-lazy.raku*](../../../examples/decl-lazy.raku).
 
   - `Bool` **`:skip-null`**
     
@@ -224,7 +222,13 @@ There is an exception though: adverbs `:skip`, `:build`, and `:aliases`, used in
 
   - `Bool` **`:lazy`**
     
-    Force laziness mode of this attribute.
+    Force laziness mode of this attribute. If omitted then the following rules are used to determine attribute's default laziness mode:
+    
+      - When attribute has an initializer or default value then it defaults to non-lazy
+    
+      - If attribute's declarator laziness mode is set explicitly then it is used for the attribute
+    
+      - Otherwise attribute defaults to lazy when its type is a non-basic, and to non-lazy otherwise
 
   - `Bool` **`:serializer(...)`**, `Bool` **`:deserializer(...)`**
     
@@ -696,10 +700,7 @@ Notice that except for `C3`, all other classes and roles are not JSONified. Only
     
     ``` 
     --- C1 serialization:
-    {
-      "count": 42,
-      "what": "The Answer"
-    }
+    {"count":42,"what":"The Answer"}
     --- C2 serialization:
     {"count":42,"what":"The Answer"}
     ```
@@ -754,9 +755,9 @@ Apparently, this example doesn't cover all of `JSON::Class` sequence features.
     Sample output:
     
     ``` 
-    --- Initial    : ["something",{"section":"S","chapter":"22.1"},{"id":"EBCA-12F","quantity":13},"final"]
+    --- Initial    : ["something",{"chapter":"22.1","section":"S"},{"id":"EBCA-12F","quantity":13},"final"]
     --- Delete 2nd : Item2.new(section => "S", chapter => "22.1")
-    --- 2nd deleted: ["something","removed",{"id":"EBCA-12F","quantity":13},"final"]
+    --- 2nd deleted: ["something","removed",{"quantity":13,"id":"EBCA-12F"},"final"]
     
     --- 0 ---
     Deserialized before accessing? False
@@ -835,10 +836,10 @@ Apparently, this example doesn't cover all of `JSON::Class` sequence features.
     Sample output:
     
     ``` 
-    --- Initial        : {"plain":"string","i2":{"chapter":"66.6","section":"D"},"i1":{"id":"AB12-EFZK","quantity":2}}
+    --- Initial        : {"plain":"string","i2":{"section":"D","chapter":"66.6"},"i1":{"id":"AB12-EFZK","quantity":2}}
     --- Delete i1      : Item1.new(id => "AB12-EFZK", quantity => 2)
     --- Default is     : <not there>
-    --- JSON without i1: {"plain":"string","i2":{"section":"D","chapter":"66.6"}}
+    --- JSON without i1: {"i2":{"section":"D","chapter":"66.6"},"plain":"string"}
     
     --- Key 'in' ---
     Deserialized before accessing? False
@@ -846,16 +847,16 @@ Apparently, this example doesn't cover all of `JSON::Class` sequence features.
     Value: Item2.new(section => "DS", chapter => "43.2.1")
     Deserialized after accessing? True
     
-    --- Key 'entry1' ---
-    Deserialized before accessing? False
-    ... deserializing key 'entry1'
-    Value: Item1.new(id => "FROM-JSON", quantity => 0)
-    Deserialized after accessing? True
-    
     --- Key 'sval' ---
     Deserialized before accessing? False
     ... deserializing key 'sval'
     Value: some string
+    Deserialized after accessing? True
+    
+    --- Key 'entry1' ---
+    Deserialized before accessing? False
+    ... deserializing key 'entry1'
+    Value: Item1.new(id => "FROM-JSON", quantity => 0)
     Deserialized after accessing? True
     ```
 
@@ -869,7 +870,7 @@ Apparently, this example doesn't cover all of `JSON::Class` sequence features.
     }
     
     class Struct is json(:implicit) {
-        has Array:D[Real:D] @.matrix is json(:predicate);
+        has Array[Real:D](Array:D) @.matrix is json(:predicate);
         has Rec:D %.rec is json(:name<records>, :predicate);
     }
     
@@ -1042,7 +1043,7 @@ These two subjects are tightly bound to each other, hence single example for bot
     We expect an exception here: X::Method::NotFound
     Exception message: No such method 'update-record' for invocant of type 'Status'
     Serialization with custom config using standard defaults:
-      {"rec":{"count":0,"what":"irrelevant"},"st":{"verified":false,"code":"1A-CD3","notes":"to be done"}}
+      {"st":{"notes":"to be done","verified":false,"code":"1A-CD3"},"rec":{"what":"irrelevant","count":0}}
     ```
 
 ## Custom Serialziers And Deserializers

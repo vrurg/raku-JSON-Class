@@ -135,18 +135,18 @@ The following example is, perhaps, the best demonstration of how marshalling wor
     ### Serializing ###
     Attribute-level serializes: {k1 => 2023-10-23, k2 => 3.141592653589793, k3 => v3.4}
     Key-level serializes  : k3
-    Key-level serializes  : k2
     Key-level serializes  : k1
+    Key-level serializes  : k2
     {"idx":{"Foo.k1":"Date.new(2023,10,23)","Foo.k2":"3.141592653589793e0","Foo.k3":"v3.4"}}
     
     ### Deserializing ###
     Attribute-level deserializes: {Foo.k1 => Date.new(2023,10,23), Foo.k2 => 3.141592653589793e0, Foo.k3 => v3.4}
+    Key-level deserializes  : 'Foo.k3'
+    Value-level deserializes: 'v3.4'
     Key-level deserializes  : 'Foo.k1'
     Value-level deserializes: 'Date.new(2023,10,23)'
     Key-level deserializes  : 'Foo.k2'
     Value-level deserializes: '3.141592653589793e0'
-    Key-level deserializes  : 'Foo.k3'
-    Value-level deserializes: 'v3.4'
     Foo.new(idx => ${"oo.k1" => Date.new(2023,10,23), "oo.k2" => 3.141592653589793e0, "oo.k3" => v3.4})
     ```
 
@@ -200,7 +200,7 @@ Ok, but what if we want to marshall using JSON class owns methods? It can be don
     Serializing Num: {"n":"Num"}
     
     Deserializing a Rat: Rat|-621/50
-    Deserializing a type: Int|U4151608216912
+    Deserializing a type: Int|U5683871372624
     ```
 
 ### Marshaller Signature Match

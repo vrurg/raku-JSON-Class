@@ -382,7 +382,7 @@ li > .pod-block-code { margin-top: 16px; }
 <tr class="toc-level-1"><td class="toc-number">2</td><td class="toc-text"><a href="#SYNOPSIS">SYNOPSIS</a></td></tr>
 <tr class="toc-level-1"><td class="toc-number">3</td><td class="toc-text"><a href="#DESCRIPTION">DESCRIPTION</a></td></tr>
 <tr class="toc-level-1"><td class="toc-number">4</td><td class="toc-text"><a href="#BASICS">BASICS</a></td></tr>
-<tr class="toc-level-2"><td class="toc-number">4.1</td><td class="toc-text"><a href='#Basic_Or_"Complex"_Types'>Basic Or "Complex" Types</a></td></tr>
+<tr class="toc-level-2"><td class="toc-number">4.1</td><td class="toc-text"><a href="#Basic_Or_%22Complex%22_Types">Basic Or "Complex" Types</a></td></tr>
 <tr class="toc-level-2"><td class="toc-number">4.2</td><td class="toc-text"><a href="#Marshalling_And_JSONification">Marshalling And JSONification</a></td></tr>
 <tr class="toc-level-2"><td class="toc-number">4.3</td><td class="toc-text"><a href="#Trait">Trait</a></td></tr>
 <tr class="toc-level-2"><td class="toc-number">4.4</td><td class="toc-text"><a href="#Declarant">Declarant</a></td></tr>
@@ -534,8 +534,7 @@ Attribute : The Answer
 <p>See <a href="examples/decl-implicit.raku"><em>examples/decl-implicit.raku</em></a>.</p>
 </li>
 <li><p><code>Bool</code> <strong><code>:lazy</code></strong></p>
-<p>Set typeobject lazyness. When the argument is omitted attributes are set to <em>non-lazy</em> if they have a <em>basic type</em>, and set to <em>lazy</em> otherwise.</p>
-<p>When the argument is used all attributes of the typeobject use it as their default, unless their own mode is set manually. See <a href="examples/decl-lazy.raku"><em>examples/decl-lazy.raku</em></a>.</p>
+<p>Set typeobject lazyness. Depending on its value (or absence of such) attributes with no individually set laziness choose their default mode. See attribute trait <code>:lazy</code> argument description below and <a href="examples/decl-lazy.raku"><em>examples/decl-lazy.raku</em></a>.</p>
 </li>
 <li><p><code>Bool</code> <strong><code>:skip-null</code></strong></p>
 <p>If <em>True</em> then attributes of this typeobject are not serialized if their value is undefined. When omitted then value of this parameter is obtained from the configuration object. See <a href="t/020-json-basics.rakutest"><em>t/020-json-basics.rakutest</em></a>, subtest "Undefineds".</p>
@@ -575,7 +574,14 @@ Attribute : The Answer
 <p>This adverb has the same meaning as its counterpart in <a href="https://raku.land/?q=AttrX::Mooish"><code>AttrX::Mooish</code></a>: it allows an attribute to have more than one name. <strong>Note</strong> though that this adverb doesn't affect marshalling where only one JSON key name is allowed.</p>
 </li>
 <li><p><code>Bool</code> <strong><code>:lazy</code></strong></p>
-<p>Force laziness mode of this attribute.</p>
+<p>Force laziness mode of this attribute. If omitted then the following rules are used to determine attribute's default laziness mode:</p>
+<ul><li><p>When attribute has an initializer or default value then it defaults to non-lazy</p>
+</li>
+<li><p>If attribute's declarator laziness mode is set explicitly then it is used for the attribute</p>
+</li>
+<li><p>Otherwise attribute defaults to lazy when its type is a non-basic, and to non-lazy otherwise</p>
+</li>
+</ul>
 </li>
 <li><p><code>Bool</code> <strong><code>:serializer(...)</code></strong>, <code>Bool</code> <strong><code>:deserializer(...)</code></strong></p>
 <p>Allowed aliases are <code>:to-json</code> and <code>:from-json</code>, correspondingly.</p>
@@ -940,10 +946,7 @@ say "--- C2 serialization:\n", $c2.to-json;
 </pre>
 <p>Sample output:</p>
 <pre class="pod-block-code">--- C1 serialization:
-{
-  "count": 42,
-  "what": "The Answer"
-}
+{"count":42,"what":"The Answer"}
 --- C2 serialization:
 {"count":42,"what":"The Answer"}
 </pre>
@@ -992,9 +995,9 @@ for ^$deserialized.elems -&gt; $idx {
 }
 </pre>
 <p>Sample output:</p>
-<pre class="pod-block-code">--- Initial    : ["something",{"section":"S","chapter":"22.1"},{"id":"EBCA-12F","quantity":13},"final"]
+<pre class="pod-block-code">--- Initial    : ["something",{"chapter":"22.1","section":"S"},{"id":"EBCA-12F","quantity":13},"final"]
 --- Delete 2nd : Item2.new(section =&gt; "S", chapter =&gt; "22.1")
---- 2nd deleted: ["something","removed",{"id":"EBCA-12F","quantity":13},"final"]
+--- 2nd deleted: ["something","removed",{"quantity":13,"id":"EBCA-12F"},"final"]
 
 --- 0 ---
 Deserialized before accessing? False
@@ -1068,10 +1071,10 @@ for $deserialized.keys -&gt; $key {
 }
 </pre>
 <p>Sample output:</p>
-<pre class="pod-block-code">--- Initial        : {"plain":"string","i2":{"chapter":"66.6","section":"D"},"i1":{"id":"AB12-EFZK","quantity":2}}
+<pre class="pod-block-code">--- Initial        : {"plain":"string","i2":{"section":"D","chapter":"66.6"},"i1":{"id":"AB12-EFZK","quantity":2}}
 --- Delete i1      : Item1.new(id =&gt; "AB12-EFZK", quantity =&gt; 2)
 --- Default is     : &lt;not there&gt;
---- JSON without i1: {"plain":"string","i2":{"section":"D","chapter":"66.6"}}
+--- JSON without i1: {"i2":{"section":"D","chapter":"66.6"},"plain":"string"}
 
 --- Key 'in' ---
 Deserialized before accessing? False
@@ -1079,16 +1082,16 @@ Deserialized before accessing? False
 Value: Item2.new(section =&gt; "DS", chapter =&gt; "43.2.1")
 Deserialized after accessing? True
 
---- Key 'entry1' ---
-Deserialized before accessing? False
-... deserializing key 'entry1'
-Value: Item1.new(id =&gt; "FROM-JSON", quantity =&gt; 0)
-Deserialized after accessing? True
-
 --- Key 'sval' ---
 Deserialized before accessing? False
 ... deserializing key 'sval'
 Value: some string
+Deserialized after accessing? True
+
+--- Key 'entry1' ---
+Deserialized before accessing? False
+... deserializing key 'entry1'
+Value: Item1.new(id =&gt; "FROM-JSON", quantity =&gt; 0)
 Deserialized after accessing? True
 </pre>
 </li>
@@ -1100,7 +1103,7 @@ Deserialized after accessing? True
 }
 
 class Struct is json(:implicit) {
-    has Array:D[Real:D] @.matrix is json(:predicate);
+    has Array[Real:D](Array:D) @.matrix is json(:predicate);
     has Rec:D %.rec is json(:name&lt;records&gt;, :predicate);
 }
 
@@ -1264,7 +1267,7 @@ Serialization of mapped types:
 We expect an exception here: X::Method::NotFound
 Exception message: No such method 'update-record' for invocant of type 'Status'
 Serialization with custom config using standard defaults:
-  {"rec":{"count":0,"what":"irrelevant"},"st":{"verified":false,"code":"1A-CD3","notes":"to be done"}}
+  {"st":{"notes":"to be done","verified":false,"code":"1A-CD3"},"rec":{"what":"irrelevant","count":0}}
 </pre>
 </li>
 </ul>

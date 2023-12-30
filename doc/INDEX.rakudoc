@@ -4,6 +4,7 @@
 =head1 JSON::Class Document Pages
 
 =item L«C«Changes»|rakudoc:..::ChangeLog»
+=item L«C«JSON::Class»|rakudoc:JSON::Class»
 =item L«C«JSON::Class::Attr»|rakudoc:JSON::Class::Attr»
 =item L«C«JSON::Class::Attr::Associative»|rakudoc:JSON::Class::Attr::Associative»
 =item L«C«JSON::Class::Attr::Positional»|rakudoc:JSON::Class::Attr::Positional»

@@ -175,7 +175,7 @@ entities injected into JSONified typeobject as part of their public or private A
 
 There is a consequence to this rule: implicit JSONification of attributes skips these with C<json->-prefixed names:
 
-=begin item :example("examples/json-pfx-attr.raku") :mtime(1699754677)
+=begin item :example("examples/json-pfx-attr.raku") :mtime(1700195861)
 From L<examples/json-pfx-attr.raku|file:examples/json-pfx-attr.raku>
 
 =begin code :example :lang("raku")
@@ -214,11 +214,9 @@ See L<I<examples/decl-implicit.raku>|file:examples/decl-implicit.raku>.
 =begin item
 C<Bool> B<C<:lazy>>
 
-Set typeobject lazyness. When the argument is omitted attributes are set to I<non-lazy> if they have a I<basic type>,
-and set to I<lazy> otherwise.
-
-When the argument is used all attributes of the typeobject use it as their default, unless their own mode is set
-manually. See L<I<examples/decl-lazy.raku>|file:examples/decl-lazy.raku>.
+Set typeobject lazyness. Depending on its value (or absence of such) attributes with no individually set laziness choose
+their default mode. See attribute trait C<:lazy> argument description below and
+L<I<examples/decl-lazy.raku>|file:examples/decl-lazy.raku>.
 =end item
 
 =begin item
@@ -309,7 +307,12 @@ allowed.
 =begin item
 C<Bool> B<C<:lazy>>
 
-Force laziness mode of this attribute.
+Force laziness mode of this attribute. If omitted then the following rules are used to determine attribute's default
+laziness mode:
+
+=item When attribute has an initializer or default value then it defaults to non-lazy
+=item If attribute's declarator laziness mode is set explicitly then it is used for the attribute
+=item Otherwise attribute defaults to lazy when its type is a non-basic, and to non-lazy otherwise
 =end item
 
 =begin item
@@ -537,7 +540,7 @@ But what if we know that IDs of books and articles are sufficiently different to
 example, book ID could start with I<ISBN:>, whereas article ID starts with a date-based I<YYYY-MM-DD:> prefix? In this
 case custom matchers can distinguish one JSON object from another:
 
-=begin item :example("examples/book-article-seq.raku") :mtime(1699754677)
+=begin item :example("examples/book-article-seq.raku") :mtime(1700195861)
 From L<examples/book-article-seq.raku|file:examples/book-article-seq.raku>
 
 =begin code :example :lang("raku")
@@ -620,7 +623,7 @@ be found under I<examples/> subdirectory of the distribution.
 
 =head2 Explicit/Implicit
 
-=begin item :example("examples/decl-implicit.raku") :mtime(1703346626)
+=begin item :example("examples/decl-implicit.raku") :mtime(1703347404)
 From L<examples/decl-implicit.raku|file:examples/decl-implicit.raku>
 
 =begin code :example :lang("raku")
@@ -655,7 +658,7 @@ Bar is explicit: True
 
 =head2 Inheritance And Role Consumption
 
-=begin item :example("examples/simple-inherit.raku") :mtime(1699754677)
+=begin item :example("examples/simple-inherit.raku") :mtime(1700195861)
 From L<examples/simple-inherit.raku|file:examples/simple-inherit.raku>
 
 =begin code :example :lang("raku")
@@ -692,7 +695,7 @@ Sample output:
 Notice that except for C<C3>, all other classes and roles are not JSONified. Only attributes of C<C1> and C<R1> are
 serialized.
 
-=begin item :example("examples/incorporation.raku") :mtime(1699754677)
+=begin item :example("examples/incorporation.raku") :mtime(1700195861)
 From L<examples/incorporation.raku|file:examples/incorporation.raku>
 
 =begin code :example :lang("raku")
@@ -734,7 +737,7 @@ Sample output:
 
 =head2 Lazy Deserialization
 
-=begin item :example("examples/decl-lazy.raku") :mtime(1699754677)
+=begin item :example("examples/decl-lazy.raku") :mtime(1700195861)
 From L<examples/decl-lazy.raku|file:examples/decl-lazy.raku>
 
 =begin code :example :lang("raku")
@@ -794,7 +797,7 @@ Sample output:
 
 =head2 Lazy Attribute Build
 
-=begin item :example("examples/lazy-build.raku") :mtime(1700537950)
+=begin item :example("examples/lazy-build.raku") :mtime(1702590285)
 From L«examples/lazy-build.raku|file:examples/lazy-build.raku»
 
 =begin code :example :lang("raku")
@@ -837,7 +840,7 @@ C<C1> specify config defaults but they affect the output only when the immediate
 Otherwise if a subclass instance is serialized then its defaults are used. This is to preserve the uniformity of
 serialization.
 
-=begin item :example("examples/config-defaults.raku") :mtime(1699754677)
+=begin item :example("examples/config-defaults.raku") :mtime(1700195861)
 From L<examples/config-defaults.raku|file:examples/config-defaults.raku>
 
 =begin code :example :lang("raku")
@@ -858,10 +861,7 @@ Sample output:
 
 =begin output :example
 --- C1 serialization:
-{
-  "count": 42,
-  "what": "The Answer"
-}
+{"count":42,"what":"The Answer"}
 --- C2 serialization:
 {"count":42,"what":"The Answer"}
 =end output
@@ -884,7 +884,7 @@ where only few of them are actually needed.
 
 Apparently, this example doesn't cover all of C<JSON::Class> sequence features.
 
-=begin item :example("examples/simple-sequence.raku") :mtime(1699754682)
+=begin item :example("examples/simple-sequence.raku") :mtime(1700195861)
 From L<examples/simple-sequence.raku|file:examples/simple-sequence.raku>
 
 =begin code :example :lang("raku")
@@ -925,9 +925,9 @@ for ^$deserialized.elems -> $idx {
 Sample output:
 
 =begin output :example
---- Initial    : ["something",{"section":"S","chapter":"22.1"},{"id":"EBCA-12F","quantity":13},"final"]
+--- Initial    : ["something",{"chapter":"22.1","section":"S"},{"id":"EBCA-12F","quantity":13},"final"]
 --- Delete 2nd : Item2.new(section => "S", chapter => "22.1")
---- 2nd deleted: ["something","removed",{"id":"EBCA-12F","quantity":13},"final"]
+--- 2nd deleted: ["something","removed",{"quantity":13,"id":"EBCA-12F"},"final"]
 
 --- 0 ---
 Deserialized before accessing? False
@@ -958,7 +958,7 @@ Deserialized after accessing? True
 
 =head2 Dictionary
 
-=begin item :example("examples/simple-dictionary.raku") :mtime(1699653226)
+=begin item :example("examples/simple-dictionary.raku") :mtime(1700195861)
 From L«examples/simple-dictionary.raku|file:examples/simple-dictionary.raku»
 
 =begin code :example :lang("raku")
@@ -1009,10 +1009,10 @@ for $deserialized.keys -> $key {
 Sample output:
 
 =begin output :example
---- Initial        : {"plain":"string","i2":{"chapter":"66.6","section":"D"},"i1":{"id":"AB12-EFZK","quantity":2}}
+--- Initial        : {"plain":"string","i2":{"section":"D","chapter":"66.6"},"i1":{"id":"AB12-EFZK","quantity":2}}
 --- Delete i1      : Item1.new(id => "AB12-EFZK", quantity => 2)
 --- Default is     : <not there>
---- JSON without i1: {"plain":"string","i2":{"section":"D","chapter":"66.6"}}
+--- JSON without i1: {"i2":{"section":"D","chapter":"66.6"},"plain":"string"}
 
 --- Key 'in' ---
 Deserialized before accessing? False
@@ -1020,16 +1020,16 @@ Deserialized before accessing? False
 Value: Item2.new(section => "DS", chapter => "43.2.1")
 Deserialized after accessing? True
 
---- Key 'entry1' ---
-Deserialized before accessing? False
-... deserializing key 'entry1'
-Value: Item1.new(id => "FROM-JSON", quantity => 0)
-Deserialized after accessing? True
-
 --- Key 'sval' ---
 Deserialized before accessing? False
 ... deserializing key 'sval'
 Value: some string
+Deserialized after accessing? True
+
+--- Key 'entry1' ---
+Deserialized before accessing? False
+... deserializing key 'entry1'
+Value: Item1.new(id => "FROM-JSON", quantity => 0)
 Deserialized after accessing? True
 =end output
 
@@ -1037,7 +1037,7 @@ Deserialized after accessing? True
 
 =head2 Array Attributes
 
-=begin item :example("examples/typed-array.raku") :mtime(1703346656)
+=begin item :example("examples/typed-array.raku") :mtime(1703905997)
 From L<examples/typed-array.raku|file:examples/typed-array.raku>
 
 =begin code :example :lang("raku")
@@ -1046,7 +1046,7 @@ class Rec {
 }
 
 class Struct is json(:implicit) {
-    has Array:D[Real:D] @.matrix is json(:predicate);
+    has Array[Real:D](Array:D) @.matrix is json(:predicate);
     has Rec:D %.rec is json(:name<records>, :predicate);
 }
 
@@ -1127,7 +1127,7 @@ Has .rec   : True
 
 These two subjects are tightly bound to each other, hence single example for both subjects.
 
-=begin item :example("examples/config-and-type-map.raku") :mtime(1699754677)
+=begin item :example("examples/config-and-type-map.raku") :mtime(1700195861)
 From L<examples/config-and-type-map.raku|file:examples/config-and-type-map.raku>
 
 =begin code :example :lang("raku")
@@ -1223,7 +1223,7 @@ Serialization of mapped types:
 We expect an exception here: X::Method::NotFound
 Exception message: No such method 'update-record' for invocant of type 'Status'
 Serialization with custom config using standard defaults:
-  {"rec":{"count":0,"what":"irrelevant"},"st":{"verified":false,"code":"1A-CD3","notes":"to be done"}}
+  {"st":{"notes":"to be done","verified":false,"code":"1A-CD3"},"rec":{"what":"irrelevant","count":0}}
 =end output
 
 =end item
@@ -1233,7 +1233,7 @@ Serialization with custom config using standard defaults:
 There are more than we can fit into this example. We can have individual custom marshalling for hash and array values,
 and hash keys too. We can specify marshallers for sequence elements too.
 
-=begin item :example("examples/custom-marshallers.raku") :mtime(1699754677)
+=begin item :example("examples/custom-marshallers.raku") :mtime(1700195861)
 From L<examples/custom-marshallers.raku|file:examples/custom-marshallers.raku>
 
 =begin code :example :lang("raku")
@@ -1309,7 +1309,7 @@ Custom deserializers handle 'weird' JSON:
 Here we use custom marshallers too, this time for array values. But there is a trick: serializer and deserializer do
 not modify every third value. To do so they call C<json-I-cant> routine giving up the task to C<JSON::Class>
 
-=begin item :example("examples/skipping-marshalling.raku") :mtime(1699754677)
+=begin item :example("examples/skipping-marshalling.raku") :mtime(1700195861)
 From L<examples/skipping-marshalling.raku|file:examples/skipping-marshalling.raku>
 
 =begin code :example :lang("raku")

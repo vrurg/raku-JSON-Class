@@ -11,11 +11,13 @@ B<v0.0.5>
 =item No predicate helper method installed unless C<:predicate> attribute trait argument is used
 =item Implement support for mixins
 =item Support for C<:config> argument of C<is json> trait to define any default configuration value for typeobject
+=item When type-mapping a nominalizable don't construct a new type if there are no mappings for its nominals
+=item Clarify deserialization of coercive types
+=item Make attributes with initializers non-lazy by default
 =item Fix config derivation from upstream configuration
 =item Fix marshalling of non-string hash key types
 =item Fix method C<clone> of L<C<JSON::Class::Object>|rakudoc:JSON::Class::Object> not actually returning the clone
-=item When type-mapping a nominalizable don't construct a new type if there are no mappings for its nominals
-=item Clarify deserialization of coercive types
+=item Fix deserialization of nominalizable positionals and associatives
 =end item
 
 =begin item

@@ -400,15 +400,19 @@ li > .pod-block-code { margin-top: 16px; }
 </li>
 <li><p>Support for <code>:config</code> argument of <code>is json</code> trait to define any default configuration value for typeobject</p>
 </li>
+<li><p>When type-mapping a nominalizable don't construct a new type if there are no mappings for its nominals</p>
+</li>
+<li><p>Clarify deserialization of coercive types</p>
+</li>
+<li><p>Make attributes with initializers non-lazy by default</p>
+</li>
 <li><p>Fix config derivation from upstream configuration</p>
 </li>
 <li><p>Fix marshalling of non-string hash key types</p>
 </li>
 <li><p>Fix method <code>clone</code> of <a href="docs/html/JSON/Class/Object.html"><code>JSON::Class::Object</code></a> not actually returning the clone</p>
 </li>
-<li><p>When type-mapping a nominalizable don't construct a new type if there are no mappings for its nominals</p>
-</li>
-<li><p>Clarify deserialization of coercive types</p>
+<li><p>Fix deserialization of nominalizable positionals and associatives</p>
 </li>
 </ul>
 </li>

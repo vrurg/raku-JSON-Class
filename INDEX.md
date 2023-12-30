@@ -2,6 +2,8 @@
 
   - [`Changes`](ChangeLog.md)
 
+  - [`JSON::Class`](docs/md/JSON/Class.md)
+
   - [`JSON::Class::Attr`](docs/md/JSON/Class/Attr.md)
 
   - [`JSON::Class::Attr::Associative`](docs/md/JSON/Class/Attr/Associative.md)
