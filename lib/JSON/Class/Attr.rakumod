@@ -49,6 +49,7 @@ method build-nominal-type is raw {
 }
 
 method build-lazy(::?CLASS:D:) {
+    return False with ($!attr.build // $!attr.container_descriptor.default);
     my $declarant-lazy = self.declarant.^json-is-lazy;
 
     # If declarant mode is set explicitly, then use it indisputably.

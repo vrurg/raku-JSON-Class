@@ -176,7 +176,7 @@ subtest "Explicit/Implicit" => {
 }
 
 subtest "Laziness" => {
-    plan 25;
+    plan 26;
 
     my subset Counter of Int where * >= 0;
 
@@ -273,6 +273,34 @@ subtest "Laziness" => {
         ok AllLazy.^json-get-key('base-typed').lazy, "attribute of a basic type is lazy when the class is forced lazy";
         ok AllLazy.^json-get-key('num').lazy, "explicit declration of an attribute still defaults to class' laziness";
         nok AllLazy.^json-get-key('item').lazy, ":!lazy with an attribute still makes it eager";
+    }
+
+    subtest "Attributes With Initializers" => {
+        plan 5;
+
+        my class NonBasic is json {
+            has Str $.id;
+        }
+
+        my class SomeLazy is json(:lazy, :implicit) {
+            has NonBasic $.obj .= new(:id<NO-ID>);
+            has Str $.status = "OK";
+            has Real $.amount is default(12.13);
+            has Int $.count;
+        }
+
+        ok SomeLazy.^json-get-attr('$!count').lazy, "default is lazy";
+        nok SomeLazy.^json-get-attr('$!obj').lazy, "method call initializer makes attribute non-lazy";
+        nok SomeLazy.^json-get-attr('$!status').lazy, "concrete initializer makes attribute non-lazy";
+        nok SomeLazy.^json-get-attr('$!amount').lazy, "`is default` initializer makes attribute non-lazy";
+
+        my $json = q<{"obj":{"id":"REAL-ID"},"status":"JSON-OK","amount":3.1415926,"count":333}>;
+        my $deserialized = SomeLazy.from-json($json);
+        my $expected = SomeLazy.new( obj => NonBasic.new(:id<REAL-ID>),
+                                     :status<JSON-OK>,
+                                     :amount(3.1415926),
+                                     :count(333) );
+        cmp-deeply $deserialized, $expected, "deserialized";
     }
 }
 
