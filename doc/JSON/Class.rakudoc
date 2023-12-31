@@ -1037,7 +1037,7 @@ Deserialized after accessing? True
 
 =head2 Array Attributes
 
-=begin item :example("examples/typed-array.raku") :mtime(1703905997)
+=begin item :example("examples/typed-array.raku") :mtime(1704054675)
 From L<examples/typed-array.raku|file:examples/typed-array.raku>
 
 =begin code :example :lang("raku")
