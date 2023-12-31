@@ -1,5 +1,7 @@
 # CHANGELOG
 
+  - **v0.0.6**
+
   - **v0.0.5**
     
       - Support for marshalling of undefined `DateTime` and `Version` values with `:using-defaults`

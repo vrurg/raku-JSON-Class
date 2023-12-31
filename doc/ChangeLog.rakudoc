@@ -3,6 +3,11 @@
 =head1 CHANGELOG
 
 =begin item
+B<v0.0.6>
+
+=end item
+
+=begin item
 B<v0.0.5>
 
 =item Support for marshalling of undefined C<DateTime> and C<Version> values with C<:using-defaults>
