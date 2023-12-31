@@ -5,6 +5,15 @@ use JSON::Class::Utils;
 
 role Base is Exception {}
 
+my multi sub trait_mod:<is>(Mu \type, Bool :x-wrapper($)!) {
+    if $*RAKU.compiler.version >= v2023.12 {
+        type.^add_role( ::('X::Wrapper') );
+    }
+    else {
+        type.^add_role( do { require ::('AttrX::Mooish::X::Wrapper') } );
+    }
+}
+
 role Typed {
     has Mu $!type is required is built;
     method type is raw {
@@ -135,7 +144,7 @@ my class Serialize::Impossible does Serialize {
     }
 }
 
-my class Serialize::Fatal does Serialize does X::Wrapper {
+my class Serialize::Fatal does Serialize is x-wrapper {
     has Str:D $.what is required; # What was being deserialized when the exception happened
     method message {
         "Serialization of " ~ self.type.^name ~ " died" ~ self!exception-name-message
@@ -152,7 +161,7 @@ my class Deserialize::Impossible does Deserialize {
     }
 }
 
-my class Deserialize::Fatal does Deserialize does X::Wrapper {
+my class Deserialize::Fatal does Deserialize is x-wrapper {
     has Str:D $.what is required; # What was being deserialized when the exception happened
     method message {
         "Deserialization of " ~ self.type.^name ~ " died" ~ self!exception-name-message
