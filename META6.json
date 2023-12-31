@@ -1,11 +1,11 @@
 {
-    "api": "1.0.4",
+    "api": "1.0.5",
     "auth": "zef:vrurg",
     "authors": [
         "Vadim Belman"
     ],
     "depends": [
-        "AttrX::Mooish:auth<zef:vrurg>:api<1.0.6>",
+        "AttrX::Mooish:auth<zef:vrurg>:ver<1.0.9+>",
         "JSON::Fast:ver<0.19>:auth<cpan:TIMOTIMO>"
     ],
     "description": "JSON de-/serialization for classes and roles",
@@ -69,6 +69,8 @@
     },
     "tags": [
         "serialisation",
+        "deserialization",
+        "marshalling",
         "JSON"
     ],
     "test-depends": [
