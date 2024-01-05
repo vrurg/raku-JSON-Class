@@ -48,6 +48,7 @@ method json-all-set(::?CLASS:D:) {
 
 proto method json-serialize-attr(::?CLASS:D: JSON::Class::Attr:D $json-attr, Mu, |) {
     CATCH {
+        when JSON::Class::X::Serialize::Fatal { .rethrow }
         default {
             JSON::Class::X::Serialize::Fatal.new(
                 :exception($_), :type(self.WHAT), :what("process attribute " ~ $json-attr.name)
