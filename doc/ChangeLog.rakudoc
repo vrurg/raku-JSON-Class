@@ -3,6 +3,11 @@
 =head1 CHANGELOG
 
 =begin item
+B<v0.0.7>
+
+=end item
+
+=begin item
 B<v0.0.6>
 
 =item Bump L<C<AttrX::Mooish>|rakudoc:AttrX::Mooish> dependency to get compatibility with the latest Rakudo versions
