@@ -34,7 +34,6 @@ subtest "Standard Inheritance" => {
 }
 
 subtest "Using :parent" => {
-
     # When we want a child class to serialize its parent class too.
     my class C1 {
         has Int $.count;
