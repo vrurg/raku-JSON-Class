@@ -1,6 +1,8 @@
 # CHANGELOG
 
   - **v0.0.6**
+    
+      - Bump [`AttrX::Mooish`](https://raku.land/?q=AttrX::Mooish) dependency to get compatibility with the latest Rakudo versions
 
   - **v0.0.5**
     
